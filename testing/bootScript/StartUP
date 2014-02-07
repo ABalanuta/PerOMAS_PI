@@ -1,6 +1,14 @@
 #! /bin/sh
-# /etc/init.d/StartUP
-#
+### BEGIN INIT INFO
+# Provides:          StartUP
+# Required-Start:               $named $network $remote_fs $syslog
+# Required-Stop:                $syslog
+# Should-Start:
+# Should-Stop:
+# Default-Start:                3 5
+# Default-Stop:
+# Description:       Longer script description.
+### END INIT INFO
 
 # Some things that run always
 touch /var/lock/StartUP
@@ -9,7 +17,6 @@ touch /var/lock/StartUP
 case "$1" in
   start)
     echo "Starting script StartUP "
-    sleep 10
     python /opt/send_Email_With_IP.py &
     #python /home/artur-adm/sensor/LCDtestArtur.py &
     #python /home/artur-adm/sensor/showIP.py &
