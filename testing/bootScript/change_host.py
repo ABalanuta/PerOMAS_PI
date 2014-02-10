@@ -14,3 +14,4 @@ for mac, pi in MAC_Address:
 		break
 
 os.popen("sudo echo "+pi+" > /etc/hostname")
+os.popen("sudo echo '127.0.0.1\t"+pi+" >> /etc/hosts")
