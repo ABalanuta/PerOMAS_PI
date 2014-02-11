@@ -1,0 +1,42 @@
+<application>
+  <settings lcdColor="White" lcdBackground="On" />
+	
+<run text="Dash">echo "This is the Dash"</run>
+
+  <folder text="Sensors">
+    <folder text="Temp/Humi">
+      <widget text="View Info" function="TempHumiView" />
+      <widget text="Configure" function="ConfigureTempHumi" />
+    </folder>
+    <folder text="Luminosidade">
+      <widget text="View Info" function="LuxView" />
+      <widget text="Configure" function="ConfigureLux" />
+    </folder>
+  </folder>
+
+    <folder text="System Info">
+    <run text="CPU Usage">top -bn1 | grep 'Cpu(s)' | sed 's/.*, *\([0-9.]*\)%* id.*/\1/' | awk '{print 100 - $1}'</run>
+    <widget text="Show Date/Time" function="ShowDateTime" />
+    <widget text="Set Date/Time" function="SetDateTime" />
+    <folder text="Network">
+      <widget text="IP Address" function="ShowIPAddress" />
+      <widget text="Use 10.1.1.2" function="Use10Network" />
+      <widget text="Use DHCP" function="UseDHCP" />
+    </folder>
+    <folder text="LCD Color">
+      <widget text="Red" function="LcdRed" />
+      <widget text="Green" function="LcdGreen" />
+      <widget text="Blue" function="LcdBlue" />
+      <widget text="Yellow" function="LcdYellow" />
+      <widget text="Teal" function="LcdTeal" />
+      <widget text="Violet" function="LcdViolet" />
+      <widget text="White" function="LcdOn" />
+      <widget text="Off" function="LcdOff" />
+    </folder>
+  </folder>
+
+  <widget text="Quit" function="DoQuit" />
+  <widget text="Reboot" function="DoReboot" />
+  <widget text="Shutdown" function="DoShutdown" />
+</application>
+
