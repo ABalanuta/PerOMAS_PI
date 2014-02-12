@@ -5,53 +5,51 @@ import sys
 from threading import Thread
 from datetime import datetime
 
-#Sensor Temp
+#Temp and Humid Sensor Data Pin
 dhtpin = 7
 
-global temp
-global humid
 
-temp = 0.0
-humid = 0.0
+class TermoHumid(Thread):
 
-class Termo(Thread):      
+	temp = 0.0
+	humid = 0.0
+	lastUpdate = 0
+
 	def __init__(self):
-                self.stopped = False
+		self.stopped = False
 		Thread.__init__(self)
+		self.update()
 	
 	def stop(self):
-                self.stopped = True
+		self.stopped = True
 
-    	def run(self):
-    		global temp
-    		global humid
+	def run(self):
 		while not self.stopped:
-			values = subprocess.check_output(["./aux/rpi_dht", str(dhtpin)])
-			#print values
-			for line in values.split('\n'):
-				if "Humidity" in line:
-					print str(datetime.now()), line
-					break
-			#values = dhtreader.read(dev_type, dhtpin)
-			#if values: # if not null	
-			#	temp = round(values[0],4)
-			#	humid = round(values[1],4)
-			#	print str(datetime.now()), "Temp = {0} *C, Hum = {1} %".format(temp, humid)
-			#	sleep(0.5)
-			#else:
-			#	print str(datetime.now()), "Failed to read from sensor!!!"
-			#	sleep(1)
+			self.update()
 
-t = Termo()
-t.start()
+	def update(self):
+		values = subprocess.check_output(["./aux/rpi_dht", str(dhtpin)])
+		for line in values.split('\n'):
+			if "Humidity" in line:
+				#print str(datetime.now()), line
+				parts = line.split(' ')
+				self.humid = parts[5]
+				self.temp = parts[9]
+				self.lastUpdate = datetime.now()
+				break
 
-while True:
+started = datetime.now()
 
-	try:
-		sleep(.25)
-		#print str(datetime.now()), "alive"
 
-	except KeyboardInterrupt:
-        	print "Bye"
-        	t.stop()
-		sys.exit()
+print "#TEST#"
+print "#Starting#"
+d = TermoHumid()
+d.start()
+
+
+while True:	
+	print "Runtime:", str(d.lastUpdate-started), "\tTemp:", d.temp, "\tHumid:", d.humid
+	sleep(2)
+
+d.stop()
+print "#Sttoped#\n\n"
