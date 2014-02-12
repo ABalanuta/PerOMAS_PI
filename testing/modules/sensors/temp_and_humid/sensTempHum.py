@@ -1,9 +1,11 @@
 from time import sleep
+from threading import Thread
+from datetime import datetime
 import signal
 import subprocess
 import sys
-from threading import Thread
-from datetime import datetime
+import os
+
 
 #Temp and Humid Sensor Data Pin
 dhtpin = 7
@@ -14,10 +16,13 @@ class TermoHumid(Thread):
 	temp = 0.0
 	humid = 0.0
 	lastUpdate = 0
+	executable = ""
 
 	def __init__(self):
 		self.stopped = False
 		Thread.__init__(self)
+		full_path = os.path.realpath(__file__)
+		self.executable = os.path.dirname(full_path)+"/aux/rpi_dht"
 		self.update()
 	
 	def stop(self):
@@ -28,7 +33,7 @@ class TermoHumid(Thread):
 			self.update()
 
 	def update(self):
-		values = subprocess.check_output(["./aux/rpi_dht", str(dhtpin)])
+		values = subprocess.check_output([self.executable, str(dhtpin)])
 		for line in values.split('\n'):
 			if "Humidity" in line:
 				#print str(datetime.now()), line
