@@ -1,13 +1,22 @@
+#!/usr/bin/python
+
 from sensors.temp_and_humid.sensTempHum import TermoHumid
-from interaction.lcd.lcdmenu.py import *
+from interaction.lcd.lcdmenu import *
+import datetime
 
 
+global thermo
+global lcd
+
+thermo = TermoHumid()
+thermo.start()
+
+sensorList = []
+sensorList.append(thermo)
 
 
-global th
+lcd = LCD(sensorList)
+lcd.start()
 
-th = TermoHumid()
 
-th.start()
-print th.temp
-th.stop()
+#started = datetime.now()

@@ -1,28 +1,32 @@
 <application>
   <settings lcdColor="White" lcdBackground="On" />
-	
-<run text="Dash">echo "This is the Dash"</run>
 
+  <widget text="Dash" function="ShowDash" />
+
+<!--
   <folder text="Sensors">
-    <folder text="Temp/Humi">
-      <widget text="View Info" function="TempHumiView" />
-      <widget text="Configure" function="ConfigureTempHumi" />
+    <folder text="Show">
+
     </folder>
-    <folder text="Luminosidade">
-      <widget text="View Info" function="LuxView" />
-      <widget text="Configure" function="ConfigureLux" />
+
+    <folder text="Configure">
     </folder>
   </folder>
+-->
 
-    <folder text="System Info">
-    <run text="CPU Usage">top -bn1 | grep 'Cpu(s)' | sed 's/.*, *\([0-9.]*\)%* id.*/\1/' | awk '{print 100 - $1}'</run>
-    <widget text="Show Date/Time" function="ShowDateTime" />
-    <widget text="Set Date/Time" function="SetDateTime" />
-    <folder text="Network">
-      <widget text="IP Address" function="ShowIPAddress" />
-      <widget text="Use 10.1.1.2" function="Use10Network" />
-      <widget text="Use DHCP" function="UseDHCP" />
+  <folder text="System Info">
+
+    <folder text="Date/Time">
+      <widget text="Show Date/Time" function="ShowDateTime" />
+      <widget text="Set Date/Time" function="SetDateTime" />
     </folder>
+
+    <folder text="Network">
+      <widget text="Show IP Address" function="ShowIPAddress" />
+      <widget text="Use DHCP" function="UseDHCP" />
+      <widget text="Use Fixed" function="Use10Network" />
+    </folder>
+
     <folder text="LCD Color">
       <widget text="Red" function="LcdRed" />
       <widget text="Green" function="LcdGreen" />

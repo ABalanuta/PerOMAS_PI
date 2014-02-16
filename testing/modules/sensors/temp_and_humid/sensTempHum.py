@@ -1,9 +1,9 @@
+#!/usr/bin/python
+
 from time import sleep
 from threading import Thread
 from datetime import datetime
-import signal
 import subprocess
-import sys
 import os
 
 
@@ -13,48 +13,61 @@ dhtpin = 7
 
 class TermoHumid(Thread):
 
-	temp = 0.0
-	humid = 0.0
-	lastUpdate = 0
-	executable = ""
+    temp = 0.0
+    humid = 0.0
+    started = 0
+    lastUpdate = 0
+    executable = ""
 
-	def __init__(self):
-		self.stopped = False
-		Thread.__init__(self)
-		full_path = os.path.realpath(__file__)
-		self.executable = os.path.dirname(full_path)+"/aux/rpi_dht"
-		self.update()
-	
-	def stop(self):
-		self.stopped = True
+    def __init__(self):
+        self.stopped = False
+        Thread.__init__(self)
+        full_path = os.path.realpath(__file__)
+        #self.executable = os.path.dirname(full_path)+"/aux/rpi_dht"
+        self.executable = os.path.dirname(full_path)+"/aux/loldht"
+        self.started = datetime.now()
+        self.update()
 
-	def run(self):
-		while not self.stopped:
-			self.update()
+    def stop(self):
+        self.stopped = True
 
-	def update(self):
-		values = subprocess.check_output([self.executable, str(dhtpin)])
-		for line in values.split('\n'):
-			if "Humidity" in line:
-				#print str(datetime.now()), line
-				parts = line.split(' ')
-				self.humid = parts[5]
-				self.temp = parts[9]
-				self.lastUpdate = datetime.now()
-				break
+    def run(self):
+        while not self.stopped:
+            self.update()
 
-started = datetime.now()
+    def update(self):
+        values = subprocess.check_output([self.executable, str(dhtpin)])
+        for line in values.split('\n'):
+            if "Humidity" in line:
+                #print str(datetime.now()), line
+                parts = line.split(' ')
+                #self.humid = parts[5]
+                #self.temp = parts[9]
+                self.humid = parts[2]
+                self.temp = parts[6]
+                self.lastUpdate = datetime.now()
+                break
 
+    def runtime(self):
+        return str(self.lastUpdate-self.started).split(".")[0]
 
-print "#TEST#"
-print "#Starting#"
-d = TermoHumid()
-d.start()
+#Runs only if called
+if __name__ == "__main__":
 
+    started = datetime.now()
 
-while True:	
-	print "Runtime:", str(d.lastUpdate-started), "\tTemp:", d.temp, "\tHumid:", d.humid
-	sleep(2)
+    print "#TEST#"
+    print "#Starting#"
+    d = TermoHumid()
+    d.start()
+    f = open('logging.log','a')
 
-d.stop()
-print "#Sttoped#\n\n"
+    while True:
+        print "Runtime:", d.runtime(), "\tTemp:", d.temp, "\tHumid:", d.humid
+        sleep(2)
+        f.write(str(d.lastUpdate)+"\t"+"\tTemp:\t"+d.temp+"\tHumid:\t"+d.humid+"\n")
+        f.flush()
+
+    d.stop()
+    f.close()
+    print "#Sttoped#\n\n"

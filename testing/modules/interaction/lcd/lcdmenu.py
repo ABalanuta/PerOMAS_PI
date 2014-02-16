@@ -4,6 +4,7 @@ import commands
 import os
 from string import split
 from time import sleep, strftime, localtime
+from threading import Thread
 from xml.dom.minidom import *
 from Adafruit_I2C import Adafruit_I2C
 from Adafruit_MCP230xx import Adafruit_MCP230XX
@@ -12,7 +13,11 @@ from Adafruit_CharLCDPlate import Adafruit_CharLCDPlate
 
 import smbus
 
-configfile = 'lcdmenu.xml'
+full_path = os.path.realpath(__file__)
+os.path.dirname(full_path)
+configfile = os.path.dirname(full_path)+'/lcdmenu.xml'
+
+
 # set DEBUG=1 for print debug statements
 DEBUG = 1
 DISPLAY_ROWS = 2
@@ -26,6 +31,12 @@ lcd = Adafruit_CharLCDPlate(busnum = 1)
 
 lcd.begin(DISPLAY_COLS, DISPLAY_ROWS)
 lcd.backlight(lcd.OFF)
+
+
+
+
+global sensorList
+
 
 # commands
 def DoQuit():
@@ -91,30 +102,30 @@ def LcdViolet():
     lcd.backlight(lcd.VIOLET)
 
 def IsButtonPressed():
-	if lcd.buttonPressed(lcd.LEFT):
-		return 1
-	if lcd.buttonPressed(lcd.UP):
-		return 1
-	if lcd.buttonPressed(lcd.DOWN):
-		return 1
-	if lcd.buttonPressed(lcd.RIGHT):
-		return 1
-	if lcd.buttonPressed(lcd.SELECT):
-		return 1
-	else:
-		return 0
+    if lcd.buttonPressed(lcd.LEFT):
+        return 1
+    if lcd.buttonPressed(lcd.UP):
+        return 1
+    if lcd.buttonPressed(lcd.DOWN):
+        return 1
+    if lcd.buttonPressed(lcd.RIGHT):
+        return 1
+    if lcd.buttonPressed(lcd.SELECT):
+        return 1
+    else:
+        return 0
 
 def ShowDash():
-	if DEBUG:
-		print('in ShowDash')
-	lcd.clear()
-	while not IsButtonPressed():
-		sleep(0.25)
-		lcd.home()
-		lcd.clear()
-		lcd.message(str(localtime()))
+    if DEBUG:
+        print('in ShowDash')
+    lcd.clear()
+    while not(lcd.buttonPressed(lcd.LEFT)):
+        sleep(0.25)
+        lcd.home()
+        lcd.message("T="+str(sensorList[0].temp)+"C  H="+str(sensorList[0].humid)+"%\n"+sensorList[0].runtime())
+        print "T="+str(sensorList[0].temp)+"C  H="+str(sensorList[0].humid)+"%\n"+sensorList[0].runtime()
 
-	
+
 def ShowDateTime():
     if DEBUG:
         print('in ShowDateTime')
@@ -123,7 +134,7 @@ def ShowDateTime():
         sleep(0.25)
         lcd.home()
         lcd.message(strftime('%a %b %d %Y\n%I:%M:%S %p', localtime()))
-    
+
 def ValidateDateDigit(current, curval):
     # do validation/wrapping
     if current == 0: # Mm
@@ -229,7 +240,7 @@ def ShowIPAddress():
         if lcd.buttonPressed(lcd.LEFT):
             break
         sleep(0.25)
-    
+
 #only use the following if you find useful
 def Use10Network():
     "Allows you to switch to a different network for local connection"
@@ -279,7 +290,7 @@ class CommandToRun:
                         break
                     sleep(0.25)
                 lcd.clear()
-                lcd.message(self.clist[i-1]+'\n'+self.clist[i])          
+                lcd.message(self.clist[i-1]+'\n'+self.clist[i])
                 sleep(0.5)
         while 1:
             if lcd.buttonPressed(lcd.LEFT):
@@ -289,7 +300,7 @@ class Widget:
     def __init__(self, myName, myFunction):
         self.text = myName
         self.function = myFunction
-        
+
 class Folder:
     def __init__(self, myName, myParent):
         self.text = myName
@@ -339,7 +350,7 @@ class Display:
 
     def __init__(self, folder):
         self.curFolder = folder
-	self.homeFolder = folder
+        self.homeFolder = folder
         self.curTopItem = 0
         self.curSelectedItem = 0
 
@@ -375,11 +386,11 @@ class Display:
             print('------------------')
         lcd.home()
         lcd.message(str)
-	
+
     def gohome(self):
-	if DEBUG:
+        if DEBUG:
             print('gohome')
-	self.curFolder = self.homeFolder
+        self.curFolder = self.homeFolder
         self.curTopItem = 0
         self.curSelectedItem = 0
 
@@ -455,68 +466,59 @@ class Display:
                 print('eval', self.curFolder.items[self.curSelectedItem].function)
             eval(self.curFolder.items[self.curSelectedItem].function+'()')
 
-# now start things up
-uiItems = Folder('root','')
+class LCD(Thread):
 
-dom = parse(configfile) # parse an XML file by name
-
-top = dom.documentElement
-
-ProcessNode(top, uiItems)
-
-display = Display(uiItems)
-display.display()
-
-#Enters the first Menu
-display.update('r')
-display.display()
-
-if DEBUG:
-	print('start while')
-
-max = 5*20 # in seconds
-curr = 0
+    def __init__(self, sensors):
+        self.stopped = False
+        Thread.__init__(self)
+        global sensorList
+        sensorList = sensors
 
 
-while 1:
-	if (lcd.buttonPressed(lcd.LEFT)):
-		display.update('l')
-		display.display()
-		sleep(0.25)
-		curr = 0
+    def stop(self):
+        self.stopped = True
 
-	if (lcd.buttonPressed(lcd.UP)):
-		display.update('u')
-		display.display()
-		sleep(0.25)
-		curr = 0
+    def run(self):
+        uiItems = Folder('root','')
+        dom = parse(configfile) # parse an XML file by name
+        top = dom.documentElement
 
-	if (lcd.buttonPressed(lcd.DOWN)):
-		display.update('d')
-		display.display()
-		sleep(0.25)
-		curr = 0
+        ProcessNode(top, uiItems)
 
-	if (lcd.buttonPressed(lcd.RIGHT)):
-		display.update('r')
-		display.display()
-		sleep(0.25)
-		curr = 0
+        self.display = Display(uiItems)
+        self.display.display()
 
-	if (lcd.buttonPressed(lcd.SELECT)):
-		display.update('s')
-		display.display()
-		sleep(0.25)
-		curr = 0
+        #Enters the first Menu
+        self.display.update('r')
+        self.display.display()
 
-	#Return to Dash
-	if curr > max:
-		display.gohome()
-		display.display()
-		ShowDash()
-		curr = 0
-			
-	else:
-		curr = curr+1
-		sleep(0.05)
+        if DEBUG:
+            print('start while')
+        self.loop()
 
+    def loop(self):
+        while not self.stopped:
+            if (lcd.buttonPressed(lcd.LEFT)):
+                self.display.update('l')
+                self.display.display()
+                sleep(0.25)
+
+            if (lcd.buttonPressed(lcd.UP)):
+                self.display.update('u')
+                self.display.display()
+                sleep(0.25)
+
+            if (lcd.buttonPressed(lcd.DOWN)):
+                self.display.update('d')
+                self.display.display()
+                sleep(0.25)
+
+            if (lcd.buttonPressed(lcd.RIGHT)):
+                self.display.update('r')
+                self.display.display()
+                sleep(0.25)
+
+            if (lcd.buttonPressed(lcd.SELECT)):
+                self.display.update('s')
+                self.display.display()
+                sleep(0.25)
