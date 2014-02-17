@@ -1,0 +1,2 @@
+all:
+	sudo aptitude install BLUE????
