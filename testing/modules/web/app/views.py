@@ -10,7 +10,6 @@ def index():
         title = 'Home',
         user = user)
 
-
 @app.route('/login', methods = ['GET', 'POST'])
 def login():
     form = LoginForm()
