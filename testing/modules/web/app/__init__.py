@@ -1,7 +1,11 @@
 from flask import Flask
+import os
+
 
 app = Flask(__name__)
-app.config.from_object('config')
+#this_dir = os.path.dirname(os.path.realpath(__file__))
+#print this_dir
+#app.config.from_object(this_dir+'/config.py')
 
 
-from app import views
+from web.app import views
