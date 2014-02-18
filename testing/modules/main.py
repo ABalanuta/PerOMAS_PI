@@ -18,5 +18,4 @@ sensorList.append(thermo)
 lcd = LCD(sensorList)
 lcd.start()
 
-
-#started = datetime.now()
+started = datetime.now()
