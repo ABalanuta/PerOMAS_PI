@@ -51,7 +51,6 @@ def get_dns_name(ip):
             return None
 
 
-#Retru
 def get_associated(ip):
 	
 	oid = '.1.3.6.1.4.1.9.9.273.1.2.1.1.14'
@@ -81,10 +80,11 @@ def get_associated(ip):
 
 class WifiDetector(threading.Thread):
 	
-	def __init__(self):
+	def __init__(self, hub):
 		if DEBUG:
 			print "WifiDetector.init()"
 		threading.Thread.__init__(self)
+		self.hub = hub
 		self.stopped = True
 		self.detectedList = []
 		self.searchList = []
