@@ -9,14 +9,14 @@ from datetime import datetime
 class TempHumidFake(Thread):
 
     def __init__(self, hub):
-        self.stopped = False
-        Thread.__init__(self)
-        self.hub = hub
-        self.started = datetime.now()
-        self.last_update = datetime.now()
-        self.temp = 0
-        self.humid = 0
-        self.update()	# Runs one time
+		Thread.__init__(self)
+		self.stopped = False
+		self.hub = hub
+		self.started = datetime.now()
+		self.last_update = datetime.now()
+		self.temp = 0
+		self.humid = 0
+		self.update()	# Runs one time
 
     def stop(self):
         self.stopped = True
@@ -28,11 +28,11 @@ class TempHumidFake(Thread):
     def update(self):
 		self.humid = randint(20, 100)
 		self.temp = randint(20, 35)
-		self.lastUpdate = datetime.now()
+		self.last_update = datetime.now()
 		sleep(1.5)
         
     def runtime(self):
-        return str(self.lastUpdate-self.started).split(".")[0]
+        return str(self.last_update-self.started).split(".")[0]
 
 #Runs only if called
 if __name__ == "__main__":

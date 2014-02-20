@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+	
+	<div class="well well-lg">		
+		<div class="row">
+			<div class="col-md-4">
+	<div class="panel panel-primary">
+		
+		<div class="panel-heading">
+			<h3 class="panel-title">Temperature</h3>
+		</div>
+		
+		<div class="panel-body">
+			{{temp}}ºC
+		</div>
+	</div>
+  
+  </div>
+			<div class="col-md-4">
+		<div class="panel panel-primary">
+		
+		<div class="panel-heading">
+			<h3 class="panel-title">Relative Humidity</h3>
+		</div>
+		
+		<div class="panel-body">
+			{{humid}}%
+		</div>
+	</div>
+  </div>
+			<div class="col-md-4">
+	<div class="panel panel-primary">
+		
+		<div class="panel-heading">
+			<h3 class="panel-title">Updated</h3>
+		</div>
+		
+		<div class="panel-body">
+			{{last_update}}
+		</div>
+	</div></div>
+		</div>
+	</div>
+	
+
+	<!--<h1>Temperature:{{temp}}ºC</h1>
+	<h1>Relative Humidity:{{humid}}%</h1>
+	<h1>Updated:{{last_update}}</h1>-->
+	
+	 
+	
+	
+	
+	<button type="button" class="btn btn-default btn-lg">
+		 <span class="glyphicon glyphicon-refresh"></span> Update
+	</button>
+	
+	
+	
+	
+	
+{% for post in posts %}
+	<div><p>{{post.author.nickname}} says: <b>{{post.body}}</b></p></div>
+{% endfor %}
+{% endblock %}
+
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+    {% for message in messages %}
+        <li>{{ message }} </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}

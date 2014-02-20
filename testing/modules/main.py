@@ -3,7 +3,7 @@ from time import sleep
 from datetime import datetime
 from sensors.temp_humid.TempHumidFake import TempHumidFake
 from sensors.wifi_detect.WifiLocation import WifiDetector
-#from web.app import app
+from web.web import WebManager
 #
 
 #Debbuging Mode
@@ -28,33 +28,44 @@ if __name__ == '__main__':
 		print "Starting main"
 	
 	try:
+		
+		#Main object used for sharing
 		hub = Hub()
 	
 		#Start Temperature/Humidity Sensor
 		th = TempHumidFake(hub)
 		th.start()
 		hub.temp_humid = th
+		if DEBUG:
+			print "T/H sensor ON"
 		
 		#Starts Wifi Detector
 		wifi = WifiDetector(hub)
-		wifi.start()
+		#wifi.start()
 		hub.wifi = wifi
-		wifi.track('40:B0:FA:C7:A1:EB')
+		#wifi.track('40:B0:FA:C7:A1:EB')
+		if DEBUG:
+			print "WIFI sensor ON"
 		
-	
-		while True:
-			sleep(2)
-			print hub.temp_humid.temp
-			print hub.wifi.findAll()
-			
+		
+		
+		#Starts Web Server
+		#MUST BE LAST (blocks the thread)
+		wm = WebManager(hub)
+		wm.start()
+		
+		#while True:
+		#	sleep(2)
+		#	print hub.temp_humid.temp
+		#	print hub.wifi.findAll()
+				
 	except:
+		raise
+		
+	finally:
 		th.stop()
 		wifi.stop()
 		
-		try:
-			raise
-		except KeyboardInterrupt:
-			print "\n"
 		
 		
 		
