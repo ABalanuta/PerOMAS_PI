@@ -30,7 +30,7 @@ class WebManager():
 			if hub.temp_humid:
 				t = hub.temp_humid.temp
 				h = hub.temp_humid.humid
-				d = str(hub.temp_humid.last_update)
+				d = str(hub.temp_humid.last_update).split(".")[0]
 		
 			return render_template("index.html",
 				title = 'Home',
