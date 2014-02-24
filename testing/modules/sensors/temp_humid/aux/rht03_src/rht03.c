@@ -43,17 +43,22 @@ int main (void)
   temp = rh = newTemp = newRh = 0 ;
 
   wiringPiSetup () ;
-  piHiPri       (50) ;
+  piHiPri       (25) ;
 
   for (;;)
   {
-	delay (1000) ;
+	delay (500) ;
 
-	readRHT03 (RHT03_PIN, &newTemp, &newRh);
+	if(!readRHT03 (RHT03_PIN, &newTemp, &newRh)){
+		continue;
+	}
 
 	temp = newTemp ;
 	rh   = newRh ;
+
+	//delay (500) ;
 	printf ("Temp: %5.1f RH: %5.1f\n", temp / 10.0, rh / 10.0) ;
+	break;
   }
 
   return 0 ;

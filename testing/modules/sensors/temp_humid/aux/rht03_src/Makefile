@@ -51,7 +51,6 @@ BINS	=	$(SRC:.c=)
 
 all: rht03	
 	@echo "Done"
-	rm all
 
 really-all:	$(BINS)
 
