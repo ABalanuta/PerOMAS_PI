@@ -3,6 +3,7 @@ from time import sleep
 from datetime import datetime
 from sensors.temp_humid.TempHumidFake import TempHumidFake
 from sensors.wifi_detect.WifiLocation import WifiDetector
+from sensors.bt_detect.BTDetector import BTDetector
 from web.web import WebManager
 #
 
@@ -47,12 +48,22 @@ if __name__ == '__main__':
 		if DEBUG:
 			print "WIFI sensor ON"
 		
+		#Starts BT Detector
+		bt = BTDetector(hub)
+		bt.start()
+		if DEBUG:
+			print "BT sensor ON"
+		
+		
+		while True:
+			sleep(1)
+			print bt.get_devices_status()
 		
 		
 		#Starts Web Server
 		#MUST BE LAST (blocks the thread)
-		wm = WebManager(hub)
-		wm.start()
+		#wm = WebManager(hub)
+		#wm.start()
 		
 		#while True:
 		#	sleep(2)
@@ -65,6 +76,7 @@ if __name__ == '__main__':
 	finally:
 		th.stop()
 		wifi.stop()
+		bt.stop()
 		
 		
 		

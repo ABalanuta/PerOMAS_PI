@@ -22,9 +22,16 @@ class WebManager():
 	@app.route('/index')
 	def index():
 		
+		#Ambient values
 		t = "--"
 		h = "--"
 		d = "--"
+		
+		#Users
+		posts = [
+			{ 'author': "Artur", 'body': 'Test post #1' },
+			{ 'author': "Joao", 'body': 'Test post #2' }
+		]
 		
 		if hub:
 			if hub.temp_humid:
@@ -36,7 +43,8 @@ class WebManager():
 				title = 'Home',
 				temp = t,
 				humid = h,
-				last_update = d
+				last_update = d,
+				posts = posts
 				)
         
 	@app.route('/settings')

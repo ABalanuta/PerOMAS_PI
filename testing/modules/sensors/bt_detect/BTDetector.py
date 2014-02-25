@@ -1,20 +1,20 @@
 #!/usr/bin/python
 import os
 import subprocess
-from random import randint
 from time import sleep
 from threading import Thread
 from datetime import datetime
 
-
+#Debbuging Mode
+DEBUG = 0
 
 class BTDetector(Thread):
 
 	stopped = None
 	hub = None
 	paired_devices = None
-	paired_status = None #For every time the device is seen its get incremented one, else subtracted
-	paired_status_maximum = 3
+	paired_status_maximum = 3 # timeout +- 15s
+	last_updated = None
 	
 	def __init__(self, hub):
 		Thread.__init__(self)
@@ -25,7 +25,8 @@ class BTDetector(Thread):
 			
 		self.stopped = False
 		self.hub = hub
-		self.paired_devices = []
+		self.paired_devices = dict()
+		self.last_updated = datetime.now()
 		
 		p = subprocess.Popen('hciconfig -a', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		lines = p.stdout.readlines()
@@ -47,16 +48,16 @@ class BTDetector(Thread):
 		
 		mac = mac.upper()
 		
+		
 		#removes first if already paired
-		if mac in self.paired_devices:
+		if mac in self.paired_devices.keys():
 			self.remove_phone(mac)
 		
 		p = subprocess.Popen('echo '+pin+' | sudo bluez-simple-agent hci0 '+mac, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		lines = p.stdout.readlines()
-		subprocess.Popen('sudo bluez-test-device trusted '+mac+' yes', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-		
-		if lines == 3 and "New device" in lines[2]:
-			self.renew_paired_list()
+		if len(lines) == 3 and "New device" in lines[2]:
+			subprocess.Popen('sudo bluez-test-device trusted '+mac+' yes', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+			self.paired_devices[mac] = 0
 			return "Pair OK"
 		else:
 			return "Pair Fail"
@@ -67,79 +68,69 @@ class BTDetector(Thread):
 	def renew_paired_list(self):
 		p = subprocess.Popen('sudo bluez-test-device list', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		lines = p.stdout.readlines()
-		new_list = []
 		for line in lines:
 			found_mac = line.split()[0]
-			new_list += [found_mac]
-		self.paired_devices = new_list
-
-	def get_paired(self):
-		return self.paired_devices
+			self.paired_devices[found_mac] = 0 # inicialize at zero
 
 	def stop(self):
 		self.stopped = True
+		sleep(3)
 	
-	#Checks if the device is on using l2ping
 	def l2ping(self, mac):
 		p = subprocess.Popen('sudo l2ping '+mac+' -s 0 -c 1', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		lines = p.stdout.readlines()
-		device_on = False
+		device_on = -1
 		if len(lines) == 3 and mac in lines[1] and '1 received' in lines[2]:
-			device_on = True
+			device_on = 1
 		return device_on
 		
 	def run(self):
-		count = 0
+		count  = 0 
 		while not self.stopped:
-			for device in self.paired_devices:
-				status = self.l2ping(device)
-				#self.update_device_status(device, status)
-				#todo uncoment
+			for device in self.paired_devices.keys():
+				if not self.stopped:
+					status = self.l2ping(device)
+					old_status = self.paired_devices[device]
+					new_status = old_status + status
+					if new_status <= self.paired_status_maximum and new_status >= 0:
+						self.paired_devices[device] = new_status
+					if DEBUG:
+						print device, self.paired_devices[device]
 				count += 1
-				#print count, device
-			sleep(1)
-			
-	def device_status(self, device):
-		print "Device Status not Implemented"
-			 
-	def update_device_status(self, device, status):
-
-		if not self.paired_status:
-			self.paired_status = []
+				if DEBUG:
+					print "count:", count
+		sleep(1)
 				
-		for x in self.paired_status:
-			print x
-			if device == x[0]:
-				old_status = x[1]
-				new_status = old_status + status
-				if not new_status > self.paired_status_maximum and not new_status < 0:
-					x[1] = new_status
-					return
-									
-		#if not inicialized creates new variable
-		print 'Not found in the list'
-		if status > 0 #TODO HERE
-		#TODO HERE
-		if not len(self.paired_status) > 0:
-			self.paired_status = [[device, status]]
-		else:
-			self.paired_status += [device, status]
-		print self.paired_status			
-			  
-		
-	def update(self):
-		print "Update not Implemented"
+	def get_devices_status(self):
+		list = []
+		for device in self.paired_devices.keys():
+			d = dict()
+			d['mac'] = device
+			if self.paired_devices[device] > 0:
+				d['status'] = 'ON'
+			else:
+				d['status'] = 'OFF'
+			list.append(d)
+		return list
 
 #Runs only if called
 if __name__ == "__main__":
 
 	started = datetime.now()
-
-	print "#TEST#"
-	print "#Starting#"
-	d = BTDetector(None)
-	#print d.register_phone('40:B0:FA:3D:5F:08', '0000')
-	print d.get_paired()
-	#d.l2ping('40:B0:FA:3D:5F:08')
-	d.start()
-	print "#Sttoped#\n\n"
+	try:
+		print "#TEST#"
+		print "#Starting#"
+		d = BTDetector(None)
+		#print d.register_phone('40:B0:FA:3D:5F:08', '0000')
+		#print d.register_phone('AC:81:F3:F6:FD:F7', '0001')
+	
+		#print d.get_paired()
+		#print d.l2ping('AC:81:F3:F6:FD:F7')
+		d.start()
+		sleep(60*60*24*2)
+		
+	except:
+		print "Exception"
+	finally:
+		d.stop()
+		print "#Sttoped#\n\n"
