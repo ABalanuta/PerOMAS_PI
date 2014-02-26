@@ -6,7 +6,7 @@ from threading import Thread
 from datetime import datetime
 
 #Debbuging Mode
-DEBUG = 0
+DEBUG = 1
 
 class BTDetector(Thread):
 
@@ -15,6 +15,7 @@ class BTDetector(Thread):
 	paired_devices = None
 	paired_status_maximum = 3 # timeout +- 15s
 	last_updated = None
+	inter_ping_delay = 3
 	
 	def __init__(self, hub):
 		Thread.__init__(self)
@@ -77,13 +78,29 @@ class BTDetector(Thread):
 		sleep(3)
 	
 	def l2ping(self, mac):
-		p = subprocess.Popen('sudo l2ping '+mac+' -s 0 -c 1', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		p = subprocess.Popen('sudo l2ping '+mac+' -s 0 -c 1',
+							shell=True,
+							stdout=subprocess.PIPE,
+							stderr=subprocess.STDOUT)
 		lines = p.stdout.readlines()
-		device_on = -1
-		if len(lines) == 3 and mac in lines[1] and '1 received' in lines[2]:
-			device_on = 1
-		return device_on
+		if DEBUG:
+			print lines
 		
+		if len(lines) == 3 and mac in lines[1] and '1 received' in lines[2]:
+			sleep(self.inter_ping_delay)
+			return 1
+		elif len(lines) == 1 and 'Host is down' in lines[0]:
+			sleep(1)
+			return -1
+		else:
+			
+			if self.stopped:
+				return
+				
+			print "Interface Error"
+			self.reset_interface()
+			return self.l2ping(mac)
+			
 	def run(self):
 		count  = 0 
 		while not self.stopped:
@@ -95,12 +112,27 @@ class BTDetector(Thread):
 					if new_status <= self.paired_status_maximum and new_status >= 0:
 						self.paired_devices[device] = new_status
 					if DEBUG:
-						print device, self.paired_devices[device]
+						print device, self.paired_devices[device],  str(datetime.now())
+					
 				count += 1
+				
+				if count%100 == 0:
+					self.reset_interface()
+				
 				if DEBUG:
 					print "count:", count
-		sleep(1)
-				
+					
+					
+	def reset_interface(self):
+		if DEBUG:
+			print "Reset_interface()"
+		p = subprocess.Popen('sudo hciconfig hci0 reset',
+							shell=True,
+							stdout=subprocess.PIPE,
+							stderr=subprocess.STDOUT)
+		p.stdout.readlines()
+		sleep(self.inter_ping_delay)
+			
 	def get_devices_status(self):
 		list = []
 		for device in self.paired_devices.keys():

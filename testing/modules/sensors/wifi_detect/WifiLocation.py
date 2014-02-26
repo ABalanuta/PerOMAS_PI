@@ -4,7 +4,7 @@ import threading
 from datetime import datetime
 from time import sleep
 
-DEBUG = 0
+DEBUG = 1
 #APs ip Range 172.20.3.1-60
 ipRange = ('172.20.3.', 1, 90)
 scanDelay = 5 #seconds
