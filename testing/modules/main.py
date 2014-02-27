@@ -1,7 +1,7 @@
 #!/usr/bin/python
 from time import sleep
 from datetime import datetime
-from sensors.temp_humid.TempHumidFake import TempHumidFake
+from sensors.temp_humid.TempHumid import TempHumid
 from sensors.wifi_detect.WifiLocation import WifiDetector
 from sensors.bt_detect.BTDetector import BTDetector
 from web.web import WebManager
