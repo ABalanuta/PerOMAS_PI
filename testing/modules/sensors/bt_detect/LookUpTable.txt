@@ -1,0 +1,220 @@
+isco has the most granular dBm lookup table.
+
+RSSI_Max = 100
+
+Convert % to RSSI and lookup the result in the following table. The RSSI is on the left, 
+
+and the corresponding dBm value (a negative number) is on the right.
+
+Notice that this gives a range of –10dBm to –113dBm. Bearing in mind that a Cisco card 
+
+will have a Receive Sensitivity of –96dBm at its lowest, it is impossible to obtain an RSSI 
+
+value of less than 16. Note, also, that all RSSI values greater than 93 are assigned 
+
+–10dBm, and that there are multiple places in the table where two adjacent RSSI values 
+
+are assigned the same dBm value.
+
+0 = -113 
+
+1 = -112 
+
+2 = -111 
+
+3 = -110 
+
+4 = -109 
+
+5 = -108 
+
+6 = -107 
+
+7 = -106 
+
+8 = -105 
+
+9 = -104 
+
+10 = -103 
+
+11 = -102 
+
+12 = -101 
+
+13 = -99 
+
+14 = -98 
+
+15 = -97 
+
+16 = -96 
+
+17 = -95 
+
+18 = -94 
+
+19 = -93 
+
+20 = -92 
+
+21 = -91 
+
+22 = -90 
+
+23 = -89 
+
+24 = -88 
+
+25 = -87 
+
+26 = -86 
+
+27 = -85 
+
+28 = -84 
+
+29 = -83 
+
+30 = -82 
+
+31 = -81 
+
+32 = -80 
+
+33 = -79 
+
+34 = -78 
+
+35 = -77 
+
+36 = -75 
+
+37 = -74 
+
+38 = -73 
+
+39 = -72 
+
+40 = -70 
+
+41 = -69 
+
+42 = -68 
+
+43 = -67 
+
+44 = -65 
+
+45 = -64 
+
+46 = -63 
+
+47 = -62 
+
+48 = -60 
+
+49 = -59 
+
+50 = -58 
+
+51 = -56 
+
+52 = -55 
+
+53 = -53 
+
+54 = -52 
+
+55 = -50 
+
+56 = -50 
+
+57 = -49 
+
+58 = -48 
+
+59 = -48 
+
+60 = -47 
+
+61 = -46 
+
+62 = -45 
+
+63 = -44 
+
+64 = -44 
+
+65 = -43 
+
+66 = -42 
+
+67 = -42 
+
+68 = -41 
+
+69 = -40 
+
+70 = -39 
+
+71 = -38 
+
+72 = -37 
+
+73 = -35 
+
+74 = -34 
+
+75 = -33 
+
+76 = -32 
+
+77 = -30 
+
+78 = -29 
+
+79 = -28 
+
+80 = -27 
+
+81 = -25 
+
+82 = -24 
+
+83 = -23 
+
+84 = -22 
+
+85 = -20 
+
+86 = -19 
+
+87 = -18 
+
+88 = -17 
+
+89 = -16 
+
+90 = -15 
+
+91 = -14 
+
+92 = -13 
+
+93 = -12 
+
+94 = -10 
+
+95 = -10 
+
+96 = -10 
+
+97 = -10 
+
+98 = -10 
+
+99 = -10 
+
+100 = -10 
+
