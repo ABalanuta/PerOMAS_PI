@@ -28,7 +28,7 @@ class WebManager():
 		d = "--"
 		
 		#Users
-		posts = [
+		u = [
 			{ 'author': "Artur", 'body': 'Test post #1' },
 			{ 'author': "Joao", 'body': 'Test post #2' }
 		]
@@ -44,7 +44,7 @@ class WebManager():
 				temp = t,
 				humid = h,
 				last_update = d,
-				posts = posts
+				users = u
 				)
         
 	@app.route('/settings')
