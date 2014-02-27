@@ -127,7 +127,6 @@ def ShowDash():
 		if lcdHUB:
 			if lcdHUB.temp_humid:
 				lcd.message("T="+str(lcdHUB.temp_humid.temp)+"C  H="+str(lcdHUB.temp_humid.humid)+"%\n"+lcdHUB.temp_humid.runtime())
-				print "ok", stopped
 		else:
 			lcd.message("Error Reading\nNo Obj HUB ")
 			print "error"
@@ -509,7 +508,7 @@ class LCD(Thread):
         self.loop()
 
     def loop(self):
-		global stopped
+	global stopped
 		
         while not stopped:
             if (lcd.buttonPressed(lcd.LEFT)):
