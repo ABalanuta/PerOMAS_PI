@@ -1,9 +1,10 @@
 #!/usr/bin/python
 from time import sleep
 from datetime import datetime
-from sensors.temp_humid.TempHumidFake import TempHumidFake
+from sensors.temp_humid.TempHumid import TempHumid
 from sensors.wifi_detect.WifiLocation import WifiDetector
 from sensors.bt_detect.BTDetector import BTDetector
+from interaction.lcd.LCDmenu import LCD
 from web.web import WebManager
 #
 
@@ -19,6 +20,7 @@ class Hub():
 		self.lcd = None
 		self.wifi = None
 		self.bt = None
+		self.lcd = None
 		
 
 
@@ -34,7 +36,7 @@ if __name__ == '__main__':
 		hub = Hub()
 	
 		#Start Temperature/Humidity Sensor
-		th = TempHumidFake(hub)
+		th = TempHumid(hub)
 		th.start()
 		hub.temp_humid = th
 		if DEBUG:
@@ -49,24 +51,26 @@ if __name__ == '__main__':
 			print "WIFI sensor ON"
 		
 		#Starts BT Detector
-		bt = BTDetector(hub)
-		bt.start()
+		#bt = BTDetector(hub)
+		#bt.start()
+		#if DEBUG:
+		#	print "BT sensor ON"
+		
+		
+		#Starts LCD
+		lcd = LCD(hub)
+		lcd.start()
+		hub.lcd = lcd
 		if DEBUG:
-			print "BT sensor ON"
-		
-		
-		while True:
-			sleep(1)
-			print bt.get_devices_status()
-		
+			print "WIFI sensor ON"
 		
 		#Starts Web Server
 		#MUST BE LAST (blocks the thread)
 		#wm = WebManager(hub)
 		#wm.start()
 		
-		#while True:
-		#	sleep(2)
+		while True:
+			sleep(2)
 		#	print hub.temp_humid.temp
 		#	print hub.wifi.findAll()
 				
@@ -76,7 +80,8 @@ if __name__ == '__main__':
 	finally:
 		th.stop()
 		wifi.stop()
-		bt.stop()
+		#bt.stop()
+		lcd.stop()
 		
 		
 		

@@ -33,11 +33,6 @@ lcd.begin(DISPLAY_COLS, DISPLAY_ROWS)
 lcd.backlight(lcd.OFF)
 
 
-
-
-global sensorList
-
-
 # commands
 def DoQuit():
     lcd.clear()
@@ -116,14 +111,27 @@ def IsButtonPressed():
         return 0
 
 def ShowDash():
-    if DEBUG:
-        print('in ShowDash')
-    lcd.clear()
-    while not(lcd.buttonPressed(lcd.LEFT)):
-        sleep(0.25)
-        lcd.home()
-        lcd.message("T="+str(sensorList[0].temp)+"C  H="+str(sensorList[0].humid)+"%\n"+sensorList[0].runtime())
-        print "T="+str(sensorList[0].temp)+"C  H="+str(sensorList[0].humid)+"%\n"+sensorList[0].runtime()
+	global lcdHUB
+	global stopped
+	
+	if DEBUG:
+		print('in ShowDash')
+	lcd.clear()
+	while not stopped:
+		
+		if lcd.buttonPressed(lcd.LEFT):
+			return
+			
+		sleep(0.25)
+		lcd.home()
+		if lcdHUB:
+			if lcdHUB.temp_humid:
+				lcd.message("T="+str(lcdHUB.temp_humid.temp)+"C  H="+str(lcdHUB.temp_humid.humid)+"%\n"+lcdHUB.temp_humid.runtime())
+		else:
+			lcd.message("Error Reading\nNo Obj HUB ")
+			print "error"
+        #
+        #print "T="+str(sensorList[0].temp)+"C  H="+str(sensorList[0].humid)+"%\n"+sensorList[0].runtime()
 
 
 def ShowDateTime():
@@ -468,15 +476,18 @@ class Display:
 
 class LCD(Thread):
 
-    def __init__(self, sensors):
-        self.stopped = False
-        Thread.__init__(self)
-        global sensorList
-        sensorList = sensors
-
-
+    def __init__(self, hub):
+		Thread.__init__(self)
+		global stopped
+		global lcdHUB
+		
+		stopped = False
+		self.hub = hub
+		lcdHUB = hub
+		
     def stop(self):
-        self.stopped = True
+		global stopped
+		stopped = True
 
     def run(self):
         uiItems = Folder('root','')
@@ -497,7 +508,9 @@ class LCD(Thread):
         self.loop()
 
     def loop(self):
-        while not self.stopped:
+	global stopped
+		
+        while not stopped:
             if (lcd.buttonPressed(lcd.LEFT)):
                 self.display.update('l')
                 self.display.display()

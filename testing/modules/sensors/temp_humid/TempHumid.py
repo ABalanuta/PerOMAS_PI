@@ -8,7 +8,7 @@ from datetime import datetime
 
 
 
-class TempHumidFake(Thread):
+class TempHumid(Thread):
 
     def __init__(self, hub):
 		Thread.__init__(self)
@@ -20,15 +20,17 @@ class TempHumidFake(Thread):
 		self.last_update = datetime.now()
 		self.temp = 0
 		self.humid = 0
+		self.update_interval = 5 # 5 sec
 		self.update()# Runs one time
 		
     def stop(self):
         self.stopped = True
-        subprocess.Popen('sudo killall rht03', shell=True) # kills the process
+        subprocess.Popen('sudo killall rht03 2>/dev/null', shell=True) # kills the process
 
     def run(self):
         while not self.stopped:
             self.update()
+            sleep(self.update_interval)
 
     def update(self):
 		p = subprocess.Popen(
@@ -37,8 +39,8 @@ class TempHumidFake(Thread):
 		for line in p.stdout.readlines():
 			if "Temp" in line:
 				parts = line.split()
-				self.humid = parts[1]
-				self.temp = parts[3]
+				self.temp = parts[1]
+				self.humid = parts[3]
 				self.last_update = datetime.now()
         
     def runtime(self):
@@ -56,7 +58,7 @@ if __name__ == "__main__":
     try:
 		while True:
 			print "Runtime:", d.runtime(), "\tTemp:", d.temp, "\tHumid:", d.humid
-			sleep(1)
+			sleep(d.update_interval)
     except: 
 		d.stop()
     
