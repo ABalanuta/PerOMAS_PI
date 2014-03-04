@@ -89,7 +89,7 @@ class BTDetector(Thread):
 		sleep(0.5)
 		subprocess.Popen('sudo modprobe btusb', shell=True)
 		sleep(1)
-		
+			
 		p = subprocess.Popen('hciconfig -a', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		lines = p.stdout.readlines()
 		if not (len(lines) > 0 and "hci0" in lines[0]):
