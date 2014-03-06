@@ -8,6 +8,9 @@ from datetime import datetime
 #Debbuging Mode
 DEBUG = 1
 
+global names
+names = dict()
+
 class BTExecutor(Thread):
 	
 	value = None
@@ -19,15 +22,29 @@ class BTExecutor(Thread):
 	def run(self):
 		p = subprocess.Popen('sudo bluez-test-discovery', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		lines = p.stdout.readlines()
-		found = []
+		found_name = []
+		found_mac = []
+		found_rssi = []
 		for line in lines:
-			#if "Name" in line:
-			#	print line
+			if "Name" in line:
+				if len(line.split()) > 2: #Name could be null
+					found_name += [' '.join(line.split()[2:])]
+					global names
+					if ' '.join(line.split()[2:]) in names:
+						names[' '.join(line.split()[2:])] += 1
+					else:
+						names[' '.join(line.split()[2:])] = 1
+				else:
+					found_name += [""]
 			if "Address" in line:
-				found += [line.split()[2]]
-			#elif "RSSI" in line:
-			#	print line
-			
+				found_mac += [line.split()[2]]
+			if "RSSI" in line:
+				found_rssi += [line.split()[2]]
+		
+		found = []
+		for x in range(0, len(found_name)):
+			found += [(found_mac[x], found_name[x], found_rssi[x], int((int(found_rssi[x])+97)*1.325))]
+		
 		self.value = found
 	
 class BTDetector(Thread):
@@ -71,7 +88,9 @@ class BTDetector(Thread):
 			exe.join(30)
 			if exe.value:
 				self.last_update = datetime.now()
-				print "Found: ", exe.value
+				print "Found: " 
+				for f in exe.value:
+					print "\t", f
 			else:
 				self.reset_interface()
 				fail += 1
@@ -125,3 +144,5 @@ if __name__ == "__main__":
 	finally:
 		d.stop()
 		print "#Sttoped#\n\n"
+		global names
+		print names
