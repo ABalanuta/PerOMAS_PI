@@ -17,7 +17,7 @@ class BTExecutor(Thread):
 	
 	def __init__(self):
 		Thread.__init__(self)
-		print "BTExecutor thread init"
+		#print "BTExecutor thread init"
 
 	def run(self):
 		p = subprocess.Popen('sudo bluez-test-discovery', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -105,17 +105,17 @@ class BTDetector(Thread):
 			print "Reset_interface()"
 			
 		subprocess.Popen('sudo rmmod btusb', shell=True)
-		sleep(0.5)
+		sleep(2)
 		subprocess.Popen('sudo modprobe btusb', shell=True)
-		sleep(1)
+		sleep(6)
 			
 		p = subprocess.Popen('hciconfig -a', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		lines = p.stdout.readlines()
 		if not (len(lines) > 0 and "hci0" in lines[0]):
 			raise Exception("No BT device Connected")
 		
-		subprocess.Popen('sudo hciconfig hci0 reset', shell=True)
-		sleep(0.5)
+		#subprocess.Popen('sudo hciconfig hci0 reset', shell=True)
+		#sleep(2)
 		subprocess.Popen('sudo hciconfig hci0 noscan', shell=True)
 		subprocess.Popen('sudo hciconfig hci0 name BT_$(hostname)', shell=True)
 		subprocess.Popen('sudo hciconfig hci0 afhmode 1', shell=True)
@@ -144,5 +144,7 @@ if __name__ == "__main__":
 	finally:
 		d.stop()
 		print "#Sttoped#\n\n"
-		global names
-		print names
+		print "-----------------"
+		for x in names:
+			print x, names[x]	
+		print "-----------------"
