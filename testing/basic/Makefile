@@ -1,7 +1,7 @@
 all: i2c temp_humid_sensor
 
 i2c:
-	#I2c Tools
+	##I2c Tools
 	sudo cp modules /etc/modules
 	sudo cp raspi-blacklist.conf /etc/modprobe.d/raspi-blacklist.conf
 	sudo apt-get install python-smbus i2c-tools
