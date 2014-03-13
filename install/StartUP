@@ -17,7 +17,7 @@ touch /var/lock/StartUP
 case "$1" in
   start)
     echo "Starting script StartUP "
-    python /opt/send_Email_With_IP.py &
+    #python /opt/send_Email_With_IP.py &
     #python /home/artur-adm/sensor/LCDtestArtur.py &
     #python /home/artur-adm/sensor/showIP.py &
     ;;
