@@ -1,8 +1,8 @@
-all: profile update i2c temp_humid_sensor startup netwotk bluetooth snmp web
+all: profile update i2c temp_humid_sensor startup network bluetooth snmp web
 
 profile:
 	git config --global user.email AliensGoo@users.noreply.github.com
-  	git config --global user.name AliensGoo
+	git config --global user.name AliensGoo
 
 update:
 	sudo aptitude update -y
@@ -13,7 +13,6 @@ i2c:
 	sudo cp modules /etc/modules
 	sudo cp raspi-blacklist.conf /etc/modprobe.d/raspi-blacklist.conf
 	sudo aptitude install python-smbus i2c-tools -y
-
 
 temp_humid_sensor:
 	#wiringPi Library AutoInstall
