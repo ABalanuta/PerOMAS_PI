@@ -1,4 +1,8 @@
-all: update i2c temp_humid_sensor startup netwotk bluetooth
+all: profile update i2c temp_humid_sensor startup netwotk bluetooth snmp web
+
+profile:
+	git config --global user.email AliensGoo@users.noreply.github.com
+  	git config --global user.name AliensGoo
 
 update:
 	sudo aptitude update -y
@@ -25,7 +29,7 @@ startup:
 	cd /etc/init.d/;sudo chmod +x StartUP;sudo update-rc.d StartUP defaults
 
 network:
-	sudo aptitude install iw  -y
+	sudo aptitude install iw -y
 	#sudo aptitude install firmware-realtek -y
 	
 bluetooth:
