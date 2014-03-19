@@ -43,12 +43,12 @@ if __name__ == '__main__':
 			print "T/H sensor ON"
 		
 		#Starts Wifi Detector
-		wifi = WifiDetector(hub)
+		#wifi = WifiDetector(hub)
 		#wifi.start()
-		hub.wifi = wifi
+		#hub.wifi = wifi
 		#wifi.track('40:B0:FA:C7:A1:EB')
-		if DEBUG:
-			print "WIFI sensor ON"
+		#if DEBUG:
+		#	print "WIFI sensor ON"
 		
 		#Starts BT Detector
 		#bt = BTDetector(hub)
@@ -71,7 +71,7 @@ if __name__ == '__main__':
 		
 		while True:
 			sleep(2)
-		#	print hub.temp_humid.temp
+			#print hub.temp_humid.temp
 		#	print hub.wifi.findAll()
 				
 	except:
@@ -79,7 +79,7 @@ if __name__ == '__main__':
 		
 	finally:
 		th.stop()
-		wifi.stop()
+		#wifi.stop()
 		#bt.stop()
 		lcd.stop()
 		
