@@ -1,4 +1,4 @@
-all: profile update i2c temp_humid_sensor startup network bluetooth snmp web mesh
+all: profile update i2c temp_humid_sensor startup network bluetooth snmp web mesh hostname reboot
 
 profile:
 	git config --global user.email AliensGoo@users.noreply.github.com
@@ -47,3 +47,11 @@ web:
 
 mesh:
 	sudo aptitude install htop ntp batctl batctl bridge-utils iw wireless-tools iperf -y
+
+hostname:
+	sudo python change_host.py
+
+reboot:
+	echo "System will rebootn in 10"
+	sleep 10
+	sudo reboot

@@ -21,9 +21,9 @@ for mac, pi in MAC_Address:
 		MyPI = pi
 		break
 
-#os.popen("sudo chmod 777 /etc/hosts")
-#os.popen("sudo echo '127.0.1.1	'"+MyPI+" >> /etc/hosts")
-#os.popen("sudo echo "+MyPI+" > /etc/hostname")
-#os.popen("sudo chmod 644 /etc/hosts")
+os.popen("sudo chmod 777 /etc/hosts")
+os.popen("sudo echo '127.0.1.1	'"+MyPI+" >> /etc/hosts")
+os.popen("sudo chmod 644 /etc/hosts")
+os.popen("sudo echo "+MyPI+" > /etc/hostname")
 
 print "You Need to reboot the Pi"
