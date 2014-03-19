@@ -1,4 +1,4 @@
-all: profile update i2c temp_humid_sensor startup network bluetooth snmp web
+all: profile update i2c temp_humid_sensor startup network bluetooth snmp web mesh
 
 profile:
 	git config --global user.email AliensGoo@users.noreply.github.com
@@ -44,3 +44,6 @@ web:
 	#pip install flask-login
 	#pip install flask-openid
 	#pip install sqlalchemy
+
+mesh:
+	sudo aptitude install htop ntp batctl batctl bridge-utils iw wireless-tools iperf -y
