@@ -5,8 +5,8 @@
 # Required-Stop:                $syslog
 # Should-Start:
 # Should-Stop:
-# Default-Start:                3 5
-# Default-Stop:
+# Default-Start:                2 3 4 5
+# Default-Stop:			0 1 6
 # Description:       Longer script description.
 ### END INIT INFO
 
@@ -16,7 +16,8 @@ touch /var/lock/StartUP
 # Carry out specific functions when asked to by the system
 case "$1" in
   start)
-    echo "Starting script StartUP "
+    echo "Starting script StartUP"
+    python /opt/peromas/start_batman.py > /tmp/wifi.log &
     #python /opt/send_Email_With_IP.py &
     #python /home/artur-adm/sensor/LCDtestArtur.py &
     #python /home/artur-adm/sensor/showIP.py &

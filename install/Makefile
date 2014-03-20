@@ -48,6 +48,13 @@ web:
 mesh:
 	sudo aptitude install htop ntp batctl batctl bridge-utils iw wireless-tools iperf -y
 
+boot:
+	sudo cp StartUP /etc/init.d/
+	sudo update-rc.d StartUP remove
+	sudo update-rc.d StartUP defaults
+	sudo mkdir /opt/peromas -p
+	sudo cp start_batman.py /opt/peromas/	
+
 hostname:
 	sudo python change_host.py
 
