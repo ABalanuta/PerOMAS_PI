@@ -23,7 +23,7 @@ for mac, pi, ip in MAC_Address:
 		batnet_ip = ip		
 		break
 
-sleep(30)
+sleep(15)
 os.popen("sudo modprobe batman-adv")
 sleep(2)
 os.popen("sudo iw dev wlan0 del")
@@ -40,6 +40,18 @@ os.popen("sudo batctl if add me0")
 sleep(2)
 os.popen("sudo ifconfig me0 up")
 sleep(2)
-os.popen("sudo ifconfig me0:1 "+batnet_ip+"/24 up")
+os.popen("sudo ifconfig me0 "+batnet_ip+"/24 up")
 sleep(2)
-os.popen("sudo dhclient me0")
+
+#Enable the brige if this device is the gateway
+if batnet_ip is "10.0.0.1":
+	os.popen("sudo brctl addbr br0")
+	os.popen("sudo brctl stp br0 off")
+	os.popen("sudo brctl addif br0 bat0")
+	os.popen("sudo brctl addif br0 eth0")
+	os.popen("sudo ifconfig br0 hw ether b8:11:11:11:11:11")
+
+#Get DHCP IP from the wired vlan
+os.popen("sudo dhclient bat0")
+
+
