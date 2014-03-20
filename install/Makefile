@@ -1,4 +1,4 @@
-all: profile update i2c temp_humid_sensor startup network bluetooth snmp web mesh hostname reboot
+all: profile update i2c temp_humid_sensor startup network bluetooth snmp web mesh hostname boot reboot
 
 profile:
 	git config --global user.email AliensGoo@users.noreply.github.com
