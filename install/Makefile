@@ -7,6 +7,7 @@ profile:
 update:
 	sudo aptitude update -y
 	sudo aptitude upgrade -y
+	sudo aptitude install tmux screen -y
 
 i2c:
 	##I2c Tools
@@ -32,7 +33,7 @@ network:
 	#sudo aptitude install firmware-realtek -y
 	
 bluetooth:
-	sudo aptitude install bluez  bluez-tools python-gobject python-gobject-2 -y
+	sudo aptitude install bluez bluez-tools python-gobject python-gobject-2 -y
 
 snmp:
 	sudo aptitude install snmp libsnmp-python python-pysnmp2 python-pysnmp-common -y
