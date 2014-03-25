@@ -8,9 +8,6 @@ from datetime import datetime
 #Debbuging Mode
 DEBUG = 0
 
-global names
-names = dict()
-
 class BTExecutor(Thread):
 	
 	#Return value
@@ -33,11 +30,6 @@ class BTExecutor(Thread):
 			if "Name" in line:
 				if len(line.split()) > 2: #Name could be null
 					found_name += [' '.join(line.split()[2:])]
-					global names
-					if ' '.join(line.split()[2:]) in names:
-						names[' '.join(line.split()[2:])] += 1
-					else:
-						names[' '.join(line.split()[2:])] = 1
 				else:
 					found_name += [""]
 			if "Address" in line:
@@ -70,7 +62,7 @@ class BTDetector(Thread):
 	hub = None
 	last_updated = None
 	seen_devices = list()
-	seen_timeout = 60	# if device is not seen for x seconds it gets eliminated
+	seen_timeout = 30	# if device is not seen for x seconds it gets eliminated
 	
 	def __init__(self, hub):
 		Thread.__init__(self)
@@ -110,7 +102,9 @@ class BTDetector(Thread):
 				if DEBUG:
 					print "Found: " 
 					for f in exe.value:
-						print "\t", f
+						for k, v in f.items():
+							print "\t\t", k, ": ",  v
+						print "\n"
 			else:
 				self.reset_interface()
 				self.interface_fail += 1
@@ -140,12 +134,10 @@ class BTDetector(Thread):
 					new_version = True
 			
 			if not new_version:
-				if not (time_now - seen["Last seen"]) > self.seen_timeout:
+				if not (time_now - seen["Last seen"]).total_seconds() > self.seen_timeout:
 					new_list.append(seen)
 		
 		self.seen_devices = new_list
-		for x in new_list:
-			print x
 		
 		
 	def reset_interface(self):
@@ -169,18 +161,10 @@ class BTDetector(Thread):
 		subprocess.Popen('sudo hciconfig hci0 lm MASTER', shell=True)
 		sleep(0.5)
 	
-	def find_devices(self):
-		
-		seen = list(self.seen_devices)
-		time_now = datetime.now()
-		return_list = []
-		#Filter repeated
-		for device in seen:
-			address = device["Address"]
-			when = device["Last seen"]
-			
-			
-			
+	
+	def find_devices(self):		
+		return self.seen_devices
+					
 #Runs only if called
 if __name__ == "__main__":
 
@@ -203,6 +187,6 @@ if __name__ == "__main__":
 		d.stop()
 		print "#Sttoped#\n\n"
 		print "-----------------"
-		for x in names:
-			print x, names[x]	
+		for x in d.seen_devices:
+			print x
 		print "-----------------"
