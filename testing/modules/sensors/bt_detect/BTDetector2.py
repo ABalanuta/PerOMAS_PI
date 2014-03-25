@@ -6,13 +6,14 @@ from threading import Thread
 from datetime import datetime
 
 #Debbuging Mode
-DEBUG = 1
+DEBUG = 0
 
 global names
 names = dict()
 
 class BTExecutor(Thread):
 	
+	#Return value
 	value = None
 	
 	def __init__(self):
@@ -22,9 +23,12 @@ class BTExecutor(Thread):
 	def run(self):
 		p = subprocess.Popen('sudo bluez-test-discovery', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		lines = p.stdout.readlines()
+		
 		found_name = []
 		found_mac = []
 		found_rssi = []
+		
+		#Find devices and their parameters
 		for line in lines:
 			if "Name" in line:
 				if len(line.split()) > 2: #Name could be null
@@ -41,20 +45,32 @@ class BTExecutor(Thread):
 			if "RSSI" in line:
 				found_rssi += [line.split()[2]]
 		
+		#Put device parameters in a dictionary
 		found = []
 		for x in range(0, len(found_name)):
-			found += [(found_mac[x], found_name[x], found_rssi[x], int((int(found_rssi[x])+97)*1.325))]
+			device = dict()
+			device['Address'] = found_mac[x]
+			device['Name'] = found_name[x]
+			device['RSSI'] = found_rssi[x]
+			device['Quality'] = int((int(found_rssi[x])+97)*1.325)
+			
+			#Filter duplicates
+			for dev in found:
+				if device['Address'] == dev['Address']:
+					continue
+			
+			found.append(device)
 		
+		# make it the returning values
 		self.value = found
 	
 class BTDetector(Thread):
 
 	stopped = None
 	hub = None
-	paired_devices = None
-	paired_status_maximum = 3 # timeout +- 15s
 	last_updated = None
-	inter_ping_delay = 3
+	seen_devices = list()
+	seen_timeout = 60	# if device is not seen for x seconds it gets eliminated
 	
 	def __init__(self, hub):
 		Thread.__init__(self)
@@ -67,7 +83,7 @@ class BTDetector(Thread):
 		self.hub = hub
 		self.started = datetime.now()
 		self.last_update = datetime.now()
-		
+		self.interface_fail = 0
 		self.reset_interface()
 
 	def stop(self):
@@ -79,49 +95,91 @@ class BTDetector(Thread):
 	
 	def run(self):
 		
-		fail = 0
-		
 		while not self.stopped:
-			print "\n-----------------------------------"
+			
+			if DEBUG:
+				print "\n-----------------------------------"
+				
 			exe = BTExecutor()
 			exe.start()
-			exe.join(30)
+			exe.join(15)
 			if exe.value:
 				self.last_update = datetime.now()
-				print "Found: " 
-				for f in exe.value:
-					print "\t", f
+				self.update_seen_list(exe.value)
+					
+				if DEBUG:
+					print "Found: " 
+					for f in exe.value:
+						print "\t", f
 			else:
 				self.reset_interface()
-				fail += 1
+				self.interface_fail += 1
 				
-			print "Runtime: "+ self.runtime()
-			print "Last Update ", str(self.last_update).split(".")[0]
-			print "Hardware Fails: ", fail
-			print "-----------------------------------\n"
+			if DEBUG:	
+				print "Runtime: "+ self.runtime()
+				print "Last Update ", str(self.last_update).split(".")[0]
+				print "Hardware Fails: ", self.interface_fail
+				print "-----------------------------------\n"
+				
+	def update_seen_list(self, devices):
+		
+		time_now = datetime.now()
+		new_list = list()
+						
+		#Appends the new discovered devices to the seen list
+		for device in devices:
+			device["Last seen"] = time_now
+			new_list.append(device)
+		
+		#Appends older devices that did not timmed out yet
+		for seen in self.seen_devices:
 			
+			new_version = False
+			for device in new_list:
+				if device["Address"] == seen["Address"]:
+					new_version = True
+			
+			if not new_version:
+				if not (time_now - seen["Last seen"]) > self.seen_timeout:
+					new_list.append(seen)
+		
+		self.seen_devices = new_list
+		for x in new_list:
+			print x
+		
+		
 	def reset_interface(self):
 		if DEBUG:
 			print "Reset_interface()"
 			
 		subprocess.Popen('sudo rmmod btusb', shell=True)
-		sleep(2)
+		sleep(1)
 		subprocess.Popen('sudo modprobe btusb', shell=True)
-		sleep(6)
+		sleep(2)
 			
 		p = subprocess.Popen('hciconfig -a', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		lines = p.stdout.readlines()
 		if not (len(lines) > 0 and "hci0" in lines[0]):
 			raise Exception("No BT device Connected")
 		
-		#subprocess.Popen('sudo hciconfig hci0 reset', shell=True)
-		#sleep(2)
 		subprocess.Popen('sudo hciconfig hci0 noscan', shell=True)
 		subprocess.Popen('sudo hciconfig hci0 name BT_$(hostname)', shell=True)
 		subprocess.Popen('sudo hciconfig hci0 afhmode 1', shell=True)
 		subprocess.Popen('sudo hciconfig hci0 sspmode 0', shell=True)
 		subprocess.Popen('sudo hciconfig hci0 lm MASTER', shell=True)
 		sleep(0.5)
+	
+	def find_devices(self):
+		
+		seen = list(self.seen_devices)
+		time_now = datetime.now()
+		return_list = []
+		#Filter repeated
+		for device in seen:
+			address = device["Address"]
+			when = device["Last seen"]
+			
+			
 			
 #Runs only if called
 if __name__ == "__main__":
