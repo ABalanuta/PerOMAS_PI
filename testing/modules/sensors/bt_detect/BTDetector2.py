@@ -94,7 +94,7 @@ class BTDetector(Thread):
 				
 			exe = BTExecutor()
 			exe.start()
-			exe.join(15)
+			exe.join(20)
 			if exe.value:
 				self.last_update = datetime.now()
 				self.update_seen_list(exe.value)
@@ -114,7 +114,8 @@ class BTDetector(Thread):
 				print "Last Update ", str(self.last_update).split(".")[0]
 				print "Hardware Fails: ", self.interface_fail
 				print "-----------------------------------\n"
-				
+	
+
 	def update_seen_list(self, devices):
 		
 		time_now = datetime.now()
@@ -122,8 +123,18 @@ class BTDetector(Thread):
 						
 		#Appends the new discovered devices to the seen list
 		for device in devices:
-			device["Last seen"] = time_now
-			new_list.append(device)
+			
+			#Filters duplicates
+			duplicate = False
+			for d in new_list:
+				if device["Address"] == d["Address"]:
+					duplicate = True
+					break
+			
+			if not duplicate:
+				device["Last seen"] = time_now	
+				new_list.append(device)
+		
 		
 		#Appends older devices that did not timmed out yet
 		for seen in self.seen_devices:
@@ -144,10 +155,11 @@ class BTDetector(Thread):
 		if DEBUG:
 			print "Reset_interface()"
 			
+		subprocess.Popen('sudo modprobe btusb', shell=True)
 		subprocess.Popen('sudo rmmod btusb', shell=True)
 		sleep(1)
 		subprocess.Popen('sudo modprobe btusb', shell=True)
-		sleep(2)
+		sleep(3)
 			
 		p = subprocess.Popen('hciconfig -a', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		lines = p.stdout.readlines()
@@ -159,7 +171,7 @@ class BTDetector(Thread):
 		subprocess.Popen('sudo hciconfig hci0 afhmode 1', shell=True)
 		subprocess.Popen('sudo hciconfig hci0 sspmode 0', shell=True)
 		subprocess.Popen('sudo hciconfig hci0 lm MASTER', shell=True)
-		sleep(0.5)
+		sleep(1)
 	
 	
 	def find_devices(self):		

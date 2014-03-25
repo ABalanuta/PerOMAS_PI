@@ -3,7 +3,7 @@ from time import sleep
 from datetime import datetime
 from sensors.temp_humid.TempHumid import TempHumid
 from sensors.wifi_detect.WifiLocation import WifiDetector
-from sensors.bt_detect.BTDetector import BTDetector
+from sensors.bt_detect.BTDetector2 import BTDetector
 from interaction.lcd.LCDmenu import LCD
 from web.web import WebManager
 #
@@ -41,7 +41,14 @@ if __name__ == '__main__':
 		hub.temp_humid = th
 		if DEBUG:
 			print "T/H sensor ON"
-		
+			
+		#Starts LCD
+		lcd = LCD(hub)
+		lcd.start()
+		hub.lcd = lcd
+		if DEBUG:
+			print "LCD sensor ON"
+			
 		#Starts Wifi Detector
 		#wifi = WifiDetector(hub)
 		#wifi.start()
@@ -53,16 +60,12 @@ if __name__ == '__main__':
 		#Starts BT Detector
 		#bt = BTDetector(hub)
 		#bt.start()
+		#hub.bt = bt
 		#if DEBUG:
 		#	print "BT sensor ON"
 		
 		
-		#Starts LCD
-		lcd = LCD(hub)
-		lcd.start()
-		hub.lcd = lcd
-		if DEBUG:
-			print "WIFI sensor ON"
+		
 		
 		#Starts Web Server
 		#MUST BE LAST (blocks the thread)
@@ -70,18 +73,36 @@ if __name__ == '__main__':
 		#wm.start()
 		
 		while True:
-			sleep(2)
-			#print hub.temp_humid.temp
-		#	print hub.wifi.findAll()
+			sleep(4)
+			
+			# TEmp and Humid
+			print "#Temp and Humidity"
+			print "\t", hub.temp_humid.temp, "C ", hub.temp_humid.humid, "%"
+			
+			# Detected BT devices
+			print "#Last seen BT devices"
+			for device in hub.bt.seen_devices:
+				print "\t", device["Name"], "seen ", (datetime.now() - device["Last seen"]).total_seconds(), "seconds ago !"
+			print "\n"
+			
+			
+			#print hub.wifi.findAll()
 				
 	except:
 		raise
 		
 	finally:
-		th.stop()
-		#wifi.stop()
-		#bt.stop()
-		lcd.stop()
+		if hub.temp_humid:
+			hub.temp_humid.stop()
+			
+		if hub.wifi:
+			hub.wifi.stop()
+
+		if hub.bt:
+			hub.bt.stop()
+			
+		if hub.lcd:
+			hub.lcd.stop()
 		
 		
 		
