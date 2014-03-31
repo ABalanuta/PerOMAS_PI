@@ -6,7 +6,7 @@ from threading import Thread
 from datetime import datetime
 
 #Debbuging Mode
-DEBUG = 0
+DEBUG = 1
 
 class BTExecutor(Thread):
 	
@@ -94,14 +94,14 @@ class BTDetector(Thread):
 				
 			exe = BTExecutor()
 			exe.start()
-			exe.join(20)
+			exe.join(16)
 			if exe.value:
 				self.last_update = datetime.now()
 				self.update_seen_list(exe.value)
 					
 				if DEBUG:
 					print "Found: " 
-					for f in exe.value:
+					for f in self.seen_devices:
 						for k, v in f.items():
 							print "\t\t", k, ": ",  v
 						print "\n"
@@ -154,26 +154,31 @@ class BTDetector(Thread):
 	def reset_interface(self):
 		if DEBUG:
 			print "Reset_interface()"
-			
-		subprocess.Popen('sudo modprobe btusb', shell=True)
-		subprocess.Popen('sudo rmmod btusb', shell=True)
-		sleep(1)
-		subprocess.Popen('sudo modprobe btusb', shell=True)
-		sleep(3)
-			
-		p = subprocess.Popen('hciconfig -a', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-		lines = p.stdout.readlines()
-		if not (len(lines) > 0 and "hci0" in lines[0]):
-			raise Exception("No BT device Connected")
 		
+		
+		self.kill_mod()
+		while True:
+			p = subprocess.Popen('hciconfig -a', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+			lines = p.stdout.readlines()
+			if not (len(lines) > 0 and "hci0" in lines[0]):
+				if DEBUG:
+					print "Kill_bt_mod()"
+				self.kill_mod()
+			else:
+				break
+
 		subprocess.Popen('sudo hciconfig hci0 noscan', shell=True)
 		subprocess.Popen('sudo hciconfig hci0 name BT_$(hostname)', shell=True)
 		subprocess.Popen('sudo hciconfig hci0 afhmode 1', shell=True)
 		subprocess.Popen('sudo hciconfig hci0 sspmode 0', shell=True)
 		subprocess.Popen('sudo hciconfig hci0 lm MASTER', shell=True)
 		sleep(1)
-	
-	
+
+	def kill_mod(self):
+		subprocess.Popen('sudo rmmod btusb', shell=True)
+		sleep(1)
+		subprocess.Popen('sudo modprobe btusb', shell=True)
+		sleep(1)	
 	def find_devices(self):		
 		return self.seen_devices
 					

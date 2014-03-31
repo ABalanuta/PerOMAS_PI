@@ -80,10 +80,10 @@ if __name__ == '__main__':
 			print "\t", hub.temp_humid.temp, "C ", hub.temp_humid.humid, "%"
 			
 			# Detected BT devices
-			print "#Last seen BT devices"
-			for device in hub.bt.seen_devices:
-				print "\t", device["Name"], "seen ", (datetime.now() - device["Last seen"]).total_seconds(), "seconds ago !"
-			print "\n"
+			#print "#Last seen BT devices"
+			#for device in hub.bt.seen_devices:
+			#	print "\t", device["Name"], "seen ", (datetime.now() - device["Last seen"]).total_seconds(), "seconds ago !"
+			#print "\n"
 			
 			
 			#print hub.wifi.findAll()

@@ -43,7 +43,7 @@ int main (void)
   temp = rh = newTemp = newRh = 0 ;
 
   wiringPiSetup () ;
-  piHiPri       (25) ;
+  piHiPri       (21) ;
 
   for (;;)
   {

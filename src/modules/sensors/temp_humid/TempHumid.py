@@ -20,8 +20,8 @@ class TempHumid(Thread):
 		self.last_update = datetime.now()
 		self.temp = 0
 		self.humid = 0
-		self.update_interval = 5 # 5 sec
-		self.update()# Runs one time
+		self.update_interval = 12 # 12 sec
+		#self.update()# Runs one time
 		
     def stop(self):
         self.stopped = True
