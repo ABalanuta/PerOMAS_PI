@@ -7,7 +7,7 @@ profile:
 update:
 	sudo aptitude update -y
 	sudo aptitude upgrade -y
-	sudo aptitude install tmux screen -y
+	sudo aptitude install vim git tmux screen htop -y
 
 i2c:
 	##I2c Tools
