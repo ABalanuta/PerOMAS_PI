@@ -18,38 +18,35 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
 #print 'Press Ctrl+C to exit'
 
-
-
 adc.startContinuousConversion(0, 1024, 860)
-
-
-
-
-
-# Read channel 0 in single-ended mode using the settings above
-#volts = adc.readADCSingleEnded(0, gain, sps) / 1000
-
-# To read channel 3 in single-ended mode, +/- 1.024V, 860 sps use:
-# volts = adc.readADCSingleEnded(3, 1024, 860)
-
-
-ratio = 5.0
 
 while True:
 
 	max = 0.0
-
-	amostras = 66
+	min = 0.0
+	
+	amostras = 50
 	t = 0
 
 	while t < amostras:
-		volts = adc.getLastConversionResults()
-		#volts = int(adc.readADCSingleEnded(0, 1024, 860))
-		if volts > max:
-			max = volts
-		#print int(volts)*ratio
-		time.sleep(0.5/amostras) 
+		
+		# V2 = I2 x R2
+		# I2 = V2 / R2		
+		# I1 = I2 x Turns
+		# Turns = 1800
+		# R2 = 62 Ohm
+		Is = 0
+		Vs = abs(adc.getLastConversionResults()/1000.0)
+		if Vs > 0:
+			Is = Vs/62
+		Ip = 1800 * Is
+		Vp = 230
+		Wp = Ip * Vp
+		#print Vs, Is, Ip, Wp
+		if Wp > max:
+			max = Wp
 		t += 1
-	print max*5
+		time.sleep(0.25/amostras)
+	print max
 
 adc.stopContinuousConversion()
