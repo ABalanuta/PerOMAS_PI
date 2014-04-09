@@ -20,8 +20,8 @@ class TempHumid(Thread):
 		self.last_update = datetime.now()
 		self.temp = 0
 		self.humid = 0
-		self.update_interval = 2 # 12 sec
-		#self.update()# Runs one time
+		self.update_interval = 3 # 3 sec
+		self.update()# Runs one time
 		
     def stop(self):
         self.stopped = True
@@ -29,13 +29,13 @@ class TempHumid(Thread):
     def run(self):
         while not self.stopped:
             self.update()
-            sleep(self.update_interval)
+#            sleep(self.update_interval)
 
     def update(self):
 		p = subprocess.Popen('sudo python3 ' + self.executable, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		parts = p.stdout.readlines()[0].split()					
-		self.temp = parts[1]
-		self.humid = parts[3]
+		self.temp = parts[1][:7]
+		self.humid = parts[3][:7]
 		self.last_update = datetime.now()
         
     def runtime(self):
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     try:
 		while True:
 			print "Runtime:", d.runtime(), "\tTemp:", d.temp, "\tHumid:", d.humid
-			sleep(d.update_interval)
+			sleep(1)
     except: 
 		d.stop()
     

@@ -20,14 +20,16 @@ adc.startContinuousConversion(0, 1024, 860)
 
 
 list = []
-calibration_factor = 0.78242
+calibration_factor = 0.745
+
+media = 0
 
 while True:
 
 	max = 0.0
 	min = 0.0
 	
-	amostras = 30
+	amostras = 480
 	t = 0
 
 	while t < amostras:
@@ -38,27 +40,32 @@ while True:
 		# Turns = 1800
 		# R2 = 62 Ohm
 		Is = 0
-		Vs = abs(adc.getLastConversionResults()/1000.0)
-		if Vs > 0:
+		Vs = adc.getLastConversionResults()/1000.0
+		if Vs != 0:
 			Is = Vs/62
 		Ip = 1800 * Is
 		Vp = 230
 		Wp = Ip * Vp
 
 		Wp = Wp * calibration_factor
+		
+		print Wp
 		#print Vs, Is, Ip, Wp
 		if Wp > max:
 			max = Wp
+		if Wp < min:
+			min = Wp
 		t += 1
-		time.sleep(0.5/amostras)
+		time.sleep(1/amostras)
 
-	if len(list) == 2:
-		sum = 0.0
-		for x in list:
-			sum += x
-		print "%.2d W/n" % (sum/len(list))
-		list = []
-	else:
-		list.append(max)
+	print min, max
+	#if len(list) == 4:
+	#	sum = 0.0
+	#	for x in list:
+	#		sum += x
+	#	print "%.1f" % (sum/len(list)), "W"
+	#	list = []
+	#else:
+	#	list.append(max)
 
 adc.stopContinuousConversion()
