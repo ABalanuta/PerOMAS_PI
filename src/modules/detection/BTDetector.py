@@ -1,4 +1,13 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+"""Bluetooth Detection Module
+
+Detects bluetooth beacons sent from devices and stores for a shor period,
+Invokes CLI commands and bluez python code.
+"""
+__author__ = "Artur Balanuta"
+__version__ = "1.0.0"
+__email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
+
 import os
 import subprocess
 from time import sleep
