@@ -1,4 +1,12 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+"""Consumption Estimation
+
+Uses the ADS1115 Adafruit lib to estimate the values read by the ADC to
+Real power consumption in Watts.
+"""
+__author__ = "Artur Balanuta"
+__version__ = "1.0.0"
+__email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 import time, signal, sys
 from Adafruit_ADS1x15 import ADS1x15
@@ -16,6 +24,7 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
 #print 'Press Ctrl+C to exit'
 
+#reads values +-1V with 860 samples/s
 adc.startContinuousConversion(0, 1024, 860)
 
 

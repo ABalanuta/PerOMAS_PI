@@ -1,13 +1,23 @@
+#!/usr/bin/env python
+"""Wifi Detection Module
+
+Scans the APs at IST-Taguspark via SNMP and retrives the connectd MAC
+addreses saving the relevant information.
+"""
+__author__ = "Artur Balanuta"
+__version__ = "1.0.0"
+__email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
+
 import netsnmp
 import socket
 import threading
 from datetime import datetime
 from time import sleep
 
-DEBUG = 1
+DEBUG = False
 #APs ip Range 172.20.3.1-60
 ipRange = ('172.20.3.', 1, 90)
-scanDelay = 5 #seconds
+scanDelay = 6 #seconds
 
 
 #Converts the deciaml representation to hexadecimal
@@ -56,7 +66,6 @@ def get_associated(ip):
 	oid = '.1.3.6.1.4.1.9.9.273.1.2.1.1.14'
 	
 	dns_name = get_dns_name(ip)
-	
 	if dns_name:
 		if DEBUG:
 			print "Found AP "+dns_name
@@ -99,15 +108,17 @@ class WifiDetector(threading.Thread):
 		if DEBUG:
 			print "WifiDetector.run()"
 		self.stopped = False
-		count = 11
+		count = scanDelay + 1
+		
 		while not self.stopped:
 			if count > scanDelay and len(self.searchList) > 0:
+				
 				self.update()
 				count = 0
 			else:
 				count += 1
 				sleep(1)
-				
+						
 	def update(self):
 		if DEBUG:
 			print "WifiDetector.update()"
@@ -171,6 +182,7 @@ if __name__ == '__main__':
 	macList = ['40:B0:FA:C7:A1:EB']
 	
 	wd = WifiDetector(macList)
+	wd.track('40:B0:FA:C7:A1:EB')
 	
 	try:
 		wd.start()

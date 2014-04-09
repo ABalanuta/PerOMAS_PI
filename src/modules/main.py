@@ -1,16 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+"""Application Main Class
+
+Starts the different modules composing the Application
+"""
+__author__ = "Artur Balanuta"
+__version__ = "1.0.0"
+__email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
+
 from time import sleep
 from datetime import datetime
-from sensors.temp_humid.TempHumid import TempHumid
-from sensors.wifi_detect.WifiLocation import WifiDetector
-from sensors.bt_detect.BTDetector2 import BTDetector
+from sensors.HTU21D.HTU21D import TempHumid
+#from sensors.wifi_detect.WifiLocation import WifiDetector
+from detection.BTDetector import BTDetector
 from interaction.lcd.LCDmenu import LCD
-from web.web import WebManager
-#
+#from web.web import WebManager
 
-#Debbuging Mode
-DEBUG = 1
 
+#Debug Mode
+DEBUG = True
 
 #Used to interconect all Modules
 class Hub():
@@ -21,6 +28,7 @@ class Hub():
 		self.wifi = None
 		self.bt = None
 		self.lcd = None
+		self.storage = None
 		
 
 
@@ -58,17 +66,15 @@ if __name__ == '__main__':
 		#	print "WIFI sensor ON"
 		
 		#Starts BT Detector
-		#bt = BTDetector(hub)
-		#bt.start()
-		#hub.bt = bt
-		#if DEBUG:
-		#	print "BT sensor ON"
-		
-		
+		bt = BTDetector(hub)
+		bt.start()
+		hub.bt = bt
+		if DEBUG:
+			print "BT sensor ON"
 		
 		
 		#Starts Web Server
-		#MUST BE LAST (blocks the thread)
+		#Must be last (Blocking)
 		#wm = WebManager(hub)
 		#wm.start()
 		
@@ -76,8 +82,8 @@ if __name__ == '__main__':
 			sleep(4)
 			
 			# TEmp and Humid
-			print "#Temp and Humidity"
-			print "\t", hub.temp_humid.temp, "C ", hub.temp_humid.humid, "%"
+			print "\n#Temp and Humidity"
+			print "\t", hub.temp_humid.temp, "C ", hub.temp_humid.humid, "% Last Update:", hub.temp_humid.last_update
 			
 			# Detected BT devices
 			#print "#Last seen BT devices"
@@ -103,47 +109,6 @@ if __name__ == '__main__':
 			
 		if hub.lcd:
 			hub.lcd.stop()
-		
-		
-		
-		
-	
-	#thermo = TermoHumid()
-	#thermo.start()
-
-	#sensorList = []
-	#sensorList.append(thermo)
-
-
-	#lcd = LCD(sensorList)
-	#lcd.start()
-
-	
-
-	#web = None
-	#wifi = None
-
-
-	#for x in toStart:
-		
-	#	if x == 'web':
-	#		if DEBUG:
-	#			print "Start web"
-	#		web = app
-	#		web.run(host='0.0.0.0', debug = True, use_reloader=False)
-	#	
-	#	elif x == 'wifi':
-	#		if DEBUG:
-	#			print "Start wifi"
-	#		wifi = WifiDetector()
-	#		wifi.start()
-	#		wifi.track('40:B0:FA:C7:A1:EB')
-
-	#sleep(100)
-	
-	#TODO for x in toStart:
-		#stop
-
 
 
 

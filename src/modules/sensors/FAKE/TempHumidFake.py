@@ -1,4 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/env python
+"""Bogus Temperature and Humidity Sensor"""
+__author__ = "Artur Balanuta"
+__version__ = "1.0.0"
+__email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
+
+
 from random import randint
 from time import sleep
 from threading import Thread
