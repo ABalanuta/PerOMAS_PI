@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import os
 import subprocess
+
 from random import randint
 from time import sleep
 from threading import Thread
@@ -15,7 +16,7 @@ class TempHumid(Thread):
 		self.stopped = False
 		self.hub = hub
 		full_path = os.path.realpath(__file__)
-		self.executable = os.path.dirname(full_path)+"/htu21d.python3.py"
+		self.executable = os.path.dirname(full_path)+"/C/sht21"
 		self.started = datetime.now()
 		self.last_update = datetime.now()
 		self.temp = 0
@@ -32,10 +33,10 @@ class TempHumid(Thread):
 #            sleep(self.update_interval)
 
     def update(self):
-		p = subprocess.Popen('sudo python3 ' + self.executable, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-		parts = p.stdout.readlines()[0].split()					
-		self.temp = parts[1][:7]
-		self.humid = parts[3][:7]
+		p = subprocess.Popen(self.executable, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		parts = p.stdout.readlines()[0].split()	
+		self.temp = parts[0]
+		self.humid = parts[1]
 		self.last_update = datetime.now()
         
     def runtime(self):

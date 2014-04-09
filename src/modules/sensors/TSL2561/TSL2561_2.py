@@ -511,5 +511,11 @@ void Adafruit_TSL2561::getSensor(sensor_t *sensor)
 LightSensor = Adafruit_TSL2651()
 LightSensor.enableAutoGain(True)
 while True:
-	print LightSensor.calculateLux()
-	time.sleep(0.5)
+	l1 = LightSensor.calculateLux()
+	time.sleep(0.07)
+	l2 = LightSensor.calculateLux()
+	time.sleep(0.07)
+	l3 = LightSensor.calculateLux()	
+	time.sleep(0.07)
+	l4 = LightSensor.calculateLux()
+	print (l1+l2+l3+l4)/4
