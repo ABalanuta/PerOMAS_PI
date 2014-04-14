@@ -7,6 +7,7 @@ __author__ = "Artur Balanuta"
 __version__ = "1.0.0"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
+import time, signal, sys
 from time import sleep
 from datetime import datetime
 from sensors.HTU21D.HTU21D import TempHumid
@@ -35,8 +36,30 @@ class Hub():
 ##Executed if only is the main app		
 if __name__ == '__main__':	
 	
+	def signal_handler(signal, frame):
+		
+		print 'You pressed Ctrl+C!'
+		if hub.temp_humid:
+			hub.temp_humid.stop()
+			
+		if hub.wifi:
+			hub.wifi.stop()
+			
+		if hub.bt:
+			hub.bt.stop()
+			
+		if hub.lcd:
+			hub.lcd.stop()
+		
+		sys.exit(0)
+	
+	signal.signal(signal.SIGINT, signal_handler)
+	#print 'Press Ctrl+C to exit'
+	
+	
+	
 	if DEBUG:
-		print "Starting main"
+		print "-> Starting main <-"
 	
 	try:
 		
@@ -49,13 +72,6 @@ if __name__ == '__main__':
 		hub.temp_humid = th
 		if DEBUG:
 			print "T/H sensor ON"
-			
-		#Starts LCD
-		lcd = LCD(hub)
-		lcd.start()
-		hub.lcd = lcd
-		if DEBUG:
-			print "LCD sensor ON"
 			
 		#Starts Wifi Detector
 		#wifi = WifiDetector(hub)
@@ -72,7 +88,13 @@ if __name__ == '__main__':
 		if DEBUG:
 			print "BT sensor ON"
 		
-		
+		#Starts LCD
+		lcd = LCD(hub)
+		lcd.start()
+		hub.lcd = lcd
+		if DEBUG:
+			print "LCD sensor ON"
+			
 		#Starts Web Server
 		#Must be last (Blocking)
 		#wm = WebManager(hub)
@@ -82,8 +104,8 @@ if __name__ == '__main__':
 			sleep(4)
 			
 			# TEmp and Humid
-			print "\n#Temp and Humidity"
-			print "\t", hub.temp_humid.temp, "C ", hub.temp_humid.humid, "% Last Update:", hub.temp_humid.last_update
+			#print "\n#Temp and Humidity"
+			#print "\t", hub.temp_humid.temp, "C ", hub.temp_humid.humid, "% Last Update:", hub.temp_humid.last_update
 			
 			# Detected BT devices
 			#print "#Last seen BT devices"
@@ -96,19 +118,6 @@ if __name__ == '__main__':
 				
 	except:
 		raise
-		
-	finally:
-		if hub.temp_humid:
-			hub.temp_humid.stop()
-			
-		if hub.wifi:
-			hub.wifi.stop()
-
-		if hub.bt:
-			hub.bt.stop()
-			
-		if hub.lcd:
-			hub.lcd.stop()
 
 
 

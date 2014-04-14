@@ -2,7 +2,7 @@
 """Temperature and Humidity Module
 for reading the values from the HTU21D sensor"""
 __author__ = "Artur Balanuta"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 import os
@@ -27,7 +27,7 @@ class TempHumid(Thread):
 		self.last_update = datetime.now()
 		self.temp = 0
 		self.humid = 0
-		self.update_interval = 3 # 3 sec
+		self.update_interval = 2 # 2 sec
 		self.update()# Runs one time
 		
     def stop(self):
@@ -36,14 +36,16 @@ class TempHumid(Thread):
     def run(self):
         while not self.stopped:
             self.update()
-#            sleep(self.update_interval)
+            sleep(self.update_interval)
 
     def update(self):
 		p = subprocess.Popen(self.executable, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-		parts = p.stdout.readlines()[0].split()	
-		self.temp = parts[0]
-		self.humid = parts[1]
-		self.last_update = datetime.now()
+		lines = p.stdout.readlines()
+		if len(lines) == 1:
+			parts = lines[0].split()	
+			self.temp = parts[0]
+			self.humid = parts[1]
+			self.last_update = datetime.now()
         
     def runtime(self):
         return str(self.last_update-self.started).split(".")[0]

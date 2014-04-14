@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """LCD Interaction Menu"""
 __author__ = "Artur Balanuta"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 import commands
@@ -23,7 +23,7 @@ configfile = os.path.dirname(full_path)+'/lcdmenu.xml'
 
 
 # set DEBUG=1 for print debug statements
-DEBUG = 1
+DEBUG = False
 DISPLAY_ROWS = 2
 DISPLAY_COLS = 16
 

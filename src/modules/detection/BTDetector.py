@@ -5,7 +5,7 @@ Detects bluetooth beacons sent from devices and stores for a shor period,
 Invokes CLI commands and bluez python code.
 """
 __author__ = "Artur Balanuta"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 import os
@@ -15,7 +15,7 @@ from threading import Thread
 from datetime import datetime
 
 #Debbuging Mode
-DEBUG = 1
+DEBUG = False
 
 class BTExecutor(Thread):
 	

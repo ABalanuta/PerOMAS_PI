@@ -1,10 +1,17 @@
+#!/usr/bin/env python
+"""Startup Script used to inform the new DHCP obtained Adress"""
+
+__author__ = "Artur Balanuta"
+__version__ = "1.0.0"
+__email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
+
 import smtplib
 import socket
 
 SERVER = "smtp.ist.utl.pt"
 
 FROM = "Raspberry@tagus.ist.utl.pt"
-TO = ["Artur.Balanuta@Gmail.com"] # must be a list
+TO = ["aliensgoo@Gmail.com"] # must be a list
 
 SUBJECT = "My New IP"
 

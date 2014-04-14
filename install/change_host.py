@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+"""Changes the hostname of the raspberryPi based on the MAC"""
+
+__author__ = "Artur Balanuta"
+__version__ = "1.0.0"
+__email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
+
 import os
 import random
 
