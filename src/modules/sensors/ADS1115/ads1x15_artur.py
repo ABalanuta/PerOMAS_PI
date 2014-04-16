@@ -9,6 +9,7 @@ __version__ = "1.0.0"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 import time, signal, sys
+import numpy
 from Adafruit_ADS1x15 import ADS1x15
 
 
@@ -29,7 +30,7 @@ adc.startContinuousConversion(0, 1024, 860)
 
 
 list = []
-calibration_factor = 0.745
+calibration_factor = 1.1
 
 media = 0
 
@@ -38,7 +39,7 @@ while True:
 	max = 0.0
 	min = 0.0
 	
-	amostras = 480
+	amostras = 120
 	t = 0
 
 	while t < amostras:
@@ -51,23 +52,20 @@ while True:
 		Is = 0
 		Vs = adc.getLastConversionResults()/1000.0
 		if Vs != 0:
-			Is = Vs/62
+			Is = Vs/182
 		Ip = 1800 * Is
 		Vp = 230
 		Wp = Ip * Vp
-
-		Wp = Wp * calibration_factor
+	
+		list.append(Wp)
 		
 		print Wp
 		#print Vs, Is, Ip, Wp
-		if Wp > max:
-			max = Wp
-		if Wp < min:
-			min = Wp
 		t += 1
 		time.sleep(1/amostras)
-
-	print min, max
+		
+	print numpy.mean(list)
+	list = []
 	#if len(list) == 4:
 	#	sum = 0.0
 	#	for x in list:
