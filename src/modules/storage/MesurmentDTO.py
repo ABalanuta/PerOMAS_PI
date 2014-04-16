@@ -12,7 +12,7 @@ class MesurmentDTO():
 	dto_type = None
 	timestamp = None
 	
-	def __init__(self, value, dto_type, timestamp):
+	def __init__(self, timestamp, dto_type, value):
 		self.value = value
 		self.dto_type = dto_type
 		self.timestamp = timestamp
@@ -24,7 +24,7 @@ class MesurmentDTO():
 		return self.get()
 		
 	def getType(self):
-		return dto_type
+		return self.dto_type
 	
 	def getTimestamp(self):
-		return timestamp
+		return self.timestamp
