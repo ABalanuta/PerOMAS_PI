@@ -10,34 +10,22 @@ import os
 from time import sleep
 from threading import Thread
 from datetime import datetime
-from MesurmentDTO import MesurmentDTO
-from MeasurmentEnum import DataType
+from DTOs.MesurmentDTO import MesurmentDTO
+from DTOs.MeasurmentEnum import DataType
+
 class StorageHandler(Thread):
 	
-	DEBUG 		= False
+	DEBUG 		= True
 	FILENAME 	= 'database.sqlite3.db'
 	
 	def __init__(self, hub):
-		Thread.__init__(self)
 		
 		self.hub = hub
-		self.stopped = True
 		dir_path = os.path.dirname(os.path.realpath(__file__))
 		self.db_path = dir_path +'/' + self.FILENAME
 		
 		self.create_database()
 		
-	def stop(self):
-		self.stopped = True
-	
-	def run(self):
-		self.stopped = False
-		while not self.stopped:
-			self.update()
-			
-	def update(self):
-		if self.DEBUG:
-			print "Update"
 	
 	def create_database(self):
 		
@@ -49,6 +37,8 @@ class StorageHandler(Thread):
 			c.execute('CREATE TABLE '+DataType.HUMIDITY+' (TimeStamp TIMESTAMP, '+DataType.HUMIDITY+' REAL)')
 			c.execute('CREATE TABLE '+DataType.LUMINOSITY+' (TimeStamp TIMESTAMP, '+DataType.LUMINOSITY+' REAL)')
 			c.execute('CREATE TABLE '+DataType.CURRENT+' (TimeStamp TIMESTAMP, '+DataType.CURRENT+' REAL)')
+			if self.DEBUG:
+				print "New Database " + self.FILENAME + " Created"
 		except:
 			if self.DEBUG:
 				print "Database " + self.FILENAME + " Already Exists, skipping ..."
@@ -64,29 +54,14 @@ class StorageHandler(Thread):
 		conn.commit()
 		conn.close()
 		
-	def get_all_temp(self):
-		#query = '''
-		#	SELECT * 
-		#	FROM ambient
-		#	ORDER BY datetime DESC 
-		#	LIMIT 1;
-		#	'''
-		#c.execute(query)
-		#all = c.fetchall()
-		#print all
-		
-		return
-		
 		
 		
 #Runs only if called
 if __name__ == "__main__":
 	
 	d = StorageHandler(None)
-	d.start()
 	
-	
-	print "ola"
+	print "Insert"
 	d.insertValue(MesurmentDTO(str(datetime.now()), DataType.TEMPERATURE, 28.4))
 	d.insertValue(MesurmentDTO(str(datetime.now()), DataType.HUMIDITY, 50.1))
 	d.insertValue(MesurmentDTO(str(datetime.now()), DataType.LUMINOSITY, 200))
@@ -97,9 +72,7 @@ if __name__ == "__main__":
 	d.insertValue(MesurmentDTO(str(datetime.now()), DataType.LUMINOSITY, 230))
 	d.insertValue(MesurmentDTO(str(datetime.now()), DataType.CURRENT, 3100.33))
 	
-	print "adeus"
-	d.stop()
-	d.join()
+	print "Done"
 
 	
 	
