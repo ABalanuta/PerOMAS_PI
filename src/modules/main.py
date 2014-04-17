@@ -15,42 +15,29 @@ from sensors.HTU21D.HTU21D import TempHumid
 from detection.BTDetector import BTDetector
 from interaction.lcd.LCDmenu import LCD
 #from web.web import WebManager
+from Scheduler_Manager import ScheduleManager
+from Storage_Handler import StorageHandler
 
 
-#Debug Mode
-DEBUG = True
-
-#Used to interconect all Modules
-class Hub():
-	
-	def __init__(self):
-		self.temp_humid = None
-		self.lcd = None
-		self.wifi = None
-		self.bt = None
-		self.lcd = None
-		self.storage = None
-		
 
 
 ##Executed if only is the main app		
 if __name__ == '__main__':	
 	
+
+	DEBUG 			= True		# Debug Mode
+	CLI_INTERFACE	= False		# 
+	WEB_INTERFACE	= False		# 
+	
 	def signal_handler(signal, frame):
 		
 		print 'You pressed Ctrl+C!'
-		if hub.temp_humid:
-			hub.temp_humid.stop()
-			
-		if hub.wifi:
-			hub.wifi.stop()
-			
-		if hub.bt:
-			hub.bt.stop()
-			
-		if hub.lcd:
-			hub.lcd.stop()
-		
+		for key, value in hub.items():
+			if DEBUG:
+				print "Stopping", key
+			if value.stop:
+				value.stop()
+				
 		sys.exit(0)
 	
 	signal.signal(signal.SIGINT, signal_handler)
@@ -64,41 +51,60 @@ if __name__ == '__main__':
 	try:
 		
 		#Main object used for sharing
-		hub = Hub()
+		hub = dict()
 	
 		#Start Temperature/Humidity Sensor
 		th = TempHumid(hub)
 		th.start()
-		hub.temp_humid = th
+		hub["TEMPERATURE"] = th
+		hub["HUMIDITY"] = th
 		if DEBUG:
 			print "T/H sensor ON"
 			
 		#Starts Wifi Detector
 		#wifi = WifiDetector(hub)
 		#wifi.start()
-		#hub.wifi = wifi
+		#hub["WIFI"] = wifi
 		#wifi.track('40:B0:FA:C7:A1:EB')
 		#if DEBUG:
 		#	print "WIFI sensor ON"
 		
 		#Starts BT Detector
-		bt = BTDetector(hub)
-		bt.start()
-		hub.bt = bt
-		if DEBUG:
-			print "BT sensor ON"
+		#bt = BTDetector(hub)
+		#bt.start()
+		#hub["BLUETOOTH"] = bt
+		#if DEBUG:
+		#	print "BT sensor ON"
 		
 		#Starts LCD
-		lcd = LCD(hub)
-		lcd.start()
-		hub.lcd = lcd
+		#lcd = LCD(hub)
+		#lcd.start()
+		#hub["LCD"] = lcd
+		#if DEBUG:
+		#	print "LCD sensor ON"
+		
+		#Starts the Storage Handler
+		sh = StorageHandler(hub)
+		hub["STORAGE HANDLER"] = sh
 		if DEBUG:
-			print "LCD sensor ON"
-			
+			print "Storage ON"
+		
+		
+		
+		#Starts the Scheduler Manager
+		sm = ScheduleManager(hub)
+		sm.start()
+		hub["SCHEDULE MANAGER"] = sm
+		if DEBUG:
+			print "Scheduler Manager started automation"
+		
+		
+		
 		#Starts Web Server
 		#Must be last (Blocking)
-		#wm = WebManager(hub)
-		#wm.start()
+		if WEB_INTERFACE:
+			wm = WebManager(hub)
+			wm.start()
 		
 		while True:
 			sleep(4)
@@ -113,9 +119,6 @@ if __name__ == '__main__':
 			#	print "\t", device["Name"], "seen ", (datetime.now() - device["Last seen"]).total_seconds(), "seconds ago !"
 			#print "\n"
 			
-			
-			#print hub.wifi.findAll()
-				
 	except:
 		raise
 
