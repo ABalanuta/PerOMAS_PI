@@ -8,12 +8,11 @@ __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 import sqlite3
 import os
 from time import sleep
-from threading import Thread
 from datetime import datetime
 from DTOs.MesurmentDTO import MesurmentDTO
 from DTOs.MeasurmentEnum import DataType
 
-class StorageHandler(Thread):
+class StorageHandler():
 	
 	DEBUG 		= True
 	FILENAME 	= 'database.sqlite3.db'
@@ -54,7 +53,9 @@ class StorageHandler(Thread):
 		conn.commit()
 		conn.close()
 		
-		
+	#Bogus method
+	def stop(self):
+		return
 		
 #Runs only if called
 if __name__ == "__main__":

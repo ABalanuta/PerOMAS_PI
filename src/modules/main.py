@@ -15,8 +15,8 @@ from sensors.HTU21D.HTU21D import TempHumid
 from detection.BTDetector import BTDetector
 from interaction.lcd.LCDmenu import LCD
 #from web.web import WebManager
-from Scheduler_Manager import Schedule_Manager
-
+from Scheduler_Manager import ScheduleManager
+from Storage_Handler import StorageHandler
 
 
 
@@ -83,8 +83,16 @@ if __name__ == '__main__':
 		#if DEBUG:
 		#	print "LCD sensor ON"
 		
+		#Starts the Storage Handler
+		sh = StorageHandler(hub)
+		hub["STORAGE HANDLER"] = sh
+		if DEBUG:
+			print "Storage ON"
+		
+		
+		
 		#Starts the Scheduler Manager
-		sm = Schedule_Manager(hub)
+		sm = ScheduleManager(hub)
 		sm.start()
 		hub["SCHEDULE MANAGER"] = sm
 		if DEBUG:
