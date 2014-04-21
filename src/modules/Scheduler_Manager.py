@@ -34,10 +34,10 @@ class ScheduleManager(Thread):
 		self.stopped = False
 		
 		#Append Rutines to the list
-		self.tasks.append(Task(self.save_Temperature_to_DB, 5*5)) # loop every 5 Mins
-		self.tasks.append(Task(self.save_Humidity_to_DB, 5*5))	# loop every 5 Min
-		self.tasks.append(Task(self.save_Luminosity_to_DB, 2*5))	# loop every 2 Min
-		self.tasks.append(Task(self.save_Current_to_DB, 1*5))	# loop every 1 Min
+		self.tasks.append(Task(self.save_Temperature_to_DB, 5*60)) # loop every 5 Mins
+		self.tasks.append(Task(self.save_Humidity_to_DB, 5*60))	# loop every 5 Min
+		self.tasks.append(Task(self.save_Luminosity_to_DB, 2*60))	# loop every 2 Min
+		self.tasks.append(Task(self.save_Current_to_DB, 1*60))	# loop every 1 Min
 		
 		while not self.stopped:
 			self.update()
