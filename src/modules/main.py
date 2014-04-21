@@ -10,7 +10,8 @@ __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 import time, signal, sys
 from time import sleep
 from datetime import datetime
-from sensors.HTU21D.HTU21D import TempHumid
+from sensors.HTU21D.HTU21D import TempHumid #Temp/Humid
+from sensors.TSL2561.TSL2561 import TSL2561	#Lux
 #from sensors.wifi_detect.WifiLocation import WifiDetector
 from detection.BTDetector import BTDetector
 from interaction.lcd.LCDmenu import LCD
@@ -60,6 +61,13 @@ if __name__ == '__main__':
 		hub["HUMIDITY"] = th
 		if DEBUG:
 			print "T/H sensor ON"
+
+		#Start Luminosity Sensor
+		lux = TSL2561(hub)
+		lux.start()
+		hub["LUMINOSITY"] = lux
+		if DEBUG:
+			print "LUX sensor ON"
 			
 		#Starts Wifi Detector
 		#wifi = WifiDetector(hub)
