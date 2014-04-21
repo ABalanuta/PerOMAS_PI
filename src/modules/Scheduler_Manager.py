@@ -2,11 +2,10 @@
 """Manages programmed Actions
 """
 __author__ = "Artur Balanuta"
-__version__ = "1.0.0"
+__version__ = "1.0.4"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
-import numpy as np
-
+from numpy import mean
 from time import sleep
 from datetime import datetime
 from threading import Thread
@@ -35,9 +34,10 @@ class ScheduleManager(Thread):
 		self.stopped = False
 		
 		#Append Rutines to the list
-		self.tasks.append(Task(self.save_Temperature_to_DB, 5*60)) # loop every 5 Mins
-		self.tasks.append(Task(self.save_Humidity_to_DB, 5*60))	# loop every 5 Min
-		self.tasks.append(Task(self.save_Luminosity_to_DB, 2*60))	# loop every 2 Min
+		self.tasks.append(Task(self.save_Temperature_to_DB, 5*5)) # loop every 5 Mins
+		self.tasks.append(Task(self.save_Humidity_to_DB, 5*5))	# loop every 5 Min
+		self.tasks.append(Task(self.save_Luminosity_to_DB, 2*5))	# loop every 2 Min
+		self.tasks.append(Task(self.save_Current_to_DB, 1*5))	# loop every 1 Min
 		
 		while not self.stopped:
 			self.update()
@@ -58,9 +58,9 @@ class ScheduleManager(Thread):
 		if self.hub["TEMPERATURE"] and self.hub["STORAGE HANDLER"]:
 			values = self.hub["TEMPERATURE"].dumpTemperatureMemoryValues()
 			if len(values) > 0:
-				mean = np.mean(values)
+				vmean = mean(values)
 				db = self.hub["STORAGE HANDLER"]
-				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.TEMPERATURE, mean))
+				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.TEMPERATURE, vmean))
 			
 		else:
 			print "Scheduler: Save_Temperature_to_DB locating TEMPERATURE or STORAGE object"
@@ -71,9 +71,9 @@ class ScheduleManager(Thread):
 		if self.hub["HUMIDITY"] and self.hub["STORAGE HANDLER"]:
 			values = self.hub["HUMIDITY"].dumpHumidityMemoryValues()
 			if len(values) > 0:
-				mean = np.mean(values)
+				vmean = mean(values)
 				db = self.hub["STORAGE HANDLER"]
-				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.HUMIDITY, mean))
+				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.HUMIDITY, vmean))
 		else:
 			print "Scheduler: Save_Temperature_to_DB locating HUMIDITY or STORAGE object"
 
@@ -83,9 +83,22 @@ class ScheduleManager(Thread):
 		if self.hub["LUMINOSITY"] and self.hub["STORAGE HANDLER"]:
 			values = self.hub["LUMINOSITY"].dumpMemoryValues()
 			if len(values) > 0:
-				mean = np.mean(values)
+				vmean = mean(values)
 				db = self.hub["STORAGE HANDLER"]
-				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.LUMINOSITY, mean))
+				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.LUMINOSITY, vmean))
+		else:
+			print "Scheduler: Save_Temperature_to_DB locating LUMINOSITY or STORAGE object"
+
+
+	def	save_Current_to_DB(self):
+		if self.DEBUG:
+			print "Scheduler: Save_Current_to_DB"
+		if self.hub["CURRENT"] and self.hub["STORAGE HANDLER"]:
+			values = self.hub["CURRENT"].dumpMemoryValues()
+			if len(values) > 0:
+				vmean = mean(values)
+				db = self.hub["STORAGE HANDLER"]
+				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.CURRENT, vmean))
 		else:
 			print "Scheduler: Save_Temperature_to_DB locating LUMINOSITY or STORAGE object"
 

@@ -24,10 +24,10 @@ class ADS1115(Thread):
 	ADS1115 			= 0x01	# 16-bit ADC
 	CHANNEL 			= 0 	# ADC Channel (from 0 to 3)
 	PGA					= 2048	# programable gain, possible values (256,512,1024,2048,4096,6144)
-	SAMPLES 			= 8 	# Samples per Second, possible values (8,16,32,128,256,475,860)
+	SAMPLES 			= 860 	# Samples per Second, possible values (8,16,32,128,256,475,860)
 	CALIBRATION_FACTOR 	= 2.4 	# Used to ajust the read values to the real consumption values
 	BASE_CONSUMPTION	= 1.0  	# Base confumption of the sensor
-	MESURMENTS			= 2		# Number of mesurments per second (Hz)
+	MESURMENTS			= 60		# Number of mesurments per second (Hz)
 
 
 	def __init__(self, hub):
@@ -61,7 +61,7 @@ class ADS1115(Thread):
 		values = []
 		for x in range(0, self.MESURMENTS):
 			values.append(self.sensor.getLastConversionResults())
-			sleep(1/self.MESURMENTS)
+			sleep(1.0/self.MESURMENTS)
 		self.watts = mean(values) * self.CALIBRATION_FACTOR - self.BASE_CONSUMPTION
 		self.watts_memory_values.append(self.watts)
 		#self.last_update = datetime.now()

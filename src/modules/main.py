@@ -12,6 +12,7 @@ from time import sleep
 from datetime import datetime
 from sensors.HTU21D.HTU21D import TempHumid #Temp/Humid
 from sensors.TSL2561.TSL2561 import TSL2561	#Lux
+from sensors.ADS1115.ADS1115 import ADS1115	#Current
 #from sensors.wifi_detect.WifiLocation import WifiDetector
 from detection.BTDetector import BTDetector
 from interaction.lcd.LCDmenu import LCD
@@ -68,8 +69,15 @@ if __name__ == '__main__':
 		hub["LUMINOSITY"] = lux
 		if DEBUG:
 			print "LUX sensor ON"
-			
-		#Starts Wifi Detector
+		
+		#Start Current Sensor
+		watt = ADS1115(hub)
+		watt.start()
+		hub["CURRENT"] = watt
+		if DEBUG:
+			print "CURRENT sensor ON"
+
+		#Starts Wifi DetectorADS1115
 		#wifi = WifiDetector(hub)
 		#wifi.start()
 		#hub["WIFI"] = wifi
