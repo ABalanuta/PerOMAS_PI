@@ -16,9 +16,9 @@ from DTOs.MeasurmentEnum import DataType
 
 class ScheduleManager(Thread):
 	
-	DEBUG 					= False
+	DEBUG 					= True
 	SLEEP_BETWEEN_CHECKS 	= 1	#sleeps X seconds befor cheking the need of executing any task
-	
+	MINUTE					= 60
 	def __init__(self, hub):
 		Thread.__init__(self)
 		
@@ -34,10 +34,12 @@ class ScheduleManager(Thread):
 		self.stopped = False
 		
 		#Append Rutines to the list
-		self.tasks.append(Task(self.save_Temperature_to_DB, 5*60)) # loop every 5 Mins
-		self.tasks.append(Task(self.save_Humidity_to_DB, 5*60))	# loop every 5 Min
-		self.tasks.append(Task(self.save_Luminosity_to_DB, 2*60))	# loop every 2 Min
-		self.tasks.append(Task(self.save_Current_to_DB, 1*60))	# loop every 1 Min
+
+		self.tasks.append(Task(self.save_Temperature_to_DB, 5*self.MINUTE)) # loop every 5 Mins
+		self.tasks.append(Task(self.save_Humidity_to_DB, 5*self.MINUTE))	# loop every 5 Min
+		self.tasks.append(Task(self.save_Luminosity_to_DB, 2*self.MINUTE))	# loop every 2 Min
+		self.tasks.append(Task(self.save_Current_to_DB, 1*self.MINUTE))	# loop every 1 Min
+		self.tasks.append(Task(self.save_Blutooth_Presence_to_DB, 3*self.MINUTE))	# loop every 1 Min
 		
 		while not self.stopped:
 			self.update()
@@ -45,8 +47,6 @@ class ScheduleManager(Thread):
 				sleep(self.SLEEP_BETWEEN_CHECKS)
 			
 	def update(self):
-		if self.DEBUG:
-			print "Update"
 		for task in self.tasks:
 			if task.can_run() and not self.stopped:
 				task.run()
@@ -75,7 +75,7 @@ class ScheduleManager(Thread):
 				db = self.hub["STORAGE HANDLER"]
 				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.HUMIDITY, vmean))
 		else:
-			print "Scheduler: Save_Temperature_to_DB locating HUMIDITY or STORAGE object"
+			print "Scheduler: Save_Humidity_to_DB locating HUMIDITY or STORAGE object"
 
 	def save_Luminosity_to_DB(self):
 		if self.DEBUG:
@@ -87,7 +87,7 @@ class ScheduleManager(Thread):
 				db = self.hub["STORAGE HANDLER"]
 				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.LUMINOSITY, vmean))
 		else:
-			print "Scheduler: Save_Temperature_to_DB locating LUMINOSITY or STORAGE object"
+			print "Scheduler: Save_Luminosity_to_DB locating LUMINOSITY or STORAGE object"
 
 
 	def	save_Current_to_DB(self):
@@ -100,7 +100,20 @@ class ScheduleManager(Thread):
 				db = self.hub["STORAGE HANDLER"]
 				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.CURRENT, vmean))
 		else:
-			print "Scheduler: Save_Temperature_to_DB locating LUMINOSITY or STORAGE object"
+			print "Scheduler: Save_Current_to_DB locating CURRENT or STORAGE object"
+
+	def	save_Blutooth_Presence_to_DB(self):
+		if self.DEBUG:
+			print "Scheduler: Save_Blutooth_Presence_to_DB"
+		if self.hub["BLUETOOTH"] and self.hub["STORAGE HANDLER"]:
+			values = self.hub["BLUETOOTH"].dumpMemoryValues()
+			if len(values) > 0:
+				db = self.hub["STORAGE HANDLER"]
+				date = str(datetime.now())
+				for device in values:
+					db.insertValue(MesurmentDTO(date, DataType.WIFI_PRESENCE, device))
+		else:
+			print "Scheduler: Save_Temperature_to_DB locating BLUETOOTH or STORAGE object"
 
 #Runs only if called
 if __name__ == "__main__":

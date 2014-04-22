@@ -67,13 +67,9 @@ class BTExecutor(Thread):
 	
 class BTDetector(Thread):
 
-	stopped = None
-	hub = None
-	last_updated = None
-	seen_devices = list()
-	seen_timeout = 30	# if device is not seen for x seconds it gets eliminated
 	
-	def __init__(self, hub):
+	
+	def __init__(self, hub, db=True):
 		Thread.__init__(self)
 		
 		#Sudo required
@@ -82,10 +78,15 @@ class BTDetector(Thread):
 			
 		self.stopped = False
 		self.hub = hub
+		self.db = db
 		self.started = datetime.now()
 		self.last_update = datetime.now()
+		self.seen_devices = list()
+		self.seen_timeout = 30	# if device is not seen for x seconds it gets eliminated
+		self.bluetooth_memory_values = set()
+		self.traking_devices = set()
 		self.interface_fail = 0
-		self.reset_interface()
+
 
 	def stop(self):
 		self.stopped = True
@@ -95,7 +96,14 @@ class BTDetector(Thread):
 		return str(self.last_update-self.started).split(".")[0]
 	
 	def run(self):
+
+		#Resets the BT interface befor starting the Search
+		self.reset_interface()
 		
+		#Loads the settings from the DB if present
+		if self.db:
+			self.traking_devices = self.get_traked_devices_from_db()
+
 		while not self.stopped:
 			
 			if DEBUG:
@@ -103,11 +111,17 @@ class BTDetector(Thread):
 				
 			exe = BTExecutor()
 			exe.start()
-			exe.join(16)
+			exe.join(16)	#Wait 16 seconds for the scan to be preformed
+
 			if exe.value:
 				self.last_update = datetime.now()
 				self.update_seen_list(exe.value)
-					
+
+				for device in exe.value:
+					addr = device["Address"]
+					if addr in self.traking_devices:
+						self.bluetooth_memory_values.add(addr)
+
 				if DEBUG:
 					print "Found: " 
 					for f in self.seen_devices:
@@ -183,11 +197,35 @@ class BTDetector(Thread):
 		subprocess.Popen('sudo hciconfig hci0 lm MASTER', shell=True)
 		sleep(1)
 
+	#Dumps the cache of seen devices
+	def dumpMemoryValues(self):
+		b = self.bluetooth_memory_values
+		self.bluetooth_memory_values = set()
+		return b
+
+	def get_traked_devices_from_db(self):
+		while "STORAGE HANDLER" not in self.hub.keys():
+			sleep(0.5)
+
+		devices = self.hub["STORAGE HANDLER"].readSettings("Bluetooth_Tracking_Devices")
+		return devices
+
+	def track_device(self, MAC):
+		if MAC not in self.traking_devices:
+			self.traking_devices.add(MAC)
+
+			while "STORAGE HANDLER" not in self.hub.keys():
+				sleep(0.2)
+
+			self.hub["STORAGE HANDLER"].writeSettings("Bluetooth_Tracking_Devices", 
+														self.traking_devices)
+
 	def kill_mod(self):
 		subprocess.Popen('sudo rmmod btusb', shell=True)
 		sleep(1)
 		subprocess.Popen('sudo modprobe btusb', shell=True)
-		sleep(1)	
+		sleep(1)
+
 	def find_devices(self):		
 		return self.seen_devices
 					
@@ -198,12 +236,7 @@ if __name__ == "__main__":
 	try:
 		print "#TEST#"
 		print "#Starting#"
-		d = BTDetector(None)
-		#print d.register_phone('40:B0:FA:3D:5F:08', '0000')
-		#print d.register_phone('AC:81:F3:F6:FD:F7', '0001')
-	
-		#print d.get_paired()
-		#print d.l2ping('AC:81:F3:F6:FD:F7')
+		d = BTDetector(None,db=False)
 		d.start()
 		sleep(60*60*24*356)
 		

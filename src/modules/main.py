@@ -35,10 +35,16 @@ if __name__ == '__main__':
 		
 		print 'You pressed Ctrl+C!'
 		for key, value in hub.items():
+			if "STORAGE HANDLER" is not key:
+				if DEBUG:
+					print "Stopping", key
+				if value.stop:
+					value.stop()
+		#Storage stops Last
+		if "STORAGE HANDLER" in hub.keys():
 			if DEBUG:
-				print "Stopping", key
-			if value.stop:
-				value.stop()
+				print "Stopping STORAGE HANDLER"
+			hub["STORAGE HANDLER"].stop()
 				
 		sys.exit(0)
 	
@@ -54,7 +60,13 @@ if __name__ == '__main__':
 		
 		#Main object used for sharing
 		hub = dict()
-	
+
+		#Starts the Storage Handler
+		sh = StorageHandler(hub)
+		hub["STORAGE HANDLER"] = sh
+		if DEBUG:
+			print "Storage ON"
+
 		#Start Temperature/Humidity Sensor
 		th = TempHumid(hub)
 		th.start()
@@ -86,11 +98,12 @@ if __name__ == '__main__':
 		#	print "WIFI sensor ON"
 		
 		#Starts BT Detector
-		#bt = BTDetector(hub)
-		#bt.start()
-		#hub["BLUETOOTH"] = bt
-		#if DEBUG:
-		#	print "BT sensor ON"
+		bt = BTDetector(hub)
+		bt.start()
+		bt.track_device('40:B0:FA:3D:5F:08')
+		hub["BLUETOOTH"] = bt
+		if DEBUG:
+			print "BT sensor ON"
 		
 		#Starts LCD
 		#lcd = LCD(hub)
@@ -99,11 +112,7 @@ if __name__ == '__main__':
 		#if DEBUG:
 		#	print "LCD sensor ON"
 		
-		#Starts the Storage Handler
-		sh = StorageHandler(hub)
-		hub["STORAGE HANDLER"] = sh
-		if DEBUG:
-			print "Storage ON"
+		
 		
 		
 		

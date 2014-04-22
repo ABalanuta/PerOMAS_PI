@@ -9,6 +9,8 @@ import sqlite3
 import os
 from time import sleep
 from datetime import datetime
+from threading import Lock
+from pickle import dumps, loads
 from DTOs.MesurmentDTO import MesurmentDTO
 from DTOs.MeasurmentEnum import DataType
 
@@ -22,37 +24,86 @@ class StorageHandler():
 		self.hub = hub
 		dir_path = os.path.dirname(os.path.realpath(__file__))
 		self.db_path = dir_path +'/' + self.FILENAME
-		
+		self.db_lock = Lock()
 		self.create_database()
 		
 	
 	def create_database(self):
 		
+		self.db_lock.acquire(True)
+
 		conn = sqlite3.connect(self.db_path)
 		c = conn.cursor()
 		#Try to create the empty Tables if they dont already exist
 		try:
-			c.execute('CREATE TABLE '+DataType.TEMPERATURE+' (TimeStamp TIMESTAMP, '+DataType.TEMPERATURE+' REAL)')
-			c.execute('CREATE TABLE '+DataType.HUMIDITY+' (TimeStamp TIMESTAMP, '+DataType.HUMIDITY+' REAL)')
-			c.execute('CREATE TABLE '+DataType.LUMINOSITY+' (TimeStamp TIMESTAMP, '+DataType.LUMINOSITY+' REAL)')
-			c.execute('CREATE TABLE '+DataType.CURRENT+' (TimeStamp TIMESTAMP, '+DataType.CURRENT+' REAL)')
+
+			#Settings
+			c.execute('CREATE TABLE Settings (ID TEXT, PickeRepresentation TEXT)')
+
+
+			#Data
+			c.execute('CREATE TABLE '+DataType.TEMPERATURE+' (TimeStamp TIMESTAMP, Temperature REAL)')
+			c.execute('CREATE TABLE '+DataType.HUMIDITY+' (TimeStamp TIMESTAMP, Humidity REAL)')
+			c.execute('CREATE TABLE '+DataType.LUMINOSITY+' (TimeStamp TIMESTAMP, Luminosity REAL)')
+			c.execute('CREATE TABLE '+DataType.CURRENT+' (TimeStamp TIMESTAMP, Current REAL)')
+			c.execute('CREATE TABLE '+DataType.BT_PRESENCE+' (TimeStamp TIMESTAMP, MAC TEXT)')
+			c.execute('CREATE TABLE '+DataType.WIFI_PRESENCE+' (TimeStamp TIMESTAMP, MAC TEXT)')
+
 			if self.DEBUG:
 				print "New Database " + self.FILENAME + " Created"
-		except:
+
+		except sqlite3.OperationalError:
 			if self.DEBUG:
 				print "Database " + self.FILENAME + " Already Exists, skipping ..."
+		except:
+			raise
+
 		finally:
 			conn.commit()
 			conn.close()
+			self.db_lock.release()
 	
 	def insertValue(self, dto):
+
+		self.db_lock.acquire(True)
+
 		conn = sqlite3.connect(self.db_path)
 		c = conn.cursor()
+
+
 		values = (dto.getTimestamp(), dto.getValue())
 		c.execute('INSERT INTO '+dto.getType()+' VALUES (?,?)', values)
 		conn.commit()
 		conn.close()
-		
+
+		self.db_lock.release()
+
+	def readSettings(self, id):
+		self.db_lock.acquire(True)
+
+		conn = sqlite3.connect(self.db_path)
+		c = conn.cursor()
+		c.execute('SELECT * FROM Settings WHERE ID=?', [id])
+		encoded = c.fetchone()[1]
+		conn.commit()
+		conn.close()
+		self.db_lock.release()
+		return loads(encoded)
+	
+	def writeSettings(self, id, obj):
+		self.db_lock.acquire(True)
+
+		conn = sqlite3.connect(self.db_path)
+		c = conn.cursor()
+		encoded = dumps(obj)
+		values = (id, encoded)
+		c.execute('DELETE FROM Settings WHERE ID=?', [id])
+		c.execute('INSERT INTO Settings VALUES (?,?)', values)
+		conn.commit()
+		conn.close()
+
+		self.db_lock.release()
+
 	#Bogus method
 	def stop(self):
 		return
@@ -75,10 +126,9 @@ if __name__ == "__main__":
 	
 	print "Done"
 
-	
-	
-	
-	
-	
+	t = {"Sapos":123, "COGUMELOS":[1,2,3]}
+
+	d.writeSettings("teste", t)
+	print d.readSettings("teste")
 	
 
