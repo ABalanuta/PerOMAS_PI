@@ -14,12 +14,6 @@ import threading
 from datetime import datetime
 from time import sleep
 
-DEBUG = False
-#APs ip Range 172.20.3.1-60
-ipRange = ('172.20.3.', 1, 90)
-scanDelay = 6 #seconds
-
-
 #Converts the deciaml representation to hexadecimal
 def get_mac(var):
 	mac = var.split('.')
@@ -61,7 +55,7 @@ def get_dns_name(ip):
             return None
 
 
-def get_associated(ip):
+def get_associated(ip, DEBUG=False):
 	
 	oid = '.1.3.6.1.4.1.9.9.273.1.2.1.1.14'
 	
@@ -89,100 +83,116 @@ def get_associated(ip):
 
 class WifiDetector(threading.Thread):
 	
-	def __init__(self, hub):
-		if DEBUG:
+	DEBUG 		= True
+	IP_RANGE 	= ('172.20.3.', 1, 90)	# APs ip Range 172.20.3.1-60
+	SCAN_DELAY 	= 3					# Time in seconds
+
+	def __init__(self, hub, db=True):
+		if self.DEBUG:
 			print "WifiDetector.init()"
 		threading.Thread.__init__(self)
 		self.hub = hub
+		self.db = db 		#presence of an db
 		self.stopped = True
 		self.detectedList = []
-		self.searchList = []
+		self.tackList = set()
 		self.presentList = []
+		self.wifi_memory_values = dict()
 	
 	def stop(self):
-		if DEBUG:
+		if self.DEBUG:
 			print "WifiDetector.stop()"
 		self.stopped = True
 	
 	def run(self):
-		if DEBUG:
+		if self.DEBUG:
 			print "WifiDetector.run()"
 		self.stopped = False
-		count = scanDelay + 1
+
+		#Loads the settings from the DB if present
+		if self.db:
+			self.tackList = self.get_traked_devices_from_db()
 		
 		while not self.stopped:
-			if count > scanDelay and len(self.searchList) > 0:
-				
+			if len(self.tackList) > 0:
 				self.update()
-				count = 0
+				for x in range(0, self.SCAN_DELAY):
+					if not self.stopped:
+						sleep(1)
+					else:
+						break
 			else:
-				count += 1
 				sleep(1)
 						
 	def update(self):
-		if DEBUG:
+		if self.DEBUG:
 			print "WifiDetector.update()"
 		
 		newList = []
-		for x in range(int(ipRange[1]), int(ipRange[2])+1):
-			ip = ipRange[0]+str(x)
+		for x in range(int(self.IP_RANGE[1]), int(self.IP_RANGE[2])+1):
+			ip = self.IP_RANGE[0]+str(x)
 			l = get_associated(ip)
 			if len(l) > 0:
 				newList += l
 			#sleep(0.05)
-		self.detectedList = newList
-		
-		if DEBUG:
-			for x in newList:
-				print x
-			print "Len:",len(newList)
-		
-		self.updatePresentList()
-		
-		
-	def updatePresentList(self):
-		
-		newPresentList = []
-		for x in self.searchList:
-			for y in self.detectedList:
-				if x == y[0]:
-					if DEBUG:
-						print x, "is at ", y[2]
-					newPresentList += [(x, y[2], y[3])]
-					#break
-					
-		self.presentList = newPresentList
-		if DEBUG:
-			print "WifiDetector.updatePresentList()"
-			print self.presentList	
+		self.update_seen_list(newList)
+
+
+
+	def update_seen_list(self, devices):
+		if self.DEBUG:
+			print "WifiDetector.update_seen_list()"
+
+		for device in devices:
+			if device[0] in self.tackList:
+				if device[0] in self.wifi_memory_values.keys():	#if dictionary key exists
+					self.wifi_memory_values[device[0]].add(device[2])	#adds the location to the set 
+				else:
+					self.wifi_memory_values[device[0]] = set()
+					self.wifi_memory_values[device[0]].add(device[2])
+				print self.wifi_memory_values
+
+	#Dumps the cache of seen devices
+	def dumpMemoryValues(self):
+		b = self.wifi_memory_values
+		self.wifi_memory_values = dict()
+
+		#Transfoms the set of locations into a String
+		for key in b.keys():
+			string = "|"
+			for location in b[key]:
+				string = string + location + "|"
+			b[key] = string
+
+		return b
+
+	def get_traked_devices_from_db(self):
+		while "STORAGE HANDLER" not in self.hub.keys():
+			sleep(0.5)
+
+		devices = self.hub["STORAGE HANDLER"].readSettings("Wifi_Tracking_Devices")
+		return devices
 	
-	def track(self, newMac):
-		if DEBUG:
-			print "WifiDetector. track()", newMac
-		self.searchList += [newMac]
+	def track_device(self, newMac):
+		if self.DEBUG:
+			print "WifiDetector.track_device()", newMac
+
+		if newMac not in self.tackList:
+			self.tackList.add(newMac)
+
+			if self. db:
+				while "STORAGE HANDLER" not in self.hub.keys():
+					sleep(0.2)
+
+				self.hub["STORAGE HANDLER"].writeSettings("Wifi_Tracking_Devices", 
+														self.tackList)
 	
-	def find(self, findMac):
-		if DEBUG:
-			print "WifiDetector. find()", findMac
-			
-		for x in self.presentList:
-			if findMac == x[0]:
-				return (x[1], x[2])
-				
-		return None
-	
-	#Returns All traked Targets
-	def findAll(self):
-		return self.presentList
-		
-		
+
 ##Executed if only is the main app		
 if __name__ == '__main__':
-
-	macList = ['40:B0:FA:C7:A1:EB']
 	
-	wd = WifiDetector(macList)
-	wd.track('40:B0:FA:C7:A1:EB')
+	wd = WifiDetector(None,db=False)
+	wd.track_device('40:B0:FA:C7:A1:EB')
 	
 	try:
 		wd.start()

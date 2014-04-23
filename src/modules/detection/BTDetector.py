@@ -82,7 +82,7 @@ class BTDetector(Thread):
 		self.started = datetime.now()
 		self.last_update = datetime.now()
 		self.seen_devices = list()
-		self.seen_timeout = 30	# if device is not seen for x seconds it gets eliminated
+		self.seen_timeout = 30	# if device is not seen for x seconds it gets eliminated from the seen_devices
 		self.bluetooth_memory_values = set()
 		self.traking_devices = set()
 		self.interface_fail = 0
@@ -214,10 +214,11 @@ class BTDetector(Thread):
 		if MAC not in self.traking_devices:
 			self.traking_devices.add(MAC)
 
-			while "STORAGE HANDLER" not in self.hub.keys():
-				sleep(0.2)
+			if self. db:
+				while "STORAGE HANDLER" not in self.hub.keys():
+					sleep(0.2)
 
-			self.hub["STORAGE HANDLER"].writeSettings("Bluetooth_Tracking_Devices", 
+				self.hub["STORAGE HANDLER"].writeSettings("Bluetooth_Tracking_Devices", 
 														self.traking_devices)
 
 	def kill_mod(self):
