@@ -83,7 +83,7 @@ def get_associated(ip, DEBUG=False):
 
 class WifiDetector(threading.Thread):
 	
-	DEBUG 		= True
+	DEBUG 		= False
 	IP_RANGE 	= ('172.20.3.', 1, 90)	# APs ip Range 172.20.3.1-60
 	SCAN_DELAY 	= 3					# Time in seconds
 
@@ -111,7 +111,7 @@ class WifiDetector(threading.Thread):
 
 		#Loads the settings from the DB if present
 		if self.db:
-			self.tackList = self.get_traked_devices_from_db()
+			self.get_traked_devices_from_db()
 		
 		while not self.stopped:
 			if len(self.tackList) > 0:
@@ -150,7 +150,6 @@ class WifiDetector(threading.Thread):
 				else:
 					self.wifi_memory_values[device[0]] = set()
 					self.wifi_memory_values[device[0]].add(device[2])
-				print self.wifi_memory_values
 
 	#Dumps the cache of seen devices
 	def dumpMemoryValues(self):
@@ -171,7 +170,8 @@ class WifiDetector(threading.Thread):
 			sleep(0.5)
 
 		devices = self.hub["STORAGE HANDLER"].readSettings("Wifi_Tracking_Devices")
-		return devices
+		if devices:
+			self.tackList = devices
 	
 	def track_device(self, newMac):
 		if self.DEBUG:

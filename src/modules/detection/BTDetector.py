@@ -102,7 +102,7 @@ class BTDetector(Thread):
 		
 		#Loads the settings from the DB if present
 		if self.db:
-			self.traking_devices = self.get_traked_devices_from_db()
+			self.get_traked_devices_from_db()
 
 		while not self.stopped:
 			
@@ -208,7 +208,8 @@ class BTDetector(Thread):
 			sleep(0.5)
 
 		devices = self.hub["STORAGE HANDLER"].readSettings("Bluetooth_Tracking_Devices")
-		return devices
+		if devices:
+			self.traking_devices = devices
 
 	def track_device(self, MAC):
 		if MAC not in self.traking_devices:

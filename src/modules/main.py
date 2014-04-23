@@ -13,7 +13,7 @@ from datetime import datetime
 from sensors.HTU21D.HTU21D import TempHumid #Temp/Humid
 from sensors.TSL2561.TSL2561 import TSL2561	#Lux
 from sensors.ADS1115.ADS1115 import ADS1115	#Current
-#from sensors.wifi_detect.WifiLocation import WifiDetector
+from detection.WifiLocation import WifiDetector
 from detection.BTDetector import BTDetector
 from interaction.lcd.LCDmenu import LCD
 #from web.web import WebManager
@@ -90,12 +90,12 @@ if __name__ == '__main__':
 			print "CURRENT sensor ON"
 
 		#Starts Wifi DetectorADS1115
-		#wifi = WifiDetector(hub)
-		#wifi.start()
-		#hub["WIFI"] = wifi
-		#wifi.track('40:B0:FA:C7:A1:EB')
-		#if DEBUG:
-		#	print "WIFI sensor ON"
+		wifi = WifiDetector(hub)
+		wifi.start()
+		hub["WIFI"] = wifi
+		wifi.track_device('40:B0:FA:C7:A1:EB')
+		if DEBUG:
+			print "WIFI sensor ON"
 		
 		#Starts BT Detector
 		bt = BTDetector(hub)

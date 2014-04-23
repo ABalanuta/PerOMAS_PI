@@ -47,7 +47,7 @@ class StorageHandler():
 			c.execute('CREATE TABLE '+DataType.LUMINOSITY+' (TimeStamp TIMESTAMP, Luminosity REAL)')
 			c.execute('CREATE TABLE '+DataType.CURRENT+' (TimeStamp TIMESTAMP, Current REAL)')
 			c.execute('CREATE TABLE '+DataType.BT_PRESENCE+' (TimeStamp TIMESTAMP, MAC TEXT)')
-			c.execute('CREATE TABLE '+DataType.WIFI_PRESENCE+' (TimeStamp TIMESTAMP, MAC TEXT)')
+			c.execute('CREATE TABLE '+DataType.WIFI_PRESENCE+' (TimeStamp TIMESTAMP, MAC TEXT, LOCATIONS TEXT)')
 
 			if self.DEBUG:
 				print "New Database " + self.FILENAME + " Created"
@@ -70,9 +70,17 @@ class StorageHandler():
 		conn = sqlite3.connect(self.db_path)
 		c = conn.cursor()
 
+		if len(dto.getValue()) == 1:
+			values = (dto.getTimestamp(), dto.getValue()[0])
+			c.execute('INSERT INTO '+dto.getType()+' VALUES (?,?)', values)
 
-		values = (dto.getTimestamp(), dto.getValue())
-		c.execute('INSERT INTO '+dto.getType()+' VALUES (?,?)', values)
+		elif len(dto.getValue()) == 2:
+			values = (dto.getTimestamp(), dto.getValue()[0], dto.getValue()[1])
+			c.execute('INSERT INTO '+dto.getType()+' VALUES (?,?,?)', values)
+
+		else:
+			raise Exception("Too many Fields")
+
 		conn.commit()
 		conn.close()
 
@@ -84,11 +92,13 @@ class StorageHandler():
 		conn = sqlite3.connect(self.db_path)
 		c = conn.cursor()
 		c.execute('SELECT * FROM Settings WHERE ID=?', [id])
-		encoded = c.fetchone()[1]
+		settings = c.fetchone()
+		if settings:
+			settings = loads(settings[1])
 		conn.commit()
 		conn.close()
 		self.db_lock.release()
-		return loads(encoded)
+		return settings
 	
 	def writeSettings(self, id, obj):
 		self.db_lock.acquire(True)

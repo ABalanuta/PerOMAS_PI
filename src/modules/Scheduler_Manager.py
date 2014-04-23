@@ -35,11 +35,12 @@ class ScheduleManager(Thread):
 		
 		#Append Rutines to the list
 
-		self.tasks.append(Task(self.save_Temperature_to_DB, 5*self.MINUTE)) # loop every 5 Mins
-		self.tasks.append(Task(self.save_Humidity_to_DB, 5*self.MINUTE))	# loop every 5 Min
-		self.tasks.append(Task(self.save_Luminosity_to_DB, 2*self.MINUTE))	# loop every 2 Min
-		self.tasks.append(Task(self.save_Current_to_DB, 1*self.MINUTE))	# loop every 1 Min
-		self.tasks.append(Task(self.save_Blutooth_Presence_to_DB, 3*self.MINUTE))	# loop every 1 Min
+		self.tasks.append(Task(self.save_Temperature_to_DB, 5*self.MINUTE)) 		# loop every 5 Mins
+		self.tasks.append(Task(self.save_Humidity_to_DB, 5*self.MINUTE))			# loop every 5 Min
+		self.tasks.append(Task(self.save_Luminosity_to_DB, 2*self.MINUTE))			# loop every 2 Min
+		self.tasks.append(Task(self.save_Current_to_DB, 1*self.MINUTE))				# loop every 1 Min
+		self.tasks.append(Task(self.save_Blutooth_Presence_to_DB, 3*self.MINUTE))	# loop every 3 Min
+		self.tasks.append(Task(self.save_Wifi_Presence_to_DB, 5*self.MINUTE))		# loop every 5 Min
 		
 		while not self.stopped:
 			self.update()
@@ -58,9 +59,9 @@ class ScheduleManager(Thread):
 		if self.hub["TEMPERATURE"] and self.hub["STORAGE HANDLER"]:
 			values = self.hub["TEMPERATURE"].dumpTemperatureMemoryValues()
 			if len(values) > 0:
-				vmean = mean(values)
+				vmean = round(mean(values), 1)
 				db = self.hub["STORAGE HANDLER"]
-				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.TEMPERATURE, vmean))
+				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.TEMPERATURE, [vmean]))
 			
 		else:
 			print "Scheduler: Save_Temperature_to_DB locating TEMPERATURE or STORAGE object"
@@ -71,9 +72,9 @@ class ScheduleManager(Thread):
 		if self.hub["HUMIDITY"] and self.hub["STORAGE HANDLER"]:
 			values = self.hub["HUMIDITY"].dumpHumidityMemoryValues()
 			if len(values) > 0:
-				vmean = mean(values)
+				vmean = round(mean(values), 1)
 				db = self.hub["STORAGE HANDLER"]
-				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.HUMIDITY, vmean))
+				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.HUMIDITY, [vmean]))
 		else:
 			print "Scheduler: Save_Humidity_to_DB locating HUMIDITY or STORAGE object"
 
@@ -83,9 +84,9 @@ class ScheduleManager(Thread):
 		if self.hub["LUMINOSITY"] and self.hub["STORAGE HANDLER"]:
 			values = self.hub["LUMINOSITY"].dumpMemoryValues()
 			if len(values) > 0:
-				vmean = mean(values)
+				vmean = round(mean(values), 1)
 				db = self.hub["STORAGE HANDLER"]
-				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.LUMINOSITY, vmean))
+				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.LUMINOSITY, [vmean]))
 		else:
 			print "Scheduler: Save_Luminosity_to_DB locating LUMINOSITY or STORAGE object"
 
@@ -96,9 +97,9 @@ class ScheduleManager(Thread):
 		if self.hub["CURRENT"] and self.hub["STORAGE HANDLER"]:
 			values = self.hub["CURRENT"].dumpMemoryValues()
 			if len(values) > 0:
-				vmean = mean(values)
+				vmean = round(mean(values), 1)
 				db = self.hub["STORAGE HANDLER"]
-				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.CURRENT, vmean))
+				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.CURRENT, [vmean]))
 		else:
 			print "Scheduler: Save_Current_to_DB locating CURRENT or STORAGE object"
 
@@ -111,9 +112,23 @@ class ScheduleManager(Thread):
 				db = self.hub["STORAGE HANDLER"]
 				date = str(datetime.now())
 				for device in values:
-					db.insertValue(MesurmentDTO(date, DataType.WIFI_PRESENCE, device))
+					db.insertValue(MesurmentDTO(date, DataType.BT_PRESENCE, [device]))
 		else:
-			print "Scheduler: Save_Temperature_to_DB locating BLUETOOTH or STORAGE object"
+			print "Scheduler: save_Blutooth_Presence_to_DB locating BLUETOOTH or STORAGE object"
+
+
+	def	save_Wifi_Presence_to_DB(self):
+		if self.DEBUG:
+			print "Scheduler: Save_Wifi_Presence_to_DB"
+		if self.hub["WIFI"] and self.hub["STORAGE HANDLER"]:
+			values = self.hub["WIFI"].dumpMemoryValues()
+			if len(values) > 0:
+				db = self.hub["STORAGE HANDLER"]
+				date = str(datetime.now())
+				for device in values.keys():
+					db.insertValue(MesurmentDTO(date, DataType.WIFI_PRESENCE, [device, values[device]]))
+		else:
+			print "Scheduler: save_Wifi_Presence_to_DB locating WIFI or STORAGE object"
 
 #Runs only if called
 if __name__ == "__main__":
