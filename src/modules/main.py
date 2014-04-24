@@ -16,6 +16,7 @@ from sensors.ADS1115.ADS1115 import ADS1115	#Current
 from detection.WifiLocation import WifiDetector
 from detection.BTDetector import BTDetector
 from interaction.lcd.LCDmenu import LCD
+from interaction.Relay import Relay
 #from web.web import WebManager
 from Scheduler_Manager import ScheduleManager
 from Storage_Handler import StorageHandler
@@ -65,7 +66,7 @@ if __name__ == '__main__':
 		sh = StorageHandler(hub)
 		hub["STORAGE HANDLER"] = sh
 		if DEBUG:
-			print "Storage ON"
+			print "Storage is ON"
 
 		#Start Temperature/Humidity Sensor
 		th = TempHumid(hub)
@@ -73,21 +74,21 @@ if __name__ == '__main__':
 		hub["TEMPERATURE"] = th
 		hub["HUMIDITY"] = th
 		if DEBUG:
-			print "T/H sensor ON"
+			print "T/H sensor is ON"
 
 		#Start Luminosity Sensor
 		lux = TSL2561(hub)
 		lux.start()
 		hub["LUMINOSITY"] = lux
 		if DEBUG:
-			print "LUX sensor ON"
+			print "LUX sensor is ON"
 		
 		#Start Current Sensor
 		watt = ADS1115(hub)
 		watt.start()
 		hub["CURRENT"] = watt
 		if DEBUG:
-			print "CURRENT sensor ON"
+			print "CURRENT sensor is ON"
 
 		#Starts Wifi DetectorADS1115
 		wifi = WifiDetector(hub)
@@ -95,7 +96,7 @@ if __name__ == '__main__':
 		hub["WIFI"] = wifi
 		wifi.track_device('40:B0:FA:C7:A1:EB')
 		if DEBUG:
-			print "WIFI sensor ON"
+			print "WIFI sensor is ON"
 		
 		#Starts BT Detector
 		bt = BTDetector(hub)
@@ -103,7 +104,13 @@ if __name__ == '__main__':
 		bt.track_device('40:B0:FA:3D:5F:08')
 		hub["BLUETOOTH"] = bt
 		if DEBUG:
-			print "BT sensor ON"
+			print "BT sensor is ON"
+
+		#Starts Relay
+		r = Relay(hub)
+		hub["RELAY"] = r
+		if DEBUG:
+			print "Relays are ON"
 		
 		#Starts LCD
 		#lcd = LCD(hub)

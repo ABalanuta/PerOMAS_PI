@@ -8,7 +8,9 @@ update:
 	sudo aptitude update -y
 	sudo aptitude upgrade -y
 	sudo aptitude install vim git tmux screen htop -y
-
+gpio:
+	sudo apt-get install python-dev -y
+	sudo apt-get install python-rpi.gpio -y
 i2c:
 	##I2c Tools
 	sudo cp modules /etc/modules
