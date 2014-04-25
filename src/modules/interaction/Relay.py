@@ -15,7 +15,7 @@ class Relay():
 	RELAY_1_PINS	= [4, 17, 27, 22]	# GPIO.BCM Pin for the four chanels of the Relay
 	RELAY_2_PINS	= [23, 24, 25, 8]	#
 
-	RELAY 			= {	"LIGHTS_X1" 		:	{"Pin" : RELAY_1_PINS[0], "State" : False},
+	RELAY 			= {	"LIGHTS_X1" 		:	{"Pin" : RELAY_1_PINS[0], "State" : True},
 						"LIGHTS_X2" 		:	{"Pin" : RELAY_1_PINS[1], "State" : False},
 						"POWER_SOCKETS_1"	:	{"Pin" : RELAY_1_PINS[2], "State" : False},
 						"POWER_SOCKETS_2"	:	{"Pin" : RELAY_1_PINS[3], "State" : False},

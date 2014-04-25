@@ -17,6 +17,9 @@ i2c:
 	sudo cp raspi-blacklist.conf /etc/modprobe.d/raspi-blacklist.conf
 	sudo aptitude install python-smbus i2c-tools -y
 
+pubsub:
+	sudo apt-get install python-mosquitto -y
+
 temp_humid_sensor:
 	#wiringPi Library AutoInstall
 	sudo apt-get install git-core -y
@@ -61,6 +64,8 @@ boot:
 hostname:
 	sudo python change_host.py
 
+gateway:
+	sudo aptitude install mosquitto -y
 reboot:
 	echo "System will rebootn in 10"
 	sleep 10

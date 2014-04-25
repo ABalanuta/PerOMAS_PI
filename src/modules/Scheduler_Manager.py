@@ -19,6 +19,7 @@ class ScheduleManager(Thread):
 	DEBUG 					= False
 	SLEEP_BETWEEN_CHECKS 	= 1	#sleeps X seconds befor cheking the need of executing any task
 	MINUTE					= 60
+
 	def __init__(self, hub):
 		Thread.__init__(self)
 		

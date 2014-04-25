@@ -14,6 +14,7 @@ import threading
 from datetime import datetime
 from time import sleep
 
+
 #Converts the deciaml representation to hexadecimal
 def get_mac(var):
 	mac = var.split('.')
@@ -84,7 +85,7 @@ def get_associated(ip, DEBUG=False):
 class WifiDetector(threading.Thread):
 	
 	DEBUG 		= False
-	IP_RANGE 	= ('172.20.3.', 1, 90)	# APs ip Range 172.20.3.1-60
+	IP_RANGE 	= ('172.20.3.', 1, 70)	# APs ip Range 172.20.3.1-60
 	SCAN_DELAY 	= 3					# Time in seconds
 
 	def __init__(self, hub, db=True):
@@ -95,7 +96,8 @@ class WifiDetector(threading.Thread):
 		self.db = db 		#presence of an db
 		self.stopped = True
 		self.detectedList = []
-		self.tackList = set()
+		self.trackList = set()
+		self.trackList_Lock = threading.Lock()
 		self.presentList = []
 		self.wifi_memory_values = dict()
 	
@@ -112,9 +114,10 @@ class WifiDetector(threading.Thread):
 		#Loads the settings from the DB if present
 		if self.db:
 			self.get_traked_devices_from_db()
+			
 		
 		while not self.stopped:
-			if len(self.tackList) > 0:
+			if len(self.trackList) > 0:
 				self.update()
 				for x in range(0, self.SCAN_DELAY):
 					if not self.stopped:
@@ -144,7 +147,7 @@ class WifiDetector(threading.Thread):
 			print "WifiDetector.update_seen_list()"
 
 		for device in devices:
-			if device[0] in self.tackList:
+			if device[0] in self.trackList:
 				if device[0] in self.wifi_memory_values.keys():	#if dictionary key exists
 					self.wifi_memory_values[device[0]].add(device[2])	#adds the location to the set 
 				else:
@@ -159,34 +162,38 @@ class WifiDetector(threading.Thread):
 		#Transfoms the set of locations into a String
 		for key in b.keys():
 			string = "|"
-			for location in b[key]:
+			locations = list(b[key])
+			locations.sort()
+			for location in locations:
 				string = string + location + "|"
 			b[key] = string
-
 		return b
 
 	def get_traked_devices_from_db(self):
 		while "STORAGE HANDLER" not in self.hub.keys():
 			sleep(0.5)
 
+		self.trackList_Lock.acquire(True)
 		devices = self.hub["STORAGE HANDLER"].readSettings("Wifi_Tracking_Devices")
 		if devices:
-			self.tackList = devices
-	
+			self.trackList = devices
+		self.trackList_Lock.release()
+
 	def track_device(self, newMac):
 		if self.DEBUG:
 			print "WifiDetector.track_device()", newMac
 
-		if newMac not in self.tackList:
-			self.tackList.add(newMac)
+		self.trackList_Lock.acquire(True)
+		if newMac not in self.trackList:
+			self.trackList.add(newMac)
 
 			if self. db:
 				while "STORAGE HANDLER" not in self.hub.keys():
 					sleep(0.2)
 
 				self.hub["STORAGE HANDLER"].writeSettings("Wifi_Tracking_Devices", 
-														self.tackList)
-	
+														self.trackList)
+		self.trackList_Lock.release()
 
 ##Executed if only is the main app		
 if __name__ == '__main__':
