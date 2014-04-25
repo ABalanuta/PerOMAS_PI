@@ -28,7 +28,7 @@ from Storage_Handler import StorageHandler
 if __name__ == '__main__':	
 	
 
-	DEBUG 			= True		# Debug Mode
+	DEBUG		= True		# Debug Mode
 	CLI_INTERFACE	= False		# 
 	WEB_INTERFACE	= False		# 
 	
@@ -90,11 +90,12 @@ if __name__ == '__main__':
 		if DEBUG:
 			print "CURRENT sensor is ON"
 
-		#Starts Wifi DetectorADS1115
+		#Starts Wifi Detector
 		wifi = WifiDetector(hub)
 		wifi.start()
 		hub["WIFI"] = wifi
 		wifi.track_device('40:B0:FA:C7:A1:EB')
+		wifi.track_device('CC:C3:EA:0E:23:8F')
 		if DEBUG:
 			print "WIFI sensor is ON"
 		
