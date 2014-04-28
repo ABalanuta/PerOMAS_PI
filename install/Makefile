@@ -65,7 +65,11 @@ hostname:
 	sudo python change_host.py
 
 gateway:
-	sudo aptitude install mosquitto -y
+	cd /tmp/; wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key; sudo apt-key add mosquitto-repo.gpg.key
+	cd /etc/apt/sources.list.d/; sudo wget http://repo.mosquitto.org/debian/mosquitto-stable.list
+	sudo apt-get update -y
+	sudo apt-get install mosquitto -y
+	
 reboot:
 	echo "System will rebootn in 10"
 	sleep 10

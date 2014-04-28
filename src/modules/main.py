@@ -15,7 +15,7 @@ from sensors.TSL2561.TSL2561 import TSL2561	#Lux
 from sensors.ADS1115.ADS1115 import ADS1115	#Current
 from detection.WifiLocation import WifiDetector
 from detection.BTDetector import BTDetector
-from interaction.lcd.LCDmenu import LCD
+#from interaction.lcd.LCDmenu import LCD
 from interaction.Relay import Relay
 #from web.web import WebManager
 from Scheduler_Manager import ScheduleManager

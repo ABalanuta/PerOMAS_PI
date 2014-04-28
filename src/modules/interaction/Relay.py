@@ -13,7 +13,7 @@ class Relay():
 	DEBUG 			= False
 
 	RELAY_1_PINS	= [4, 17, 27, 22]	# GPIO.BCM Pin for the four chanels of the Relay
-	RELAY_2_PINS	= [14, 15, 18, 24]	#
+	RELAY_2_PINS	= [23, 24, 25, 18]	#
 
 	RELAY 			= {	"LIGHTS_X1" 		:	{"Pin" : RELAY_1_PINS[0], "State" : True},
 						"LIGHTS_X2" 		:	{"Pin" : RELAY_1_PINS[1], "State" : False},
