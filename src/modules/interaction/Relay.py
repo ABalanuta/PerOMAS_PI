@@ -13,7 +13,7 @@ class Relay():
 	DEBUG 			= False
 
 	RELAY_1_PINS	= [4, 17, 27, 22]	# GPIO.BCM Pin for the four chanels of the Relay
-	RELAY_2_PINS	= [23, 24, 25, 8]	#
+	RELAY_2_PINS	= [14, 15, 18, 24]	#
 
 	RELAY 			= {	"LIGHTS_X1" 		:	{"Pin" : RELAY_1_PINS[0], "State" : True},
 						"LIGHTS_X2" 		:	{"Pin" : RELAY_1_PINS[1], "State" : False},
@@ -28,7 +28,7 @@ class Relay():
 	def __init__(self, hub):
 		self.hub = hub
 		GPIO.setmode(GPIO.BCM)
-		GPIO.setwarnings(False)
+		GPIO.setwarnings(True)
 		
 		for x in self.RELAY_1_PINS:
 			GPIO.setup(x, GPIO.OUT)
@@ -79,12 +79,26 @@ class Relay():
 if __name__ == "__main__":
 
 	r = Relay(None)
+
+
+	for x in r.RELAY_1_PINS:
+		GPIO.output(x, True)
+
+	for x in r.RELAY_2_PINS:
+		GPIO.output(x, True)
+
+	for x in r.RELAY_1_PINS:
+		GPIO.output(x, False)
+
+	for x in r.RELAY_2_PINS:
+		GPIO.output(x, False)
+
 	r.set_lights_x2_state(True)
-	sleep(1)
+	#sleep(1)
 	r.set_lights_x1_state(True)
-	sleep(1)
+	#sleep(1)
 	r.set_lights_x2_state(False)
-	sleep(1)
+	#sleep(1)
 	r.set_lights_x2_state(True)
-	sleep(1)
+	#sleep(1)
 	r.stop()
