@@ -505,7 +505,7 @@ class LCD(Thread):
         self.display = Display(uiItems)
         self.display.display()
 
-        LcdGreen()
+        LcdRed()
 
         #Enters the first Menu
         self.display.update('r')

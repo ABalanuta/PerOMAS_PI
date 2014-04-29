@@ -4,7 +4,7 @@
 Starts the different modules composing the Application
 """
 __author__ = "Artur Balanuta"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 import time, signal, sys
@@ -55,7 +55,7 @@ if __name__ == '__main__':
 	
 	
 	if DEBUG:
-		print "-> Starting main <-"
+		print "-> Starting Client <-"
 	
 	try:
 		

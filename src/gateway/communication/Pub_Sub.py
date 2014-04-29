@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""?????????"""
+"""Pub Sub Comunication between Nodes"""
 
 __author__ = "Artur Balanuta"
 __version__ = "1.0.0"
@@ -11,17 +11,19 @@ from threading import Thread
 from time import sleep, clock
 
 
-class MyMQTTClass(Thread):
+class MQTTC(Thread):
 
 	BROKER_IP	= "10.0.0.1"
 	ZONE		= "2N11/"		#Subscribe Wildcard
 
-	def __init__(self,gateway=False):
+	def __init__(self, hub, gateway=False):
 		Thread.__init__(self)
 		self.gateway = gateway
+		self.hub = hub
 		self.stopped = True
 		self.hostname = os.uname()[1]
-		self._mqttc = mosquitto.Mosquitto(self.hostname)
+		if gateway:
+			self._mqttc = mosquitto.Mosquitto("GW "+self.ZONE)
 		self._mqttc.on_message = self.mqtt_on_message
 		self._mqttc.on_connect = self.mqtt_on_connect
 		self._mqttc.on_publish = self.mqtt_on_publish
@@ -63,7 +65,7 @@ class MyMQTTClass(Thread):
 		self._mqttc.connect(self.BROKER_IP, 1883)
 
 		if self.gateway:
-			self._mqttc.subscribe(self.ZONE+"#", 0)
+			self._mqttc.subscribe(self.ZONE+"#", 2)
 
 		while not self.stopped:
 			self.update()
@@ -76,7 +78,8 @@ class MyMQTTClass(Thread):
 
 #Runs only if called
 if __name__ == "__main__":
-	client = MyMQTTClass(gateway=True)
+	
+	client = MQTTC(gateway=True)
 	client.start()
 
 	sleep(1)
