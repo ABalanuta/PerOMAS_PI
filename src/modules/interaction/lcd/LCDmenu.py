@@ -128,12 +128,14 @@ def ShowDash():
 			
 		sleep(0.25)
 		lcd.home()
-		if lcdHUB:
-			if lcdHUB.temp_humid:
-				lcd.message("T="+str(lcdHUB.temp_humid.temp)+"C  H="+str(lcdHUB.temp_humid.humid)+"%\n"+lcdHUB.temp_humid.runtime())
-		else:
-			lcd.message("Error Reading\nNo Obj HUB ")
-			print "error"
+		lcd.message("      KGB      \n")
+		lcd.message("I'm Watching You !")
+		#if lcdHUB:
+		#	if lcdHUB.temp_humid:
+		#		lcd.message("T="+str(lcdHUB.temp_humid.temp)+"C  H="+str(lcdHUB.temp_humid.humid)+"%\n"+lcdHUB.temp_humid.runtime())
+		#else:
+		#	lcd.message("Error Reading\nNo Obj HUB ")
+		#	print "error"
         #
         #print "T="+str(sensorList[0].temp)+"C  H="+str(sensorList[0].humid)+"%\n"+sensorList[0].runtime()
 
@@ -503,9 +505,13 @@ class LCD(Thread):
         self.display = Display(uiItems)
         self.display.display()
 
+        LcdGreen()
+
         #Enters the first Menu
         self.display.update('r')
         self.display.display()
+
+        
 
         if DEBUG:
             print('start while')
@@ -515,6 +521,7 @@ class LCD(Thread):
 	global stopped
 		
         while not stopped:
+
             if (lcd.buttonPressed(lcd.LEFT)):
                 self.display.update('l')
                 self.display.display()
