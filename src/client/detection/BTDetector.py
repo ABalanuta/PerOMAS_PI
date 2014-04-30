@@ -15,7 +15,7 @@ from threading import Thread
 from datetime import datetime
 
 #Debbuging Mode
-DEBUG = False
+DEBUG = Flase
 
 class BTExecutor(Thread):
 	
@@ -29,7 +29,6 @@ class BTExecutor(Thread):
 	def run(self):
 		p = subprocess.Popen('sudo bluez-test-discovery', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		lines = p.stdout.readlines()
-		
 		found_name = []
 		found_mac = []
 		found_rssi = []
@@ -47,7 +46,7 @@ class BTExecutor(Thread):
 				found_rssi += [line.split()[2]]
 		
 		#Put device parameters in a dictionary
-		found = []
+		found = list()
 		for x in range(0, len(found_name)):
 			device = dict()
 			device['Address'] = found_mac[x]
@@ -82,6 +81,7 @@ class BTDetector(Thread):
 		self.started = datetime.now()
 		self.last_update = datetime.now()
 		self.seen_devices = list()
+		self.last_seen_devices = list()
 		self.seen_timeout = 30	# if device is not seen for x seconds it gets eliminated from the seen_devices
 		self.bluetooth_memory_values = set()
 		self.traking_devices = set()
@@ -113,7 +113,8 @@ class BTDetector(Thread):
 			exe.start()
 			exe.join(16)	#Wait 16 seconds for the scan to be preformed
 
-			if exe.value:
+			if isinstance(exe.value, list):
+
 				self.last_update = datetime.now()
 				self.update_seen_list(exe.value)
 
@@ -124,7 +125,7 @@ class BTDetector(Thread):
 
 				if DEBUG:
 					print "Found: " 
-					for f in self.seen_devices:
+					for f in exe.value:
 						for k, v in f.items():
 							print "\t\t", k, ": ",  v
 						print "\n"
@@ -228,8 +229,20 @@ class BTDetector(Thread):
 		subprocess.Popen('sudo modprobe btusb', shell=True)
 		sleep(1)
 
-	def find_devices(self):		
+	#returns a list of devices seen in the last self.seen_timeout seconds
+	def get_discovered_devices(self):		
 		return self.seen_devices
+	
+	#returns a list of traked devices that where observed lastly
+	def get_traked_devices(self):
+		
+		ret = []
+		for device in self.seen_devices:
+			addr = device["Address"]
+			if addr in self.traking_devices:
+				ret.append(addr)
+		return ret
+
 					
 #Runs only if called
 if __name__ == "__main__":

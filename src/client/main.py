@@ -17,6 +17,7 @@ from detection.WifiLocation import WifiDetector
 from detection.BTDetector import BTDetector
 from interaction.lcd.LCDmenu import LCD
 from interaction.Relay import Relay
+from communication.Pub_Sub import MQTTC
 #from web.web import WebManager
 from Scheduler_Manager import ScheduleManager
 from Storage_Handler import StorageHandler
@@ -119,10 +120,13 @@ if __name__ == '__main__':
 		hub["LCD"] = lcd
 		if DEBUG:
 			print "LCD sensor ON"
-		
-		
-		
-		
+
+		#Starts The MQTT Listener
+		mqtt = MQTTC(hub)
+		mqtt.start()
+		hub["PUBLISHER"] = mqtt
+		if DEBUG:
+			print "MQTT Publisher is ON"
 		
 		#Starts the Scheduler Manager
 		sm = ScheduleManager(hub)

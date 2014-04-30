@@ -13,8 +13,9 @@ from time import sleep, clock
 
 class MQTTC(Thread):
 
+	DEBUG		= False
 	BROKER_IP	= "10.0.0.1"
-	ZONE		= "2N11/"		#Subscribe Wildcard
+	ZONE		= "2N11"		#Subscribe Wildcard
 
 	def __init__(self, hub):
 		Thread.__init__(self)
@@ -31,7 +32,8 @@ class MQTTC(Thread):
 
 	def mqtt_on_connect(self, mqttc, rc):
 		if rc == 0:
-			print "--Connected ok"
+			if self.DEBUG:
+				print "--Connected ok"
 			self.connected = True
 		else:
 			print "--Connect Error: "+str(rc)
@@ -51,11 +53,12 @@ class MQTTC(Thread):
 		print string
 
 	def mqtt_on_disconnect(self, mqttc):
-		print "--Disconected !!!"
+		if self.DEBUG:
+			print "--Disconected !!!"
 		self.connected = False
 
 	def publish(self, topic, payload, qos):
-		self._mqttc.publish(self.ZONE + topic, payload, qos)
+		self._mqttc.publish(self.ZONE+"/"+self.hostname+"/"+topic, payload, qos)
 
 	def stop(self):
 		self.stopped = True
@@ -88,7 +91,7 @@ if __name__ == "__main__":
 	try:
 		
 		while True:
-			client.publish(client.hostname+"/Clock", str(clock()), 2)
+			client.publish("Clock", str(clock()), 2)
 			sleep(2)
 	
 	except:

@@ -42,6 +42,8 @@ class ScheduleManager(Thread):
 		self.tasks.append(Task(self.save_Current_to_DB, 1*self.MINUTE))				# loop every 1 Min
 		self.tasks.append(Task(self.save_Blutooth_Presence_to_DB, 3*self.MINUTE))	# loop every 3 Min
 		self.tasks.append(Task(self.save_Wifi_Presence_to_DB, 5*self.MINUTE))		# loop every 5 Min
+		self.tasks.append(Task(self.send_BT_Presence_to_Gateway, 2))				# loop every 1/2 Min
+
 		
 		while not self.stopped:
 			self.update()
@@ -57,6 +59,7 @@ class ScheduleManager(Thread):
 	def save_Temperature_to_DB(self):
 		if self.DEBUG:
 			print "Scheduler: Save_Temperature_to_DB"
+
 		if self.hub["TEMPERATURE"] and self.hub["STORAGE HANDLER"]:
 			values = self.hub["TEMPERATURE"].dumpTemperatureMemoryValues()
 			if len(values) > 0:
@@ -70,6 +73,7 @@ class ScheduleManager(Thread):
 	def save_Humidity_to_DB(self):
 		if self.DEBUG:
 			print "Scheduler: Save_Humidity_to_DB"
+
 		if self.hub["HUMIDITY"] and self.hub["STORAGE HANDLER"]:
 			values = self.hub["HUMIDITY"].dumpHumidityMemoryValues()
 			if len(values) > 0:
@@ -82,6 +86,7 @@ class ScheduleManager(Thread):
 	def save_Luminosity_to_DB(self):
 		if self.DEBUG:
 			print "Scheduler: Save_Luminosity_to_DB"
+
 		if self.hub["LUMINOSITY"] and self.hub["STORAGE HANDLER"]:
 			values = self.hub["LUMINOSITY"].dumpMemoryValues()
 			if len(values) > 0:
@@ -95,6 +100,7 @@ class ScheduleManager(Thread):
 	def	save_Current_to_DB(self):
 		if self.DEBUG:
 			print "Scheduler: Save_Current_to_DB"
+
 		if self.hub["CURRENT"] and self.hub["STORAGE HANDLER"]:
 			values = self.hub["CURRENT"].dumpMemoryValues()
 			if len(values) > 0:
@@ -107,6 +113,7 @@ class ScheduleManager(Thread):
 	def	save_Blutooth_Presence_to_DB(self):
 		if self.DEBUG:
 			print "Scheduler: Save_Blutooth_Presence_to_DB"
+
 		if self.hub["BLUETOOTH"] and self.hub["STORAGE HANDLER"]:
 			values = self.hub["BLUETOOTH"].dumpMemoryValues()
 			if len(values) > 0:
@@ -121,6 +128,7 @@ class ScheduleManager(Thread):
 	def	save_Wifi_Presence_to_DB(self):
 		if self.DEBUG:
 			print "Scheduler: Save_Wifi_Presence_to_DB"
+
 		if self.hub["WIFI"] and self.hub["STORAGE HANDLER"]:
 			values = self.hub["WIFI"].dumpMemoryValues()
 			if len(values) > 0:
@@ -130,6 +138,19 @@ class ScheduleManager(Thread):
 					db.insertValue(MesurmentDTO(date, DataType.WIFI_PRESENCE, [device, values[device]]))
 		else:
 			print "Scheduler: save_Wifi_Presence_to_DB locating WIFI or STORAGE object"
+
+
+
+	def send_BT_Presence_to_Gateway(self):
+		if self.DEBUG:
+			print "Scheduler: Send_BT_Presence_to_Gateway"
+
+		if self.hub["PUBLISHER"] and self.hub["BLUETOOTH"]:
+			devices = self.hub["BLUETOOTH"].get_traked_devices()
+			self.hub["PUBLISHER"].publish("Ocupants", str(len(devices)), 2)
+			self.hub["PUBLISHER"].publish("OcupantsMAC", str(devices), 2)
+		else:
+			print "Scheduler: Send_BT_Presence_to_Gateway locating PUBLISHER or BLUETOOTH object"
 
 #Runs only if called
 if __name__ == "__main__":
