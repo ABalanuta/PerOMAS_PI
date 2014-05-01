@@ -147,7 +147,10 @@ class ScheduleManager(Thread):
 		if self.hub["PUBLISHER"] and self.hub["BLUETOOTH"]:
 			devices = self.hub["BLUETOOTH"].get_traked_devices()
 			self.hub["PUBLISHER"].publish("Ocupants", str(len(devices)), 2)
-			self.hub["PUBLISHER"].publish("OcupantsMAC", str(devices), 2)
+			macs = "|"
+			for device in devices:
+				macs += device + "|"
+			self.hub["PUBLISHER"].publish("OcupantsMAC", macs, 2)
 		else:
 			print "Scheduler: Send_BT_Presence_to_Gateway locating PUBLISHER or BLUETOOTH object"
 
