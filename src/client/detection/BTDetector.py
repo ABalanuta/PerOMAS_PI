@@ -15,7 +15,7 @@ from threading import Thread
 from datetime import datetime
 
 #Debbuging Mode
-DEBUG = Flase
+DEBUG = False
 
 class BTExecutor(Thread):
 	
@@ -63,11 +63,12 @@ class BTExecutor(Thread):
 		
 		# make it the returning values
 		self.value = found
+
+
+
 	
 class BTDetector(Thread):
 
-	
-	
 	def __init__(self, hub, db=True):
 		Thread.__init__(self)
 		
@@ -81,7 +82,6 @@ class BTDetector(Thread):
 		self.started = datetime.now()
 		self.last_update = datetime.now()
 		self.seen_devices = list()
-		self.last_seen_devices = list()
 		self.seen_timeout = 30	# if device is not seen for x seconds it gets eliminated from the seen_devices
 		self.bluetooth_memory_values = set()
 		self.traking_devices = set()
