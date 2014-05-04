@@ -26,8 +26,9 @@ class ADS1115(Thread):
 	PGA					= 2048	# programable gain, possible values (256,512,1024,2048,4096,6144)
 	SAMPLES 			= 860 	# Samples per Second, possible values (8,16,32,128,256,475,860)
 	CALIBRATION_FACTOR 	= 2.4 	# Used to ajust the read values to the real consumption values
-	BASE_CONSUMPTION	= 1.0  	# Base confumption of the sensor
-	MESURMENTS			= 60		# Number of mesurments per second (Hz)
+	BASE_CONSUMPTION	= 1.14 	# Base consumption of the sensor
+	FILTER_MINIMUM		= 0.2 	# Values lower that this are considered noise and are filtered as Zero
+	MESURMENTS			= 60	# Number of mesurments per second (Hz)
 
 
 	def __init__(self, hub):
@@ -62,7 +63,14 @@ class ADS1115(Thread):
 		for x in range(0, self.MESURMENTS):
 			values.append(self.sensor.getLastConversionResults())
 			sleep(1.0/self.MESURMENTS)
-		self.watts = mean(values) * self.CALIBRATION_FACTOR - self.BASE_CONSUMPTION
+		w = mean(values) * self.CALIBRATION_FACTOR - self.BASE_CONSUMPTION
+		
+		#Filte very small walues
+		if w > self.FILTER_MINIMUM:
+			self.watts = w
+		else:
+			self.watts = 0
+
 		self.watts_memory_values.append(self.watts)
 		#self.last_update = datetime.now()
 			
