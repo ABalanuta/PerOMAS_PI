@@ -10,11 +10,7 @@ from time import sleep
 
 class Relay():
 	
-	DEBUG 			= False
-
-	RELAY_1_PINS	= [4, 17, 27, 22]	# GPIO.BCM Pin for the four chanels of the Relay
-	RELAY_2_PINS	= [23, 24, 25, 18]	#
-
+	DEBUG 			= True
 	RELAY 			= {	"AC_SPEED_1"		:	{"Pin" : 4, "State" : False},
 						"AC_SPEED_2"		:	{"Pin" : 17, "State" : False},
 						"AC_SPEED_3" 		:	{"Pin" : 27, "State" : False},
@@ -34,6 +30,28 @@ class Relay():
 			GPIO.setup(values["Pin"], GPIO.OUT)
 			GPIO.output(values["Pin"], values["State"])
 
+	def set_ac_speed(self, speed):
+
+		for relay_name, values in self.RELAY.items():
+
+			#Turn off all ac relays responsable for speed
+			if "AC_SPEED" in relay_name:
+				pin = values["Pin"]
+				self.RELAY[relay_name]["State"] = False
+				GPIO.output(pin, False)
+
+		#Turn on the especified speed
+		if 0 <= speed <= 3:
+			if speed > 0:
+				relay_name = "AC_SPEED_"+str(speed)
+				pin = self.RELAY[relay_name]["Pin"]
+				GPIO.output(pin, True)
+
+				if self.DEBUG:
+					print "AC speed set to: "+ relay_name
+			else:		
+				if self.DEBUG:
+					print "AC speed turned off"
 	#def set_lights_x1_state(self, state):
 	#	if self.DEBUG:
 	#		print "Relay: set_lights_x1_state:", state
@@ -71,9 +89,19 @@ class Relay():
 #Runs only if called
 if __name__ == "__main__":
 
-	r = Relay(None)
-	pin = r.RELAY["AC_SPEED_1"]["Pin"]
-	GPIO.output(pin, True)
-	sleep(5)
-	#sleep(1)
-	r.stop()
+	try:
+		r = Relay(None)
+		slp = 10
+		x = int(120/(4*slp))
+		for y in range(0, x):
+			r.set_ac_speed(0)
+			sleep(slp)
+			r.set_ac_speed(1)
+			sleep(slp)
+			r.set_ac_speed(2)
+			sleep(slp)
+			r.set_ac_speed(3)
+			sleep(slp)
+	finally:
+		sleep(0.5)
+		r.stop()
