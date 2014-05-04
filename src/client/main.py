@@ -135,8 +135,6 @@ if __name__ == '__main__':
 		if DEBUG:
 			print "Scheduler Manager started automation"
 		
-		
-		
 		#Starts Web Server
 		#Must be last (Blocking)
 		if WEB_INTERFACE:

@@ -2,7 +2,7 @@
 """Manages programmed Actions
 """
 __author__ = "Artur Balanuta"
-__version__ = "1.0.4"
+__version__ = "1.0.5"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 from numpy import mean
@@ -53,6 +53,9 @@ class ScheduleManager(Thread):
 		for task in self.tasks:
 			if task.can_run() and not self.stopped:
 				task.run()
+				#Removes the task from the execution loop
+				if task.one_time_task():
+					self.tasks.remove(task)
 
 	
 	def save_Temperature_to_DB(self):
