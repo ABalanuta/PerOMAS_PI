@@ -1,58 +1,89 @@
 {% extends "base.html" %}
 
 {% block content %}
-	
-	<div class="well well-lg" style="max-width:900px;">		
-		<div class="row">
-			
-			<h3>Ambient</h3>
-			
-			
-	<div class="col-md-4">
-		<div class="panel panel-primary">
-			<div class="panel-heading">
-				<h3 class="panel-title">Temperature</h3>
+
+<div class="well well-lg" style="max-width:900px;">		
+	<div class="row">
+
+		<h3>Ambient</h3>
+
+
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title">Temperature</h3>
+				</div>
+				<div class="panel-body">
+					<h3>{{temp}} ºC </h3>
+				</div>
 			</div>
-		
-			<div class="panel-body">
-				<h3><br>{{temp}} ºC </h3>
+		</div>
+
+
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+
+				<div class="panel-heading">
+					<h3 class="panel-title">Relative Humidity</h3>
+				</div>
+				<div class="panel-body">
+					<h3>{{humid}} %</h3>
+				</div>
 			</div>
 		</div>
-	</div>
-	
-	
-			<div class="col-md-4">
-		<div class="panel panel-primary">
-		
-		<div class="panel-heading">
-			<h3 class="panel-title">Relative Humidity</h3>
+
+
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+
+				<div class="panel-heading">
+					<h3 class="panel-title">Last Update</h3>
+				</div>
+
+				<div class="panel-body">
+					<h3>{{last_update}}</h3>
+				</div>
+
+			</div>
+		</div>
+
+
+
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+
+				<div class="panel-heading">
+					<h3 class="panel-title">Luminosity</h3>
+				</div>
+
+				<div class="panel-body">
+					<h3>{{lux}} Lux</h3>
+				</div>
+
+			</div>
 		</div>
 		
-		<div class="panel-body">
-			<h3><br>{{humid}} %</h3>
+
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+
+				<div class="panel-heading">
+					<h3 class="panel-title">Current</h3>
+				</div>
+
+				<div class="panel-body">
+					<h3>{{current}} Watts</h3>
+				</div>
+
+			</div>
 		</div>
-	</div>
-  </div>
-			<div class="col-md-4">
-	<div class="panel panel-primary">
-		
-		<div class="panel-heading">
-			<h3 class="panel-title">Last Update</h3>
-		</div>
-		
-		<div class="panel-body">
-			<h3>{{last_update}}</h3>
-		</div>
-	</div></div>
-		</div>
-		
 		<!--
 		<button type="button" class="btn btn-default btn-lg">
 			<span class="glyphicon glyphicon-refresh"></span> Update
 		</button>
-		-->
-		
-	</div>
-	
+	-->
+
+</div>
+
 
 {% endblock %}

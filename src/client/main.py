@@ -18,7 +18,7 @@ from detection.BTDetector import BTDetector
 from interaction.lcd.LCDmenu import LCD
 from interaction.Relay import Relay
 from communication.Pub_Sub import MQTTC
-from web.web import WebHandler
+from web.web import *
 from Scheduler_Manager import ScheduleManager
 from Storage_Handler import StorageHandler
 
@@ -146,7 +146,7 @@ if __name__ == '__main__':
 		
 		while True:
 			sleep(4)
-			
+			print hub["TEMPERATURE"].getTemperature()
 			# TEmp and Humid
 			#print "\n#Temp and Humidity"
 			#print "\t", hub.temp_humid.temp, "C ", hub.temp_humid.humid, "% Last Update:", hub.temp_humid.last_update

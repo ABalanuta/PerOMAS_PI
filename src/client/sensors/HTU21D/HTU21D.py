@@ -32,17 +32,16 @@ class TempHumid(Thread):
 		self.humidity_memory_values = []
 		#Runs after var declaration
 		self.update()# Runs one time
-   
-   
+		
 	def stop(self):
-        	self.stopped = True
+		self.stopped = True
 
-    	def run(self):
-        	while not self.stopped:
-            		self.update()
-            		sleep(self.update_interval)
+	def run(self):
+		while not self.stopped:
+			self.update()
+			sleep(self.update_interval)
 
-    	def update(self):
+	def update(self):
 		p = subprocess.Popen(self.executable, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		lines = p.stdout.readlines()
 		if len(lines) == 1:
@@ -52,10 +51,8 @@ class TempHumid(Thread):
 			self.humid = float(parts[1])
 			self.humidity_memory_values.append(self.humid)
 			self.last_update = datetime.now()
-    	def runtime(self):
-		return str(self.last_update-self.started).split(".")[0]
-    
-    #Dumps the cache of temperature values
+
+	#Dumps the cache of temperature values
 	def dumpTemperatureMemoryValues(self):
 		t = self.temperature_memory_values
 		self.temperature_memory_values = []
@@ -66,6 +63,15 @@ class TempHumid(Thread):
 		self.humidity_memory_values = []
 		return h
 		
+	def getTemperature(self):
+		return self.temp
+
+	def getHumidity(self):
+		return self.humid
+
+	def getLastUpdate(self):
+		return str(self.last_update).split(".")[0]
+
 #Runs only if called
 if __name__ == "__main__":
 
