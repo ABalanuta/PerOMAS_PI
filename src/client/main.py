@@ -18,7 +18,7 @@ from detection.BTDetector import BTDetector
 from interaction.lcd.LCDmenu import LCD
 from interaction.Relay import Relay
 from communication.Pub_Sub import MQTTC
-#from web.web import WebManager
+from web.web import WebHandler
 from Scheduler_Manager import ScheduleManager
 from Storage_Handler import StorageHandler
 
@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
 	DEBUG		= True		# Debug Mode
 	CLI_INTERFACE	= False		# 
-	WEB_INTERFACE	= False		# 
+	WEB_INTERFACE	= True		# 
 	
 	def signal_handler(signal, frame):
 		
@@ -138,8 +138,11 @@ if __name__ == '__main__':
 		#Starts Web Server
 		#Must be last (Blocking)
 		if WEB_INTERFACE:
-			wm = WebManager(hub)
-			wm.start()
+			wh = WebHandler(hub)
+			wh.start()
+			hub["WEB"] = wh
+			if DEBUG:
+				print "Web interface started"
 		
 		while True:
 			sleep(4)

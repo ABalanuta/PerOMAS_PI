@@ -2,23 +2,21 @@
 """Web server based on Flask"""
 
 __author__ = "Artur Balanuta"
-__version__ = "1.0.0"
+__version__ = "1.0.2"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 
-import os
-from threading import Thread
 from flask import Flask, render_template, flash, redirect, send_from_directory
-from forms import LoginForm
+from time import sleep
+from multiprocessing import Process
 
-class WebManager():
+class WebManager:
 	
 	app = Flask(__name__)
-	hub = None
+	#hub = None
 	
 	def __init__(self, local_hub):
-		global hub
-		hub = local_hub
+		#hub = local_hub
 		self.app.config.update(
 			CSRF_ENABLED = True,
 			SECRET_KEY = '2c1de198f4d30fa5d342ab60c31eeb308b6de0f063e20efb9322940e3888d51c'
@@ -39,8 +37,8 @@ class WebManager():
 			{ 'author': "Joao", 'body': 'Test post #2' }
 		]
 		
-		if hub:
-			if hub.temp_humid:
+		if False:
+			if self.hub.temp_humid:
 				t = hub.temp_humid.temp
 				h = hub.temp_humid.humid
 				d = str(hub.temp_humid.last_update).split(".")[0]
@@ -52,7 +50,15 @@ class WebManager():
 				last_update = d,
 				users = u
 				)
-        
+		else:
+			return render_template("index.html",
+				title = 'Home',
+				temp = 00,
+				humid = 00,
+				last_update = 0,
+				users = u
+				)
+
 	@app.route('/settings')
 	def settings():
 		return render_template("settings.html")
@@ -79,9 +85,27 @@ class WebManager():
 #        form = form)
  
  
- 
- 
+class WebHandler():
+
+	def __init__(self, hub):
+
+		self.hub = hub
+		self.web_manager = WebManager(hub)
+		self.server = Process(target=self.web_manager.start)
+
+	def start(self):
+	 	self.server.start()
+
+	def stop(self):
+	 	self.server.terminate()
+	 	self.server.join()
+
 if __name__ == "__main__":
 	#app
-	wm = WebManager()
-	wm.start()
+	
+	
+	
+	wh = WebHandler(None)
+	wh.start()
+	sleep(10)
+	wh.stop()
