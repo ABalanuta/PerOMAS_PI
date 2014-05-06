@@ -45,6 +45,7 @@ class Relay():
 			if speed > 0:
 				relay_name = "AC_SPEED_"+str(speed)
 				pin = self.RELAY[relay_name]["Pin"]
+				self.RELAY[relay_name]["State"] = True
 				GPIO.output(pin, True)
 
 				if self.DEBUG:
@@ -52,6 +53,22 @@ class Relay():
 			else:		
 				if self.DEBUG:
 					print "AC speed turned off"
+
+	def get_ac_speed(self):
+
+		on_speed = 0
+
+		for relay_name, values in self.RELAY.items():
+			#Turn off all ac relays responsable for speed
+			if "AC_SPEED" in relay_name:
+				state = self.RELAY[relay_name]["State"]
+				if state:
+					on_speed = int(relay_name[-1:])
+					break
+
+		print "----", str(self.RELAY)			
+		return on_speed
+
 	#def set_lights_x1_state(self, state):
 	#	if self.DEBUG:
 	#		print "Relay: set_lights_x1_state:", state

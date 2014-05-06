@@ -6,7 +6,7 @@ __version__ = "1.0.2"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 
-from flask import Flask, render_template, flash, redirect, send_from_directory
+from flask import Flask, request, render_template, flash, redirect, send_from_directory
 from multiprocessing import Process
 from time import sleep
 
@@ -16,9 +16,26 @@ app = Flask(__name__)
 #######################################################################################
 #    Flusk Routes
 #######################################################################################		
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 def index():
+
+
+	#On/Off AC
+	if request.method == 'POST':
+		#print str(request.form.keys())
+		
+		if "RELAY" in app.config["HUB"].keys():
+			relay = app.config["HUB"]["RELAY"]
+			
+			if "AC_OFF" in request.form.keys():
+				relay.set_ac_speed(0)
+			elif "AC_1" in request.form.keys():
+				relay.set_ac_speed(1)
+			elif "AC_2" in request.form.keys():
+				relay.set_ac_speed(2)
+			elif "AC_3" in request.form.keys():
+				relay.set_ac_speed(3)
 
 	#Ambient values
 	actual_temperature = "--"
@@ -65,6 +82,9 @@ def settings():
 def gateway():
 	return render_template("gateway.html")
 
+@app.route('/graph')
+def graph():
+	return render_template("graphs.html")
 
 
 
