@@ -143,10 +143,12 @@ if __name__ == '__main__':
 			hub["WEB"] = wh
 			if DEBUG:
 				print "Web interface started"
+
+		print "ALL DONE"
 		
 		while True:
 			sleep(4)
-			print hub["TEMPERATURE"].getTemperature()
+		#	print hub["TEMPERATURE"].getTemperature()
 			# TEmp and Humid
 			#print "\n#Temp and Humidity"
 			#print "\t", hub.temp_humid.temp, "C ", hub.temp_humid.humid, "% Last Update:", hub.temp_humid.last_update

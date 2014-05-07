@@ -19,7 +19,7 @@ case "$1" in
     echo "Starting script StartUP"
     python /opt/peromas/start_batman.py > /tmp/wifi.log &
     tmux new-session -d -s main
-    tmux send -t main.0 "sleep 10; sudo python /home/artur-adm/git/thesisPI/src/client/main.py" ENTER 
+    tmux send -t main.0 "sleep 10; sudo python /home/artur-adm/git/thesisPI/src/client/Main.py" ENTER 
     #python /opt/send_Email_With_IP.py &
     #python /home/artur-adm/sensor/LCDtestArtur.py &
     #python /home/artur-adm/sensor/showIP.py &

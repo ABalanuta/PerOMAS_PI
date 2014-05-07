@@ -8,6 +8,7 @@ __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 from flask import Flask, request, render_template, flash, redirect, send_from_directory
 from multiprocessing import Process
+from threading import Thread
 from time import sleep
 
 
@@ -20,22 +21,9 @@ app = Flask(__name__)
 @app.route('/index', methods=['GET', 'POST'])
 def index():
 
-
-	#On/Off AC
 	if request.method == 'POST':
-		#print str(request.form.keys())
-		
-		if "RELAY" in app.config["HUB"].keys():
-			relay = app.config["HUB"]["RELAY"]
-			
-			if "AC_OFF" in request.form.keys():
-				relay.set_ac_speed(0)
-			elif "AC_1" in request.form.keys():
-				relay.set_ac_speed(1)
-			elif "AC_2" in request.form.keys():
-				relay.set_ac_speed(2)
-			elif "AC_3" in request.form.keys():
-				relay.set_ac_speed(3)
+		process_index_post()
+
 
 	#Ambient values
 	actual_temperature = "--"
@@ -43,6 +31,7 @@ def index():
 	last_update = "--"
 	actual_luminosity = "--"
 	actual_current = "--"
+
 
 	#Users
 	u = [
@@ -57,13 +46,15 @@ def index():
 			actual_temperature = hub["TEMPERATURE"].getTemperature()
 			actual_humidity = hub["TEMPERATURE"].getHumidity()
 			last_update = hub["TEMPERATURE"].getLastUpdate()
-			print "WEB", actual_temperature, actual_humidity, last_update
 
 		if "CURRENT" in hub.keys():
 			actual_current = hub["CURRENT"].getValue()
 			
 		if "LUMINOSITY" in hub.keys():
 			actual_luminosity = hub["LUMINOSITY"].getValue()			
+
+		
+
 
 	return render_template("index.html",
 							title = 'Home',
@@ -84,27 +75,54 @@ def gateway():
 
 @app.route('/graph')
 def graph():
-	return render_template("graphs.html")
+
+	data = {}
+
+	if app.config["HUB"]:
+		hub = app.config["HUB"]
+
+		if "STORAGE HANDLER" in hub.keys():
+			data = hub["STORAGE HANDLER"].getGraphData()
+
+	return render_template("graphs.html", data=data)
+
+def process_index_post():
+	
+	#print str(request.form.keys())
+	
+	if "HUB" in app.config.keys() and app.config["HUB"]:
+
+		if "RELAY" in app.config["HUB"].keys():
+			
+			relay = app.config["HUB"]["RELAY"]
+			if "AC_OFF" in request.form.keys():
+				relay.set_ac_speed(0)
+			elif "AC_1" in request.form.keys():
+				relay.set_ac_speed(1)
+			elif "AC_2" in request.form.keys():
+				relay.set_ac_speed(2)
+			elif "AC_3" in request.form.keys():
+				relay.set_ac_speed(3)
 
 
-
-class WebHandler():
+class WebHandler(Thread):
 	
 	def __init__(self, hub):
+		Thread.__init__(self)
 		app.config["HUB"] = hub
 		app.config.update(
 			CSRF_ENABLED = True,
 			SECRET_KEY = '2c1de198f4d30fa5d342ab60c31eeb308sb6de0f063e20efb9322940e3888d51c'
 			)
-
-	def start(self):
 		self.server = Process(target=app.run(debug = True, 
 											host='0.0.0.0',
 											use_reloader=False))
+
+	def run(self):
 		self.server.start()
+		print "-------------------------------"
 
 	def stop(self):
-	 	self.server.terminate()
 	 	self.server.join()
 
 if __name__ == "__main__":

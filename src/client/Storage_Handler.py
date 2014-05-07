@@ -86,6 +86,23 @@ class StorageHandler():
 
 		self.db_lock.release()
 
+	def getGraphData(self):
+		self.db_lock.acquire(True)
+
+		data = {}
+
+		conn = sqlite3.connect(self.db_path)
+		c = conn.cursor()
+		
+		c.execute("SELECT * FROM Temperature WHERE TIMESTAMP > datetime('now','-24 hour')")
+		data["Temperature"] = c.fetchall()
+
+		c.execute("SELECT * FROM Humidity WHERE TIMESTAMP > datetime('now','-24 hour')")
+		data["Humidity"] = c.fetchall()
+		
+		self.db_lock.release()
+		return data
+
 	def readSettings(self, id):
 		self.db_lock.acquire(True)
 

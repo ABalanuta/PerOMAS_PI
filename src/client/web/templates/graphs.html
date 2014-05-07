@@ -1,14 +1,115 @@
-{% extends "base.html" %}
+	{% extends "base.html" %}
 
-{% block content %}
+	{% block content %}
 
-<div class="well well-lg" style="max-width:900px;">		
-	<div class="row">
+	<div class="well well-lg" style="max-width:900px;">		
+		<div class="row">
 
-		<h3>Graphs</h3>
+			<h3>Graphs</h3>
 
 
-	</div>
+			<div class="col-md-12">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h3 class="panel-title">Temperatures and Humidity</h3>
+					</div>
+					<div class="panel-body">
+						<div id="graphdiv" style="width:800px; height:300px;">
+						</div>
+					</div>
+					<div class="panel-body">
+						<div id="graphdiv2" style="width:800px; height:300px;">
+						</div>
+					</div>
+				</div>
+
+
+
+
+				<script type="text/javascript">
+
+					g = new Dygraph(
+
+	    			// containing div
+	    			document.getElementById("graphdiv"),
+	    			data_temp,
+	    			{
+	    				ylabel: 'Temperature (Cº)',
+	    				y2label: 'Humidity (%)',
+	    				labels: ["Date", "Temperature", "Humidity"], 
+	    				zlabel: 'Relative Hmidity (%)',
+	    				labelsDivStyles: { 'textAlign': 'right' },
+	    				colors: ["red", "blue"], 
+	    				showRangeSelector: true,
+	    				strokeWidth: 1.5,
+	    				labelsSeparateLines: true,
+	    				series : {
+
+	    					Humidity : {
+	    						axis : 'y2'
+	    					}
+	    				}
+
+	    			}
+	    			);
+
+	    			g2 = new Dygraph(
+
+	    			// containing div
+	    			document.getElementById("graphdiv2"),
+	    			data_humid,
+	    			{
+	    				ylabel: 'Temperature (Cº)',
+	    				y2label: 'Humidity (%)',
+	    				labels: ["Date", "Temperature", "Humidity"], 
+	    				zlabel: 'Relative Hmidity (%)',
+	    				labelsDivStyles: { 'textAlign': 'right' },
+	    				colors: ["red", "blue"], 
+	    				showRangeSelector: true,
+	    				strokeWidth: 1.5,
+	    				labelsSeparateLines: true,
+	    				series : {
+
+	    					Humidity : {
+	    						axis : 'y2'
+	    					}
+	    				}
+
+	    			}
+	    			);
+
+					function data_temp() {
+						return "" +
+						"Date,Temperature,Humidity\n" +
+
+						{% for points in data.Temperature %}
+						"{{points[0].split(".")[0]}}, {{points[1]}},\n" +
+						{% endfor %}
+
+
+						//"20070101,40, 25\n" +
+						//"20080501,45, 60\n" +
+						//"20091205,49, 70\n";
+						"";
+					}
+
+					function data_humid() {
+						return "" +
+						"Date,Temperature,Humidity\n" +
+
+						{% for points in data.Humidity %}
+						"{{points[0].split(".")[0]}}, , {{points[1]}}\n" +
+						{% endfor %}
+
+
+						//"20070101,40, 25\n" +
+						//"20080501,45, 60\n" +
+						//"20091205,49, 70\n";
+						"";
+					}
+				</script>
+						
+		</div>
 </div>
 
 
