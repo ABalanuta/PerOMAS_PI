@@ -1,4 +1,4 @@
-all: profile update i2c gpio temp_humid_sensor startup pubsub network bluetooth snmp web mesh hostname boot reboot
+all: profile update i2c gpio temp_humid_sensor startup pubsub network bluetooth snmp web mesh mysql hostname boot reboot
 
 profile:
 	git config --global user.email AliensGoo@users.noreply.github.com
@@ -70,6 +70,9 @@ gateway:
 	sudo apt-get update -y
 	sudo apt-get install mosquitto -y
 	
+mysql:
+	sudo aptitude install mysql-client mysql-server python-mysqldb -y
+
 reboot:
 	echo "System will rebootn in 10"
 	sleep 10
