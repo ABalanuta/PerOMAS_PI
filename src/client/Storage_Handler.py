@@ -14,32 +14,70 @@ from pickle import dumps, loads
 from DTOs.MesurmentDTO import MesurmentDTO
 from DTOs.MeasurmentEnum import DataType
 
+
+import MySQLdb
+
+
 class StorageHandler():
 	
 	DEBUG 		= True
-	FILENAME 	= 'database.sqlite3.db'
-	
+	HOST 		= "localhost"
+	USER 		= "root"
+	PASS 		= "3O7DCWP2HLR01471G9PZQ6U7X"
+	DB 			= "PeromasDB"
+
 	def __init__(self, hub):
 		
 		self.hub = hub
-		dir_path = os.path.dirname(os.path.realpath(__file__))
-		self.db_path = dir_path +'/' + self.FILENAME
-		self.db_lock = Lock()
-		self.create_database()
+		#self.delete_database(self.DB)
+		self.create_database(self.DB)
+
+	def create_database(self, DB):
+		if self.DEBUG:
+				print "create_database "+DB
+
+		db = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS)
+		cursor = db.cursor()
+		try:
+			cursor.execute('CREATE DATABASE '+DB)
+			db.commit()
+			if self.DEBUG:
+				print "	Database Created"
+
+			self.popolate_database()
+
+		except:
+
+			if self.DEBUG:
+				print "	Database already Present"
+		db.close()
+
+	def delete_database(self, DB):
+		if self.DEBUG:
+				print "delete_database "+DB
+
+		db = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS)
+		cursor = db.cursor()
+		try:
+			cursor.execute('DROP DATABASE '+DB)
+			db.commit()
+			if self.DEBUG:
+				print "	Database Deleted"
+		except:
+			if self.DEBUG:
+				print "	Database does not Exist"
+		db.close()
 		
 	
-	def create_database(self):
+	def popolate_database(self):
 		
-		self.db_lock.acquire(True)
-
-		conn = sqlite3.connect(self.db_path)
-		c = conn.cursor()
+		db = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
+		c = db.cursor()
 		#Try to create the empty Tables if they dont already exist
 		try:
 
 			#Settings
 			c.execute('CREATE TABLE Settings (ID TEXT, PickeRepresentation TEXT)')
-
 
 			#Data
 			c.execute('CREATE TABLE '+DataType.TEMPERATURE+' (TimeStamp TIMESTAMP, Temperature REAL)')
@@ -48,35 +86,29 @@ class StorageHandler():
 			c.execute('CREATE TABLE '+DataType.CURRENT+' (TimeStamp TIMESTAMP, Current REAL)')
 			c.execute('CREATE TABLE '+DataType.BT_PRESENCE+' (TimeStamp TIMESTAMP, MAC TEXT)')
 			c.execute('CREATE TABLE '+DataType.WIFI_PRESENCE+' (TimeStamp TIMESTAMP, MAC TEXT, LOCATIONS TEXT)')
+			db.commit()
 
 			if self.DEBUG:
-				print "New Database " + self.FILENAME + " Created"
+				print "	Database Popolated"
 
-		except sqlite3.OperationalError:
-			if self.DEBUG:
-				print "Database " + self.FILENAME + " Already Exists, skipping ..."
 		except:
 			raise
 
 		finally:
-			conn.commit()
-			conn.close()
-			self.db_lock.release()
+			db.close()
 	
 	def insertValue(self, dto):
 
-		self.db_lock.acquire(True)
-
-		conn = sqlite3.connect(self.db_path)
+		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
 		c = conn.cursor()
 
 		if len(dto.getValue()) == 1:
 			values = (dto.getTimestamp(), dto.getValue()[0])
-			c.execute('INSERT INTO '+dto.getType()+' VALUES (?,?)', values)
+			c.execute('INSERT INTO '+dto.getType()+' VALUES (%s, %s)', values)
 
 		elif len(dto.getValue()) == 2:
 			values = (dto.getTimestamp(), dto.getValue()[0], dto.getValue()[1])
-			c.execute('INSERT INTO '+dto.getType()+' VALUES (?,?,?)', values)
+			c.execute('INSERT INTO '+dto.getType()+' VALUES (%s, %s, %s)', values)
 
 		else:
 			raise Exception("Too many Fields")
@@ -84,52 +116,46 @@ class StorageHandler():
 		conn.commit()
 		conn.close()
 
-		self.db_lock.release()
-
 	def getGraphData(self):
-		self.db_lock.acquire(True)
 
 		data = {}
 
-		conn = sqlite3.connect(self.db_path)
+		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
 		c = conn.cursor()
 		
-		c.execute("SELECT * FROM Temperature WHERE TIMESTAMP > datetime('now','-24 hour')")
-		data["Temperature"] = c.fetchall()
+		#c.execute("SELECT * FROM Temperature WHERE TIMESTAMP > CURDATE() - INTERVAL 1 DAY")
+		#data["Temperature"] = c.fetchall()
 
-		c.execute("SELECT * FROM Humidity WHERE TIMESTAMP > datetime('now','-24 hour')")
-		data["Humidity"] = c.fetchall()
-		
-		self.db_lock.release()
+		#c.execute("SELECT * FROM Humidity WHERE TIMESTAMP > CURDATE() - INTERVAL 1 DAY")
+		#data["Humidity"] = c.fetchall()
+
+		c.execute("SELECT TimeStamp, Temperature, Humidity FROM Temperature NATURAL JOIN Humidity WHERE TIMESTAMP > CURDATE() - INTERVAL 1 DAY ")
+		data["TempHumid"] = c.fetchall()
+
 		return data
 
 	def readSettings(self, id):
-		self.db_lock.acquire(True)
 
-		conn = sqlite3.connect(self.db_path)
+		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
 		c = conn.cursor()
-		c.execute('SELECT * FROM Settings WHERE ID=?', [id])
+		c.execute('SELECT * FROM Settings WHERE ID=%s', [id])
 		settings = c.fetchone()
 		if settings:
 			settings = loads(settings[1])
 		conn.commit()
 		conn.close()
-		self.db_lock.release()
 		return settings
 	
 	def writeSettings(self, id, obj):
-		self.db_lock.acquire(True)
-
-		conn = sqlite3.connect(self.db_path)
+		
+		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
 		c = conn.cursor()
 		encoded = dumps(obj)
 		values = (id, encoded)
-		c.execute('DELETE FROM Settings WHERE ID=?', [id])
-		c.execute('INSERT INTO Settings VALUES (?,?)', values)
+		c.execute('DELETE FROM Settings WHERE ID=%s', [id])
+		c.execute('INSERT INTO Settings VALUES (%s, %s)', values)
 		conn.commit()
 		conn.close()
-
-		self.db_lock.release()
 
 	#Bogus method
 	def stop(self):
@@ -140,22 +166,38 @@ if __name__ == "__main__":
 	
 	d = StorageHandler(None)
 	
-	print "Insert"
-	d.insertValue(MesurmentDTO(str(datetime.now()), DataType.TEMPERATURE, 28.4))
-	d.insertValue(MesurmentDTO(str(datetime.now()), DataType.HUMIDITY, 50.1))
-	d.insertValue(MesurmentDTO(str(datetime.now()), DataType.LUMINOSITY, 200))
-	d.insertValue(MesurmentDTO(str(datetime.now()), DataType.CURRENT, 3000))
-	
-	d.insertValue(MesurmentDTO(str(datetime.now()), DataType.TEMPERATURE, 23.4))
-	d.insertValue(MesurmentDTO(str(datetime.now()), DataType.HUMIDITY, 51.1))
-	d.insertValue(MesurmentDTO(str(datetime.now()), DataType.LUMINOSITY, 230))
-	d.insertValue(MesurmentDTO(str(datetime.now()), DataType.CURRENT, 3100.33))
-	
-	print "Done"
+	#print "Insert"
+	#d.insertValue(MesurmentDTO(str(datetime.now()), DataType.TEMPERATURE, [28.4]))
+	#d.insertValue(MesurmentDTO(str(datetime.now()), DataType.HUMIDITY, [50.1]))
 
-	t = {"Sapos":123, "COGUMELOS":[1,2,3]}
 
-	d.writeSettings("teste", t)
-	print d.readSettings("teste")
+	#date = datetime.now()
+
+	#d.insertValue(MesurmentDTO(str(date), DataType.TEMPERATURE, [28.4]))
+	#d.insertValue(MesurmentDTO(str(date), DataType.HUMIDITY, [50.1]))
+
+
+	#d.insertValue(MesurmentDTO(str(datetime.now()), DataType.LUMINOSITY, [200]))
+	#d.insertValue(MesurmentDTO(str(datetime.now()), DataType.CURRENT, [3000]))
 	
+	#d.insertValue(MesurmentDTO(str(datetime.now()), DataType.TEMPERATURE, [23.4]))
+	#d.insertValue(MesurmentDTO(str(datetime.now()), DataType.HUMIDITY, [51.1]))
+	#d.insertValue(MesurmentDTO(str(datetime.now()), DataType.LUMINOSITY, [230]))
+	#d.insertValue(MesurmentDTO(str(datetime.now()), DataType.CURRENT, [3100.33]))
+	
+	#print "Done"
 
+	#t = {"Sapos":123, "COGUMELOS":[1,2,3]}
+
+	#d.writeSettings("teste", t)
+	#print d.readSettings("teste")
+	#for x, y in d.getGraphData().items():
+	#	print x, y	
+	
+		
+	#create_database(DB)
+	#delete_database(DB)
+	#delete_database(DB)
+	#db = connect(host=HOST, user=USER, passwd=PASS,db=DB)
+	
+	

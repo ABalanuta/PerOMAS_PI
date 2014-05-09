@@ -35,9 +35,8 @@ class ScheduleManager(Thread):
 		
 		#Append Rutines to the list
 
-		self.tasks.append(Task(self.save_Temperature_to_DB, 5 * 60)) 			# loop every 5 Mins
-		self.tasks.append(Task(self.save_Humidity_to_DB, 5 * 60))				# loop every 5 Min
-		self.tasks.append(Task(self.save_Luminosity_to_DB, 2 * 60))				# loop every 2 Min
+		self.tasks.append(Task(self.save_TempHumid_to_DB, 1 * 60)) 				# loop every 5 Mins
+		self.tasks.append(Task(self.save_Luminosity_to_DB, 1 * 60))				# loop every 2 Min
 		self.tasks.append(Task(self.save_Current_to_DB, 1 * 60))				# loop every 1 Min
 		self.tasks.append(Task(self.save_Blutooth_Presence_to_DB, 3 * 60))		# loop every 3 Min
 		self.tasks.append(Task(self.save_Wifi_Presence_to_DB, 5 * 60))			# loop every 5 Min
@@ -58,32 +57,23 @@ class ScheduleManager(Thread):
 					self.tasks.remove(task)
 
 	
-	def save_Temperature_to_DB(self):
+	def save_TempHumid_to_DB(self):
 		if self.DEBUG:
-			print "Scheduler: Save_Temperature_to_DB"
+			print "Scheduler: Save_TempHumid_to_DB"
 
-		if self.hub["TEMPERATURE"] and self.hub["STORAGE HANDLER"]:
-			values = self.hub["TEMPERATURE"].dumpTemperatureMemoryValues()
-			if len(values) > 0:
-				vmean = round(mean(values), 1)
+		if self.hub["TEMPERATURE"] and self.hub["HUMIDITY"] and self.hub["STORAGE HANDLER"]:
+			t_values = self.hub["TEMPERATURE"].dumpTemperatureMemoryValues()
+			h_values = self.hub["HUMIDITY"].dumpHumidityMemoryValues()
+			if len(t_values) > 0 and len(h_values):
+				t_vmean = round(mean(t_values), 1)
+				h_vmean = round(mean(h_values), 1)
 				db = self.hub["STORAGE HANDLER"]
-				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.TEMPERATURE, [vmean]))
+				timestamp = datetime.now()
+				db.insertValue(MesurmentDTO(str(timestamp), DataType.TEMPERATURE, [t_vmean]))
+				db.insertValue(MesurmentDTO(str(timestamp), DataType.HUMIDITY, [h_vmean]))
 			
 		else:
-			print "Scheduler: Save_Temperature_to_DB locating TEMPERATURE or STORAGE object"
-	
-	def save_Humidity_to_DB(self):
-		if self.DEBUG:
-			print "Scheduler: Save_Humidity_to_DB"
-
-		if self.hub["HUMIDITY"] and self.hub["STORAGE HANDLER"]:
-			values = self.hub["HUMIDITY"].dumpHumidityMemoryValues()
-			if len(values) > 0:
-				vmean = round(mean(values), 1)
-				db = self.hub["STORAGE HANDLER"]
-				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.HUMIDITY, [vmean]))
-		else:
-			print "Scheduler: Save_Humidity_to_DB locating HUMIDITY or STORAGE object"
+			print "Scheduler: Save_TempHumid_to_DB locating TEMPERATURE or HUMIDITY or STORAGE object"
 
 	def save_Luminosity_to_DB(self):
 		if self.DEBUG:
