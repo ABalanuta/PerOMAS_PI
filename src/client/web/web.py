@@ -31,7 +31,7 @@ def index():
 	last_update = "--"
 	actual_luminosity = "--"
 	actual_current = "--"
-
+	ac_speed = "--"
 
 	#Users
 	u = [
@@ -53,6 +53,8 @@ def index():
 		if "LUMINOSITY" in hub.keys():
 			actual_luminosity = hub["LUMINOSITY"].getValue()			
 
+		if "RELAY" in hub.keys():	
+			ac_speed = hub["RELAY"].get_ac_speed()
 		
 
 
@@ -62,7 +64,8 @@ def index():
 							humid = actual_humidity,
 							last_update = last_update,
 							lux = actual_luminosity,
-							current = actual_current
+							current = actual_current,
+							speed = ac_speed
 							)
 
 @app.route('/settings')

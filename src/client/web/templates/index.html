@@ -88,18 +88,47 @@
 
 				<div class="panel-body">
 					<form method="POST">
-						<button type="submit" name="AC_OFF" class="btn btn-primary btn-lg">
+
+						{% if speed == 0 %}
+						<button type="submit" name="AC_OFF" class="btn btn-primary btn-lg disabled">
   							<h5><b>OFF</b></h5>
 						</button>
-						<button type="submit" name="AC_1" class="btn btn-success btn-lg">
+						{% else %}
+						<button type="submit" name="AC_OFF" class="btn btn-default btn-lg">
+  							<h5><b>OFF</b></h5>
+						</button>
+						{% endif %}
+
+						{% if speed == 1 %}
+						<button type="submit" name="AC_1" class="btn btn-success btn-lg disabled">
   							<h5><b>1</b></h5>
 						</button>
-						<button type="submit" name="AC_2" class="btn btn-warning btn-lg">
+						{% else %}
+						<button type="submit" name="AC_1" class="btn btn-default btn-lg">
+  							<h5><b>1</b></h5>
+						</button>
+						{% endif %}
+
+						{% if speed == 2 %}
+						<button type="submit" name="AC_2" class="btn btn-warning btn-lg disabled">
   							<h5><b>2</b></h5>
 						</button>
-						<button type="submit" name="AC_3" class="btn btn-danger btn-lg">
+						{% else %}
+						<button type="submit" name="AC_2" class="btn btn-default btn-lg">
+  							<h5><b>2</b></h5>
+						</button>
+						{% endif %}
+
+						{% if speed == 3 %}
+						<button type="submit" name="AC_3" class="btn btn-danger btn-lg disabled">
   							<h5><b>3</b></h5>
 						</button>
+						{% else %}
+						<button type="submit" name="AC_3" class="btn btn-default btn-lg">
+  							<h5><b>3</b></h5>
+						</button>
+						{% endif %}
+
 					<form>
 				</div>
 
