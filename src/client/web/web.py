@@ -9,6 +9,7 @@ __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 from flask import Flask, request, render_template, flash, redirect, send_from_directory
 from flask.ext.cache import Cache
 from flask.ext.compress import Compress
+from flask.ext.login import LoginManager, login_user, logout_user, current_user, login_required
 
 from multiprocessing import Process
 from threading import Thread
@@ -16,8 +17,13 @@ from time import sleep
 
 
 app = Flask(__name__)
+
 cache = Cache(app,config={'CACHE_TYPE': 'simple'})
 Compress(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
 #######################################################################################
 #    Flusk Routes
@@ -43,8 +49,8 @@ def index():
 		hub = app.config["HUB"]
 
 		if "TEMPERATURE" in hub.keys():
-			actual_temperature = hub["TEMPERATURE"].getTemperature()
-			actual_humidity = hub["TEMPERATURE"].getHumidity()
+			actual_temperature = round(hub["TEMPERATURE"].getTemperature(), 1)
+			actual_humidity = round(hub["TEMPERATURE"].getHumidity(), 1)
 			last_update = hub["TEMPERATURE"].getLastUpdate()
 
 		if "CURRENT" in hub.keys():
@@ -69,11 +75,12 @@ def index():
 							speed = ac_speed,
 							present_devices = present_devices
 							)
-
+@login_required
 @app.route('/settings')
 def settings():
 	return render_template("settings.html")
-	
+
+@login_required
 @app.route('/gateway')
 def gateway():
 	return render_template("gateway.html")
@@ -90,6 +97,23 @@ def graph():
 			data = hub["STORAGE HANDLER"].getGraphData()
 
 	return render_template("graphs.html", data=data)
+
+@app.route('/login' , methods=['GET','POST'])
+def login():
+	return render_template('login.html')
+
+@app.route('/register' , methods=['GET','POST'])
+def register():
+    if request.method == 'GET':
+        return render_template('register.html')
+
+    print request.form.keys()
+    #login validation
+    #['username', 'password', 'password_confirmation']
+
+@login_manager.user_loader
+def load_user(id):
+	print "-------------------------", id
 
 @app.context_processor
 def override_url_for():

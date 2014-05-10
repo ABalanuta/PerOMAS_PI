@@ -9,6 +9,7 @@ __version__ = "1.0.1"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 import os
+import signal
 import subprocess
 from time import sleep
 from threading import Thread
@@ -24,10 +25,12 @@ class BTExecutor(Thread):
 	
 	def __init__(self):
 		Thread.__init__(self)
+		self.proc  = None
 		#print "BTExecutor thread init"
 
 	def run(self):
-		p = subprocess.Popen('sudo bluez-test-discovery', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		p = subprocess.Popen('sudo bluez-test-discovery', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, preexec_fn=os.setsid)
+		self.proc = p
 		lines = p.stdout.readlines()
 		found_name = []
 		found_mac = []
@@ -64,9 +67,11 @@ class BTExecutor(Thread):
 		# make it the returning values
 		self.value = found
 
+	def stop(self):
+		if self.proc:
+			os.killpg(self.proc.pid, signal.SIGTERM)
 
 
-	
 class BTDetector(Thread):
 
 	def __init__(self, hub, db=True):
@@ -86,10 +91,15 @@ class BTDetector(Thread):
 		self.bluetooth_memory_values = set()
 		self.traking_devices = set()
 		self.interface_fail = 0
+		self.running_exe = None
 
 
 	def stop(self):
 		self.stopped = True
+		if self.running_exe:
+			self.running_exe.stop()
+
+		
 		
 	def runtime(self):
 		return str(self.last_update-self.started).split(".")[0]
@@ -110,7 +120,11 @@ class BTDetector(Thread):
 				
 			exe = BTExecutor()
 			exe.start()
-			exe.join(16)	#Wait 16 seconds for the scan to be preformed
+			self.running_exe = exe
+			exe.join(16) #Wait 16 seconds for the scan to be preformed
+
+			if self.stopped:
+				break
 
 			if isinstance(exe.value, list):
 
@@ -180,7 +194,7 @@ class BTDetector(Thread):
 		
 		
 		self.kill_mod()
-		while True:
+		while not self.stopped:
 			p = subprocess.Popen('hciconfig -a', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 			lines = p.stdout.readlines()
 			if not (len(lines) > 0 and "hci0" in lines[0]):
@@ -232,7 +246,7 @@ class BTDetector(Thread):
 	def get_discovered_devices(self):		
 		return self.seen_devices
 	
-	#returns a list of tracked devices that where observed lastly
+	#returns a list of trackeddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd devices that where observed lastly
 	def get_traked_devices(self):
 		
 		ret = []

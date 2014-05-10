@@ -75,6 +75,10 @@ class StorageHandler():
 		c = db.cursor()
 		#Try to create the empty Tables if they dont already exist
 		try:
+			#Users
+			c.execute('CREATE TABLE Users (Username TEXT, Pass TEXT)')
+			c.execute('CREATE TABLE BTDevices (BTDevice TEXT, Username TEXT)')
+
 
 			#Settings
 			c.execute('CREATE TABLE Settings (ID TEXT, PickeRepresentation TEXT)')
@@ -122,15 +126,12 @@ class StorageHandler():
 
 		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
 		c = conn.cursor()
-		
-		#c.execute("SELECT * FROM Temperature WHERE TIMESTAMP > CURDATE() - INTERVAL 1 DAY")
-		#data["Temperature"] = c.fetchall()
-
-		#c.execute("SELECT * FROM Humidity WHERE TIMESTAMP > CURDATE() - INTERVAL 1 DAY")
-		#data["Humidity"] = c.fetchall()
 
 		c.execute("SELECT TimeStamp, Temperature, Humidity FROM Temperature NATURAL JOIN Humidity WHERE TIMESTAMP > CURDATE() - INTERVAL 1 DAY ")
 		data["TempHumid"] = c.fetchall()
+
+		c.execute("SELECT * FROM Luminosity WHERE TIMESTAMP > CURDATE() - INTERVAL 1 DAY ")
+		data["Luminosity"] = c.fetchall()
 
 		return data
 

@@ -71,33 +71,41 @@
 
           <ul class="nav navbar-nav pull-right">
             <li>
-              <a href="register">Register</a>
+              <a href="register">
+                <span class="glyphicon glyphicon-edit"></span>
+                Register
+              </a>
             </li>
             <li class="divider-vertical"></li>
             <li class="dropdown">
               <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                Log In <strong class="caret"></strong>
-              </a>
+                <span class="glyphicon glyphicon-user"></span>
+                  Log In <strong class="caret"></strong>
+                </a>
 
-              <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
-                <form action="index.php" method="post">
-                  Username:
-                  <br/>
-                  <input type="text" name="username" value="cenas"/><br/><br/>
-                  Password:
-                  <br/>
-                  <input type="password" name="password" value="" /><br/><br/>
-                  <input type="submit" class="btn btn-info" value="Login" />
-                </form>
-              </div>
-            </li>
-          </ul>
+                <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
+                  <form action="index.php" method="post">
+                    Username:
+                    <br/>
+                    <input type="text" name="username" value="cenas"/>
+                    <br/>
+                    <br/>
+                    Password:
+                    <br/>
+                    <input type="password" name="password" value="" />
+                    <br/>
+                    <br/>
+                    <input type="submit" class="btn btn-info" value="Login" />
+                  </form>
+                </div>
+              </li>
+            </ul>
+
+          </div>
 
         </div>
-
-      </div>
-    </nav>
-    {% block content %}{% endblock %}
+      </nav>
+      {% block content %}{% endblock %}
 </body>
-  </center>
-</html>
+    </center>
+  </html>

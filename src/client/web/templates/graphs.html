@@ -6,14 +6,25 @@
 
 			<h2> <b>Graphs</b>
 			</h2>
+			<br>	
 
 			<div class="col-md-12">
+
 				<div class="panel panel-primary">
 					<div class="panel-heading">
 						<h3 class="panel-title">Temperatures and Humidity</h3>
 					</div>
 					<div class="panel-body">
 						<div id="graphdiv" style="width:800px; height:300px;"></div>
+					</div>
+				</div>
+
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h3 class="panel-title">Luminosity</h3>
+					</div>
+					<div class="panel-body">
+						<div id="graphdivLuminosity" style="width:800px; height:300px;"></div>
 					</div>
 				</div>
 
@@ -46,11 +57,40 @@
 	    			}
 	    			);
 
+					g2 = new Dygraph(
+
+	    			// containing div
+	    			document.getElementById("graphdivLuminosity"),
+	    			data_lux,
+	    			{
+	    				ylabel: 'Luminosity (Lux)',
+	    				labels: ["Date", "Luminosity"], 
+	    				labelsDivStyles: { 'textAlign': 'right' },
+	    				colors: ["black"], 
+	    				//showRangeSelector: true,
+	    				//strokeWidth: 1.5,
+	    				//labelsSeparateLines: true,
+	    				rollPeriod: 3,
+	    				digitsAfterDecimal: 1,
+      					showRoller: true,
+	    			}
+	    			);
+
 					function data_temp() {
 						return "" +
 
 						{% for points in data.TempHumid %}
 							"{{points[0]}}, {{points[1]}}, {{points[2]}}\n" +
+						{% endfor %}
+						
+						"";
+					}
+
+					function data_lux() {
+						return "" +
+
+						{% for points in data.Luminosity %}
+							"{{points[0]}}, {{points[1]}}\n" +
 						{% endfor %}
 						
 						"";
