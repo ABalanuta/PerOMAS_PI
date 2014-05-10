@@ -64,9 +64,7 @@ class Relay():
 				state = self.RELAY[relay_name]["State"]
 				if state:
 					on_speed = int(relay_name[-1:])
-					break
-
-		print "----", str(self.RELAY)			
+					break			
 		return on_speed
 
 	#def set_lights_x1_state(self, state):

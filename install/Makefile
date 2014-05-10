@@ -47,6 +47,9 @@ web:
 	sudo aptitude install python-pip -y
 	sudo pip install flask
 	sudo pip install flask-wtf
+	sudo pip install Flask-Cache
+	sudo pip install flask-compress
+	sudo pip install Flask-Login
 	#pip install flask-login
 	#pip install flask-openid
 	#pip install sqlalchemy

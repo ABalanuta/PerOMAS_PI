@@ -35,9 +35,9 @@ class ScheduleManager(Thread):
 		
 		#Append Rutines to the list
 
-		self.tasks.append(Task(self.save_TempHumid_to_DB, 1 * 60)) 				# loop every 5 Mins
-		self.tasks.append(Task(self.save_Luminosity_to_DB, 1 * 60))				# loop every 2 Min
-		self.tasks.append(Task(self.save_Current_to_DB, 1 * 60))				# loop every 1 Min
+		self.tasks.append(Task(self.save_TempHumid_to_DB, 1 * 60))			# loop every 5 Mins
+		self.tasks.append(Task(self.save_Luminosity_to_DB, 2 * 60))			# loop every 2 Min
+		self.tasks.append(Task(self.save_Current_to_DB, 1 * 60))			# loop every 1 Min
 		self.tasks.append(Task(self.save_Blutooth_Presence_to_DB, 3 * 60))		# loop every 3 Min
 		self.tasks.append(Task(self.save_Wifi_Presence_to_DB, 5 * 60))			# loop every 5 Min
 		self.tasks.append(Task(self.send_BT_Presence_to_Gateway, 10))			# loop every 10 Sec

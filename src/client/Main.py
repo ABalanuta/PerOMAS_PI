@@ -25,7 +25,7 @@ from Storage_Handler import StorageHandler
 
 
 
-##Executed if only is the main app		
+##Executed if only is the main app
 if __name__ == '__main__':	
 	
 
@@ -37,16 +37,19 @@ if __name__ == '__main__':
 		
 		print 'You pressed Ctrl+C!'
 		for key, value in hub.items():
+			
 			if "STORAGE HANDLER" is not key:
 				if DEBUG:
 					print "Stopping", key
+
 				if value.stop:
 					value.stop()
+
 		#Storage stops Last
-		if "STORAGE HANDLER" in hub.keys():
-			if DEBUG:
-				print "Stopping STORAGE HANDLER"
-			hub["STORAGE HANDLER"].stop()
+		#if "STORAGE HANDLER" in hub.keys():
+		#	if DEBUG:
+		#		print "Stopping STORAGE HANDLER"
+		#	hub["STORAGE HANDLER"].stop()
 				
 		sys.exit(0)
 	

@@ -1,12 +1,11 @@
 	{% extends "base.html" %}
 
 	{% block content %}
-
-	<div class="well well-lg" style="max-width:900px;">		
+	<div class="well well-lg" style="max-width:900px;">
 		<div class="row">
 
-			<h3>Graphs</h3>
-
+			<h2> <b>Graphs</b>
+			</h2>
 
 			<div class="col-md-12">
 				<div class="panel panel-primary">
@@ -14,13 +13,9 @@
 						<h3 class="panel-title">Temperatures and Humidity</h3>
 					</div>
 					<div class="panel-body">
-						<div id="graphdiv" style="width:800px; height:300px;">
-						</div>
+						<div id="graphdiv" style="width:800px; height:300px;"></div>
 					</div>
 				</div>
-
-
-
 
 				<script type="text/javascript">
 
@@ -31,15 +26,15 @@
 	    			data_temp,
 	    			{
 	    				ylabel: 'Temperature (Cº)',
-	    				y2label: 'Humidity (%)',
+	    				y2label: 'Relative Hmidity (%)',
 	    				labels: ["Date", "Temperature", "Humidity"], 
-	    				zlabel: 'Relative Hmidity (%)',
 	    				labelsDivStyles: { 'textAlign': 'right' },
 	    				colors: ["red", "blue"], 
-	    				showRangeSelector: true,
-	    				strokeWidth: 1.5,
-	    				labelsSeparateLines: true,
-	    				rollPeriod: 1,
+	    				//showRangeSelector: true,
+	    				//strokeWidth: 1.5,
+	    				//labelsSeparateLines: true,
+	    				rollPeriod: 3,
+	    				digitsAfterDecimal: 1,
       					showRoller: true,
 	    				series : {
 
@@ -53,22 +48,16 @@
 
 					function data_temp() {
 						return "" +
-						"Date,Temperature,Humidity\n" +
 
 						{% for points in data.TempHumid %}
-						"{{points[0]}}, {{points[1]}}, {{points[2]}}\n" +
+							"{{points[0]}}, {{points[1]}}, {{points[2]}}\n" +
 						{% endfor %}
-
-
-						//"20070101,40, 25\n" +
-						//"20080501,45, 60\n" +
-						//"20091205,49, 70\n";
+						
 						"";
 					}
 				</script>
-						
+
+			</div>
 		</div>
-</div>
-
-
-{% endblock %}
+	</div>
+	{% endblock %}

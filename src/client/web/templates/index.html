@@ -128,20 +128,31 @@
   							<h5><b>3</b></h5>
 						</button>
 						{% endif %}
-
 					<form>
 				</div>
 
 			</div>
 		</div>
 
-		<!--
-		<button type="button" class="btn btn-default btn-lg">
-			<span class="glyphicon glyphicon-refresh"></span> Update
-		</button>
-	-->
+		<h2><b>Presence</2></h3>
+		
+		<table class="table table-condensed table-bordered">
 
+  			<thead>
+  				<tr>
+      				<th>Username</th>
+      				<th>Device</th>
+    			</tr>
+  			</thead>
+
+  			{% for device in present_devices %}
+  				<tr class="success">
+  					<td>User Xpto</td>
+					<td>{{device}}</td>
+				</tr>
+			{% endfor %}
+
+		</table>
 </div>
-
 
 {% endblock %}

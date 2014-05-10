@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 """Temperature and Humidity Module
 for reading the values from the HTU21D sensor"""
+
 __author__ = "Artur Balanuta"
-__version__ = "1.0.1"
+__version__ = "1.0.3"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
-import os
-import subprocess
-
-from random import randint
 from time import sleep
 from threading import Thread
 from datetime import datetime
+
+from Python2.sht21 import SHT21
 
 
 
@@ -21,8 +20,7 @@ class TempHumid(Thread):
 		Thread.__init__(self)
 		self.stopped = False
 		self.hub = hub
-		full_path = os.path.realpath(__file__)
-		self.executable = os.path.dirname(full_path)+"/C/sht21"
+		self.executable = SHT21(device_number=1)
 		self.started = datetime.now()
 		self.last_update = datetime.now()
 		self.temp = 0
@@ -35,6 +33,7 @@ class TempHumid(Thread):
 		
 	def stop(self):
 		self.stopped = True
+		self.executable.close()
 
 	def run(self):
 		while not self.stopped:
@@ -42,15 +41,17 @@ class TempHumid(Thread):
 			sleep(self.update_interval)
 
 	def update(self):
-		p = subprocess.Popen(self.executable, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-		lines = p.stdout.readlines()
-		if len(lines) == 1:
-			parts = lines[0].split()	
-			self.temp = float(parts[0])
+		try:
+			self.temp = round(self.executable.read_temperature() - 2.4, 1)
 			self.temperature_memory_values.append(self.temp)
-			self.humid = float(parts[1])
+
+			self.humid = self.executable.read_humidity()  + 5
 			self.humidity_memory_values.append(self.humid)
+		
 			self.last_update = datetime.now()
+
+		except:
+			print "HTU21D sensor Read Error"
 
 	#Dumps the cache of temperature values
 	def dumpTemperatureMemoryValues(self):
@@ -75,17 +76,17 @@ class TempHumid(Thread):
 #Runs only if called
 if __name__ == "__main__":
 
-    started = datetime.now()
+	started = datetime.now()
 
-    print "#TEST#"
-    print "#Starting#"
-    d = TempHumid(None)
-    d.start()
-    try:
+	print "#TEST#"
+	print "#Starting#"
+	d = TempHumid(None)
+	d.start()
+	try:
 		while True:
-			print "Runtime:", d.runtime(), "\tTemp:", d.temp, "\tHumid:", d.humid
+			print "\tTemp:", d.temp, "\tHumid:", d.humid
 			sleep(4)
-    except: 
+	except KeyboardInterrupt: 
 		d.stop()
-    
-    print "#Sttoped#\n\n"
+
+	print "#Sttoped#\n\n"

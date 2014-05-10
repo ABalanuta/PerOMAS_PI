@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Bluetooth Detection Module
 
-Detects bluetooth beacons sent from devices and stores for a shor period,
+Detects bluetooth beacons sent from devices and stores for a short period,
 Invokes CLI commands and bluez python code.
 """
 __author__ = "Artur Balanuta"
@@ -14,7 +14,7 @@ from time import sleep
 from threading import Thread
 from datetime import datetime
 
-#Debbuging Mode
+#Debugging Mode
 DEBUG = False
 
 class BTExecutor(Thread):
@@ -90,7 +90,6 @@ class BTDetector(Thread):
 
 	def stop(self):
 		self.stopped = True
-		sleep(3)
 		
 	def runtime(self):
 		return str(self.last_update-self.started).split(".")[0]
@@ -160,7 +159,7 @@ class BTDetector(Thread):
 				new_list.append(device)
 		
 		
-		#Appends older devices that did not timmed out yet
+		#Appends older devices that did not timed out yet
 		for seen in self.seen_devices:
 			
 			new_version = False
@@ -233,7 +232,7 @@ class BTDetector(Thread):
 	def get_discovered_devices(self):		
 		return self.seen_devices
 	
-	#returns a list of traked devices that where observed lastly
+	#returns a list of tracked devices that where observed lastly
 	def get_traked_devices(self):
 		
 		ret = []

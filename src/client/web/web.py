@@ -7,12 +7,17 @@ __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 
 from flask import Flask, request, render_template, flash, redirect, send_from_directory
+from flask.ext.cache import Cache
+from flask.ext.compress import Compress
+
 from multiprocessing import Process
 from threading import Thread
 from time import sleep
 
 
 app = Flask(__name__)
+cache = Cache(app,config={'CACHE_TYPE': 'simple'})
+Compress(app)
 
 #######################################################################################
 #    Flusk Routes
@@ -32,12 +37,7 @@ def index():
 	actual_luminosity = "--"
 	actual_current = "--"
 	ac_speed = "--"
-
-	#Users
-	u = [
-		{ 'author': "Artur", 'body': 'Test post #1' },
-		{ 'author': "Joao", 'body': 'Test post #2' }
-	]
+	present_devices = None
 	
 	if app.config["HUB"]:
 		hub = app.config["HUB"]
@@ -56,7 +56,8 @@ def index():
 		if "RELAY" in hub.keys():	
 			ac_speed = hub["RELAY"].get_ac_speed()
 		
-
+		if "BLUETOOTH" in hub.keys():	
+			present_devices = hub["BLUETOOTH"].get_traked_devices()
 
 	return render_template("index.html",
 							title = 'Home',
@@ -65,7 +66,8 @@ def index():
 							last_update = last_update,
 							lux = actual_luminosity,
 							current = actual_current,
-							speed = ac_speed
+							speed = ac_speed,
+							present_devices = present_devices
 							)
 
 @app.route('/settings')
@@ -88,6 +90,19 @@ def graph():
 			data = hub["STORAGE HANDLER"].getGraphData()
 
 	return render_template("graphs.html", data=data)
+
+@app.context_processor
+def override_url_for():
+    return dict(url_for=dated_url_for)
+
+def dated_url_for(endpoint, **values):
+    if endpoint == 'static':
+        filename = values.get('filename', None)
+        if filename:
+            file_path = os.path.join(app.root_path,
+                                     endpoint, filename)
+            values['q'] = int(os.stat(file_path).st_mtime)
+    return url_for(endpoint, **values)
 
 def process_index_post():
 	
@@ -117,7 +132,7 @@ class WebHandler(Thread):
 			CSRF_ENABLED = True,
 			SECRET_KEY = '2c1de198f4d30fa5d342ab60c31eeb308sb6de0f063e20efb9322940e3888d51c'
 			)
-		self.server = Process(target=app.run(debug = True, 
+		self.server = Process(target=app.run(debug = False, 
 											host='0.0.0.0',
 											use_reloader=False))
 
