@@ -7,9 +7,12 @@ __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 
 from flask import Flask, request, render_template, flash, redirect, send_from_directory
-from flask.ext.cache import Cache
+from flask.ext.cache import Cache, make_template_fragment_key
 from flask.ext.compress import Compress
 from flask.ext.login import LoginManager, login_user, logout_user, current_user, login_required
+from flask.ext.wtf import Form
+from wtforms import TextField, PasswordField, BooleanField, validators
+from wtforms.validators import Required
 
 from multiprocessing import Process
 from threading import Thread
@@ -18,15 +21,34 @@ from time import sleep
 
 app = Flask(__name__)
 
-cache = Cache(app,config={'CACHE_TYPE': 'simple'})
+app.config['CACHE_TYPE'] = 'simple'
+app.cache = Cache(app,config={'CACHE_TYPE': 'simple'})
 Compress(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+
+
+
+
+#############
+# From
+############
+class LoginForm(Form):
+    username = TextField('username', [validators.Length(min=4, max=25)])
+    password = PasswordField('password', [validators.Length(min=8, max=100)])
+    remember_me = BooleanField('remember_me', default = False)
+
+
+
+
+
+
+
 #######################################################################################
-#    Flusk Routes
+#    Flask Routes
 #######################################################################################		
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
@@ -75,17 +97,20 @@ def index():
 							speed = ac_speed,
 							present_devices = present_devices
 							)
-@login_required
+
 @app.route('/settings')
+@login_required
 def settings():
 	return render_template("settings.html")
 
-@login_required
+
 @app.route('/gateway')
+@login_required
 def gateway():
 	return render_template("gateway.html")
 
 @app.route('/graph')
+@app.cache.cached(timeout=30)
 def graph():
 
 	data = {}
@@ -98,9 +123,28 @@ def graph():
 
 	return render_template("graphs.html", data=data)
 
+
 @app.route('/login' , methods=['GET','POST'])
 def login():
-	return render_template('login.html')
+
+	form = LoginForm()
+
+	if form.validate_on_submit():
+		flash("Username: "+form.username.data + "Pass:"+ form.password.data+ ", remember_me= "+ str(form.remember_me.data))
+		return redirect('/index')
+
+	return render_template('login.html',
+		form = form)
+	#app.cache.clear()
+
+
+
+@app.route('/logout' , methods=['GET','POST'])
+def logout():
+	app.cache.clear()
+	return redirect(url_for('index'))
+	
+
 
 @app.route('/register' , methods=['GET','POST'])
 def register():

@@ -39,7 +39,7 @@
 	    				ylabel: 'Temperature (Cº)',
 	    				y2label: 'Relative Hmidity (%)',
 	    				labels: ["Date", "Temperature", "Humidity"], 
-	    				labelsDivStyles: { 'textAlign': 'right' },
+	    				labelsDivStyles: { 'textAlign': 'center' },
 	    				colors: ["red", "blue"], 
 	    				//showRangeSelector: true,
 	    				//strokeWidth: 1.5,
@@ -47,6 +47,9 @@
 	    				rollPeriod: 3,
 	    				digitsAfterDecimal: 1,
       					showRoller: true,
+      					fillGraph: true,
+      					//stepPlot: true,
+
 	    				series : {
 
 	    					Humidity : {
@@ -65,17 +68,20 @@
 	    			{
 	    				ylabel: 'Luminosity (Lux)',
 	    				labels: ["Date", "Luminosity"], 
-	    				labelsDivStyles: { 'textAlign': 'right' },
+	    				labelsDivStyles: { 'textAlign': 'center' },
 	    				colors: ["black"], 
 	    				//showRangeSelector: true,
 	    				//strokeWidth: 1.5,
 	    				//labelsSeparateLines: true,
-	    				rollPeriod: 3,
+	    				rollPeriod: 1,
 	    				digitsAfterDecimal: 1,
       					showRoller: true,
+      					fillGraph: true,
+      					drawPoints: true,
+      					//stepPlot: true,
 	    			}
 	    			);
-
+					{% cache 60*5 %}
 					function data_temp() {
 						return "" +
 
@@ -95,6 +101,7 @@
 						
 						"";
 					}
+					{% endcache %}
 				</script>
 
 			</div>

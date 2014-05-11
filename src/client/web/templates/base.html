@@ -22,7 +22,7 @@
   <center>
 <head>
     <!-- TITLE -->
-    <title>{{title}}</title>
+    <title>Pi Assistant</title>
 </head>
 
 <body>
@@ -80,32 +80,47 @@
             <li class="dropdown">
               <a class="dropdown-toggle" href="#" data-toggle="dropdown">
                 <span class="glyphicon glyphicon-user"></span>
-                  Log In <strong class="caret"></strong>
-                </a>
+                Log In <strong class="caret"></strong>
+              </a>
 
-                <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
-                  <form action="index.php" method="post">
-                    Username:
-                    <br/>
-                    <input type="text" name="username" value="cenas"/>
-                    <br/>
-                    <br/>
-                    Password:
-                    <br/>
-                    <input type="password" name="password" value="" />
-                    <br/>
-                    <br/>
-                    <input type="submit" class="btn btn-info" value="Login" />
-                  </form>
-                </div>
-              </li>
-            </ul>
-
-          </div>
+              <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
+                <form action="index.php" method="post">
+                  Username:
+                  <br/>
+                  <input type="text" name="username" value="cenas"/>
+                  <br/>
+                  <br/>
+                  Password:
+                  <br/>
+                  <input type="password" name="password" value="" />
+                  <br/>
+                  <br/>
+                  <input type="submit" class="btn btn-info" value="Login" />
+                </form>
+              </div>
+            </li>
+          </ul>
 
         </div>
-      </nav>
-      {% block content %}{% endblock %}
+
+      </div>
+    </nav>
+
+    <!-- Display flashed messages -->
+    {% with msgs = get_flashed_messages() %}
+        {% if msgs %}
+          {%- for msg in msgs %}
+    <div class="alert alert-danger col-md-6 col-md-offset-3 alert-dismissable">
+      {{ msg }}
+      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    </div>
+    {% endfor -%}
+        {% endif %}
+      {% endwith %}
+
+      
+      {% block content %}
+      {% endblock %}
 </body>
-    </center>
-  </html>
+  </center>
+</html>

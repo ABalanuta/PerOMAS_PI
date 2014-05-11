@@ -42,7 +42,7 @@ class TempHumid(Thread):
 
 	def update(self):
 		try:
-			self.temp = round(self.executable.read_temperature() - 1.9, 1)
+			self.temp = self.executable.read_temperature() - 1.9
 			self.temperature_memory_values.append(self.temp)
 
 			self.humid = self.executable.read_humidity()  + 4
