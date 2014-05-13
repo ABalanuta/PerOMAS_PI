@@ -6,7 +6,7 @@ __version__ = "1.0.2"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 
-from flask import Flask, request, render_template, flash, redirect, send_from_directory
+from flask import Flask, request, render_template, flash, redirect, send_from_directory, url_for
 from flask.ext.cache import Cache, make_template_fragment_key
 from flask.ext.compress import Compress
 from flask.ext.login import LoginManager, login_user, logout_user, current_user, login_required
@@ -18,6 +18,7 @@ from multiprocessing import Process
 from threading import Thread
 from time import sleep
 
+from UserManager import UserManager 
 
 app = Flask(__name__)
 
@@ -31,8 +32,6 @@ login_manager.login_view = 'login'
 
 
 
-
-
 #############
 # From
 ############
@@ -41,7 +40,24 @@ class LoginForm(Form):
     password = PasswordField('password', [validators.Length(min=8, max=100)])
     remember_me = BooleanField('remember_me', default = False)
 
+class RegisterForm(Form):
+    username = TextField('username',[
+    	validators.Required(),
+    	validators.Length(min=4, max=25)
+    ])
 
+    password = PasswordField('New Password', [
+        validators.Required(),
+        validators.Length(min=8, max=100),
+        validators.EqualTo('password_confirm', message='Passwords must match')
+    ])
+
+    password_confirm = PasswordField('password_confirm')
+    
+    key = PasswordField('password',[
+    	validators.Required(),
+    	validators.Length(min=4)
+    ])
 
 
 
@@ -133,6 +149,7 @@ def login():
 		flash("Username: "+form.username.data + "Pass:"+ form.password.data+ ", remember_me= "+ str(form.remember_me.data))
 		return redirect('/index')
 
+	
 	return render_template('login.html',
 		form = form)
 	#app.cache.clear()
@@ -148,12 +165,30 @@ def logout():
 
 @app.route('/register' , methods=['GET','POST'])
 def register():
-    if request.method == 'GET':
-        return render_template('register.html')
 
-    print request.form.keys()
-    #login validation
-    #['username', 'password', 'password_confirmation']
+	form = RegisterForm()
+
+	if form.validate_on_submit():
+		
+		if app.config["USER MANAGER"] and app.config["API KEY"]:
+			um = app.config["USER MANAGER"]
+			key = app.config["API KEY"]
+
+			if not form.key.data == key:
+				form.errors["key"] = ["Invalid Key"]
+				return render_template('register.html', form=form)
+
+			if um.existsUser(form.username.data):
+				form.errors["username"] = ["Username Exists"]
+				return render_template('register.html', form=form)
+
+			else:
+				um.addUser(form.username.data, form.password.data)
+
+		flash('Thanks for registering')
+		return redirect(url_for('login'))
+
+	return render_template('register.html', form=form)
 
 @login_manager.user_loader
 def load_user(id):
@@ -196,11 +231,13 @@ class WebHandler(Thread):
 	def __init__(self, hub):
 		Thread.__init__(self)
 		app.config["HUB"] = hub
+		app.config["USER MANAGER"] = UserManager()
+		app.config["API KEY"] = "0000"
 		app.config.update(
 			CSRF_ENABLED = True,
 			SECRET_KEY = '2c1de198f4d30fa5d342ab60c31eeb308sb6de0f063e20efb9322940e3888d51c'
 			)
-		self.server = Process(target=app.run(debug = False, 
+		self.server = Process(target=app.run(debug = True, 
 											host='0.0.0.0',
 											use_reloader=False))
 

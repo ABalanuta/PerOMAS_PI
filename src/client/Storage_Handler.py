@@ -76,7 +76,7 @@ class StorageHandler():
 		#Try to create the empty Tables if they dont already exist
 		try:
 			#Users
-			c.execute('CREATE TABLE Users (Username TEXT, Pass TEXT)')
+			c.execute('CREATE TABLE Users (Username TEXT, Salt TEXT, Digest TEXT)')
 			c.execute('CREATE TABLE BTDevices (BTDevice TEXT, Username TEXT)')
 
 
