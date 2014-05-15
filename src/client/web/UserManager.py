@@ -29,7 +29,7 @@ class PasswordManager():
         return self.getDigest(user, password, salt)[1] == digest
 
 
-class User():
+class User(object):
 
     def __init__(self, username, salt, digest):
         self.username = username
@@ -55,16 +55,29 @@ class User():
 
 class UserManager():
 
-    def __init__(self):
+    def __init__(self, hub=None):
+    	self.hub = hub
         self.users = dict()
         self.password_manager = PasswordManager()
-        #todo LOAD users from DB
+        self.loadUsers()
 
     def addUser(self, username, password):
 
         salt, digest = self.password_manager.getDigest(username, password)
-        self.users[username] = User(username, salt, digest)
-        #TODO add to DB
+        newUser = User(username, salt, digest)
+        self.users[username] = newUser
+
+        #Add user do DB
+        if self.hub:
+        	db = self.hub["STORAGE HANDLER"]
+        	db.addUser(newUser)
+
+    def loadUsers(self):
+    	if self.hub:
+        	db = self.hub["STORAGE HANDLER"]
+        	matrix = db.loadUsers()
+        	for x in matrix:
+        		self.users[x[0]]= User(x[0], x[1], x[2])
 
     def getUser(self, username):
         if self.existsUser(username):
@@ -73,6 +86,7 @@ class UserManager():
             return None
 
     def existsUser(self, username):
+
         if username in self.users.keys():
             return True
         else:

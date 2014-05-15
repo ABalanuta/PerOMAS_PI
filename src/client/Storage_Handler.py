@@ -5,7 +5,6 @@ __author__ = "Artur Balanuta"
 __version__ = "1.0.1"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
-import sqlite3
 import os
 from time import sleep
 from datetime import datetime
@@ -110,15 +109,40 @@ class StorageHandler():
 			values = (dto.getTimestamp(), dto.getValue()[0])
 			c.execute('INSERT INTO '+dto.getType()+' VALUES (%s, %s)', values)
 
+
 		elif len(dto.getValue()) == 2:
 			values = (dto.getTimestamp(), dto.getValue()[0], dto.getValue()[1])
 			c.execute('INSERT INTO '+dto.getType()+' VALUES (%s, %s, %s)', values)
 
 		else:
+			conn.close()
 			raise Exception("Too many Fields")
 
 		conn.commit()
 		conn.close()
+
+	def addUser(self, user):
+
+		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
+		c = conn.cursor()
+
+		values = (user.username, user.salt, user.digest)
+		c.execute('INSERT INTO Users VALUES (%s, %s, %s)', values)
+
+		conn.commit()
+		conn.close()
+
+	def loadUsers(self):
+
+		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
+		c = conn.cursor()
+
+		c.execute('SELECT * FROM Users')
+		resp = c.fetchall()
+
+		conn.commit()
+		conn.close()
+		return resp
 
 	def getGraphData(self):
 
@@ -132,7 +156,8 @@ class StorageHandler():
 
 		c.execute("SELECT * FROM Luminosity WHERE TIMESTAMP > CURDATE() - INTERVAL 1 DAY ")
 		data["Luminosity"] = c.fetchall()
-
+		conn.commit()
+		conn.close()
 		return data
 
 	def readSettings(self, id):

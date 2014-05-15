@@ -78,27 +78,33 @@
             </li>
             <li class="divider-vertical"></li>
             <li class="dropdown">
+              {% if g.user.username %}
+              <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                <span class="glyphicon glyphicon-user"></span>
+                {{g.user.username}} <strong class="caret"></strong>
+              </a>
+
+              <div class="dropdown-menu" style="padding: 15px; padding-bottom: 15px;">
+                <button type="submit" class="btn btn-danger btn-lg" onclick="location.href='/logout'">
+                LogOut
+            </button>
+            <br>
+              </div>
+              {% else %}
               <a class="dropdown-toggle" href="#" data-toggle="dropdown">
                 <span class="glyphicon glyphicon-user"></span>
                 Log In <strong class="caret"></strong>
               </a>
 
-              <div class="dropdown-menu" style="padding: 15px; padding-bottom: 0px;">
-                <form action="index.php" method="post">
-                  Username:
-                  <br/>
-                  <input type="text" name="username" value="cenas"/>
-                  <br/>
-                  <br/>
-                  Password:
-                  <br/>
-                  <input type="password" name="password" value="" />
-                  <br/>
-                  <br/>
-                  <input type="submit" class="btn btn-info" value="Login" />
-                </form>
+              <div class="dropdown-menu" style="padding: 15px; padding-bottom: 15px;">
+                <button type="submit" class="btn btn-success btn-lg" onclick="location.href='/login'">
+                LogIn
+            </button>
+            
               </div>
+              {% endif %}
             </li>
+
           </ul>
 
         </div>
