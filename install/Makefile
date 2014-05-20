@@ -75,6 +75,10 @@ gateway:
 	
 mysql:
 	sudo aptitude install mysql-client mysql-server python-mysqldb -y
+	echo "Optimizing MySQL"
+	sudo cp /etc/mysql/my.cnf /etc/mysql/my.cnf.bak
+	sudo cp my.cnf /etc/mysql/my.cnf
+	sudo service mysql restart
 
 reboot:
 	echo "System will rebootn in 10"
