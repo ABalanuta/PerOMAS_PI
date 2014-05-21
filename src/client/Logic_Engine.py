@@ -8,7 +8,7 @@ __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 
 from threading import Thread
-from time import sleep
+from time import sleep, localtime, time
 
 class Logic_Engine(Thread):
 
@@ -19,8 +19,8 @@ class Logic_Engine(Thread):
 		Thread.__init__(self)
 		self.hub = hub
 		self.ac_mode_auto = True
-		self.ac_min_target = 22
-		self.ac_max_target = 24.5
+		self.ac_min_target = 20
+		self.ac_max_target = 28
 
 	def stop(self):
 		self.stopped = True
@@ -43,10 +43,17 @@ class Logic_Engine(Thread):
 
 	def checkTermostatLogic(self):
 
+		
+
 		if self.hub["TEMPERATURE"] and self.hub["RELAY"]:
 
 			curr_temp = self.hub["TEMPERATURE"].getTemperature()
 			relay = self.hub["RELAY"]
+
+			#Shuts Down the AC if out of Working Hours
+			#if not self.isWorkingHours():
+			#	relay.set_ac_speed(0)
+			#	return
 
 			#Turn ON Fan if too Hot
 			if curr_temp > self.ac_max_target:
@@ -61,6 +68,13 @@ class Logic_Engine(Thread):
 
 		else:
 			print "Error, no TEMPERATURE Sensor or Relay Object"
+
+	def isWorkingHours(self):
+		current_hour = localtime(time()).tm_hour
+		if current_hour > 20 or current_hour < 8:
+			return False
+		else:
+			return True
 
 	def getACMode(self):
 		if self.ac_mode_auto:

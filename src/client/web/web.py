@@ -262,7 +262,6 @@ def process_index_post():
                 old_setpoint = logic.get_AC_Setpoint()
 
                 if new_setpoint[0] != old_setpoint[0] or new_setpoint[1] != old_setpoint[1]:
-                    print "Diff"
                     logic.set_AC_Setpoint(new_setpoint[0], new_setpoint[1])
                     storage.log("AC Setpoint changed to Min="+str(new_setpoint[0])+" and Max:"+str(new_setpoint[1]), user)
 
