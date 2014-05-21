@@ -19,7 +19,7 @@ import smbus
 
 full_path = os.path.realpath(__file__)
 os.path.dirname(full_path)
-configfile = os.path.dirname(full_path)+'/lcdmenu.xml'
+configfile = os.path.dirname(full_path) + '/lcdmenu.xml'
 
 
 # set DEBUG=1 for print debug statements
@@ -28,9 +28,9 @@ DISPLAY_ROWS = 2
 DISPLAY_COLS = 16
 
 # set busnum param to the correct value for your pi
-lcd = Adafruit_CharLCDPlate(busnum = 1)
+lcd = Adafruit_CharLCDPlate(busnum=1)
 # in case you add custom logic to lcd to check if it is connected (useful)
-#if lcd.connected == 0:
+# if lcd.connected == 0:
 #    quit()
 
 lcd.begin(DISPLAY_COLS, DISPLAY_ROWS)
@@ -50,6 +50,7 @@ def DoQuit():
             quit()
         sleep(0.25)
 
+
 def DoShutdown():
     lcd.clear()
     lcd.message('Are you sure?\nPress Sel for Y')
@@ -62,6 +63,7 @@ def DoShutdown():
             commands.getoutput("sudo shutdown -h now")
             quit()
         sleep(0.25)
+
 
 def DoReboot():
     lcd.clear()
@@ -76,29 +78,38 @@ def DoReboot():
             quit()
         sleep(0.25)
 
+
 def LcdOff():
     lcd.backlight(lcd.OFF)
+
 
 def LcdOn():
     lcd.backlight(lcd.ON)
 
+
 def LcdRed():
     lcd.backlight(lcd.RED)
+
 
 def LcdGreen():
     lcd.backlight(lcd.GREEN)
 
+
 def LcdBlue():
     lcd.backlight(lcd.BLUE)
+
 
 def LcdYellow():
     lcd.backlight(lcd.YELLOW)
 
+
 def LcdTeal():
     lcd.backlight(lcd.TEAL)
 
+
 def LcdViolet():
     lcd.backlight(lcd.VIOLET)
+
 
 def IsButtonPressed():
     if lcd.buttonPressed(lcd.LEFT):
@@ -114,30 +125,34 @@ def IsButtonPressed():
     else:
         return 0
 
+
 def ShowDash():
-	global lcdHUB
-	global stopped
-	
-	if DEBUG:
-		print('in ShowDash')
-	lcd.clear()
-	while not stopped:
-		
-		if lcd.buttonPressed(lcd.LEFT):
-			return
-			
-		sleep(0.25)
-		lcd.home()
-		lcd.message("      KGB      \n")
-		lcd.message("I'm Watching You !")
-		#if lcdHUB:
-		#	if lcdHUB.temp_humid:
-		#		lcd.message("T="+str(lcdHUB.temp_humid.temp)+"C  H="+str(lcdHUB.temp_humid.humid)+"%\n"+lcdHUB.temp_humid.runtime())
-		#else:
-		#	lcd.message("Error Reading\nNo Obj HUB ")
-		#	print "error"
-        #
-        #print "T="+str(sensorList[0].temp)+"C  H="+str(sensorList[0].humid)+"%\n"+sensorList[0].runtime()
+    global lcdHUB
+    global stopped
+
+    if DEBUG:
+        print('in ShowDash')
+    lcd.clear()
+    while not stopped:
+
+        if lcd.buttonPressed(lcd.LEFT):
+            return
+
+        sleep(0.25)
+        lcd.home()
+        #lcd.message("      KGB      \n")
+        #lcd.message("I'm Watching You !")
+        lcd.message("  AC  Genie  :) \n")
+        lcd.message("                  ")
+        # if lcdHUB:
+        #	if lcdHUB.temp_humid:
+        #		lcd.message("T="+str(lcdHUB.temp_humid.temp)+"C  H="+str(lcdHUB.temp_humid.humid)+"%\n"+lcdHUB.temp_humid.runtime())
+        # else:
+        #	lcd.message("Error Reading\nNo Obj HUB ")
+        #	print "error"
+    #
+    # print "T="+str(sensorList[0].temp)+"C
+    # H="+str(sensorList[0].humid)+"%\n"+sensorList[0].runtime()
 
 
 def ShowDateTime():
@@ -149,39 +164,41 @@ def ShowDateTime():
         lcd.home()
         lcd.message(strftime('%a %b %d %Y\n%I:%M:%S %p', localtime()))
 
+
 def ValidateDateDigit(current, curval):
     # do validation/wrapping
-    if current == 0: # Mm
+    if current == 0:  # Mm
         if curval < 1:
             curval = 12
         elif curval > 12:
             curval = 1
-    elif current == 1: #Dd
+    elif current == 1:  # Dd
         if curval < 1:
             curval = 31
         elif curval > 31:
             curval = 1
-    elif current == 2: #Yy
+    elif current == 2:  # Yy
         if curval < 1950:
             curval = 2050
         elif curval > 2050:
             curval = 1950
-    elif current == 3: #Hh
+    elif current == 3:  # Hh
         if curval < 0:
             curval = 23
         elif curval > 23:
             curval = 0
-    elif current == 4: #Mm
+    elif current == 4:  # Mm
         if curval < 0:
             curval = 59
         elif curval > 59:
             curval = 0
-    elif current == 5: #Ss
+    elif current == 5:  # Ss
         if curval < 0:
             curval = 59
         elif curval > 59:
             curval = 0
     return curval
+
 
 def SetDateTime():
     if DEBUG:
@@ -198,10 +215,10 @@ def SetDateTime():
     if hour > 11:
         hour -= 12
         ampm = 1
-    curr = [0,0,0,1,1,1]
-    curc = [2,5,11,1,4,7]
+    curr = [0, 0, 0, 1, 1, 1]
+    curc = [2, 5, 11, 1, 4, 7]
     curvalues = [month, day, year, hour, minute, second]
-    current = 0 # start with month, 0..14
+    current = 0  # start with month, 0..14
 
     lcd.clear()
     lcd.message(strftime("%b %d, %Y  \n%I:%M:%S %p  ", curtime))
@@ -213,14 +230,16 @@ def SetDateTime():
         if lcd.buttonPressed(lcd.UP):
             curval += 1
             curvalues[current] = ValidateDateDigit(current, curval)
-            curtime = (curvalues[2], curvalues[0], curvalues[1], curvalues[3], curvalues[4], curvalues[5], 0, 0, 0)
+            curtime = (curvalues[2], curvalues[0], curvalues[
+                       1], curvalues[3], curvalues[4], curvalues[5], 0, 0, 0)
             lcd.home()
             lcd.message(strftime("%b %d, %Y  \n%I:%M:%S %p  ", curtime))
             lcd.setCursor(curc[current], curr[current])
         if lcd.buttonPressed(lcd.DOWN):
             curval -= 1
             curvalues[current] = ValidateDateDigit(current, curval)
-            curtime = (curvalues[2], curvalues[0], curvalues[1], curvalues[3], curvalues[4], curvalues[5], 0, 0, 0)
+            curtime = (curvalues[2], curvalues[0], curvalues[
+                       1], curvalues[3], curvalues[4], curvalues[5], 0, 0, 0)
             lcd.home()
             lcd.message(strftime("%b %d, %Y  \n%I:%M:%S %p  ", curtime))
             lcd.setCursor(curc[current], curr[current])
@@ -249,13 +268,16 @@ def ShowIPAddress():
     if DEBUG:
         print('in ShowIPAddress')
     lcd.clear()
-    lcd.message(commands.getoutput("/sbin/ifconfig").split("\n")[1].split()[1][5:])
+    lcd.message(commands.getoutput("/sbin/ifconfig")
+                .split("\n")[1].split()[1][5:])
     while 1:
         if lcd.buttonPressed(lcd.LEFT):
             break
         sleep(0.25)
 
-#only use the following if you find useful
+# only use the following if you find useful
+
+
 def Use10Network():
     "Allows you to switch to a different network for local connection"
     lcd.clear()
@@ -272,7 +294,9 @@ def Use10Network():
             break
         sleep(0.25)
 
-#only use the following if you find useful
+# only use the following if you find useful
+
+
 def UseDHCP():
     "Allows you to switch to a network config that uses DHCP"
     lcd.clear()
@@ -289,10 +313,13 @@ def UseDHCP():
             break
         sleep(0.25)
 
+
 class CommandToRun:
+
     def __init__(self, myName, theCommand):
         self.text = myName
         self.commandToRun = theCommand
+
     def Run(self):
         self.clist = split(commands.getoutput(self.commandToRun), '\n')
         if len(self.clist) > 0:
@@ -304,22 +331,27 @@ class CommandToRun:
                         break
                     sleep(0.25)
                 lcd.clear()
-                lcd.message(self.clist[i-1]+'\n'+self.clist[i])
+                lcd.message(self.clist[i - 1] + '\n' + self.clist[i])
                 sleep(0.5)
         while 1:
             if lcd.buttonPressed(lcd.LEFT):
                 break
 
+
 class Widget:
+
     def __init__(self, myName, myFunction):
         self.text = myName
         self.function = myFunction
 
+
 class Folder:
+
     def __init__(self, myName, myParent):
         self.text = myName
         self.items = []
         self.parent = myParent
+
 
 def HandleSettings(node):
     global lcd
@@ -342,6 +374,7 @@ def HandleSettings(node):
     elif node.getAttribute('lcdBacklight').lower() == 'off':
         lcd.backlight(lcd.OFF)
 
+
 def ProcessNode(currentNode, currentItem):
     children = currentNode.childNodes
 
@@ -354,11 +387,14 @@ def ProcessNode(currentNode, currentItem):
                 currentItem.items.append(thisFolder)
                 ProcessNode(child, thisFolder)
             elif child.tagName == 'widget':
-                thisWidget = Widget(child.getAttribute('text'), child.getAttribute('function'))
+                thisWidget = Widget(
+                    child.getAttribute('text'), child.getAttribute('function'))
                 currentItem.items.append(thisWidget)
             elif child.tagName == 'run':
-                thisCommand = CommandToRun(child.getAttribute('text'), child.firstChild.data)
+                thisCommand = CommandToRun(
+                    child.getAttribute('text'), child.firstChild.data)
                 currentItem.items.append(thisCommand)
+
 
 class Display:
 
@@ -376,25 +412,25 @@ class Display:
         if DEBUG:
             print('------------------')
         str = ''
-        for row in range(self.curTopItem, self.curTopItem+DISPLAY_ROWS):
+        for row in range(self.curTopItem, self.curTopItem + DISPLAY_ROWS):
             if row > self.curTopItem:
                 str += '\n'
             if row < len(self.curFolder.items):
                 if row == self.curSelectedItem:
-                    cmd = '-'+self.curFolder.items[row].text
+                    cmd = '-' + self.curFolder.items[row].text
                     if len(cmd) < 16:
                         for row in range(len(cmd), 16):
                             cmd += ' '
                     if DEBUG:
-                        print('|'+cmd+'|')
+                        print('|' + cmd + '|')
                     str += cmd
                 else:
-                    cmd = ' '+self.curFolder.items[row].text
+                    cmd = ' ' + self.curFolder.items[row].text
                     if len(cmd) < 16:
                         for row in range(len(cmd), 16):
                             cmd += ' '
                     if DEBUG:
-                        print('|'+cmd+'|')
+                        print('|' + cmd + '|')
                     str += cmd
         if DEBUG:
             print('------------------')
@@ -410,7 +446,7 @@ class Display:
 
     def update(self, command):
         if DEBUG:
-            print('do',command)
+            print('do', command)
         if command == 'u':
             self.up()
         elif command == 'd':
@@ -432,9 +468,9 @@ class Display:
             self.curSelectedItem -= 1
 
     def down(self):
-        if self.curSelectedItem+1 == len(self.curFolder.items):
+        if self.curSelectedItem + 1 == len(self.curFolder.items):
             return
-        elif self.curSelectedItem < self.curTopItem+DISPLAY_ROWS-1:
+        elif self.curSelectedItem < self.curTopItem + DISPLAY_ROWS - 1:
             self.curSelectedItem += 1
         else:
             self.curTopItem += 1
@@ -460,6 +496,7 @@ class Display:
                 self.curFolder = self.curFolder.parent
                 self.curTopItem = 0
                 self.curSelectedItem = 0
+
     def right(self):
         if isinstance(self.curFolder.items[self.curSelectedItem], Folder):
             self.curFolder = self.curFolder.items[self.curSelectedItem]
@@ -467,8 +504,9 @@ class Display:
             self.curSelectedItem = 0
         elif isinstance(self.curFolder.items[self.curSelectedItem], Widget):
             if DEBUG:
-                print('eval', self.curFolder.items[self.curSelectedItem].function)
-            eval(self.curFolder.items[self.curSelectedItem].function+'()')
+                print('eval', self.curFolder.items[
+                      self.curSelectedItem].function)
+            eval(self.curFolder.items[self.curSelectedItem].function + '()')
         elif isinstance(self.curFolder.items[self.curSelectedItem], CommandToRun):
             self.curFolder.items[self.curSelectedItem].Run()
 
@@ -477,27 +515,29 @@ class Display:
             print('check widget')
         if isinstance(self.curFolder.items[self.curSelectedItem], Widget):
             if DEBUG:
-                print('eval', self.curFolder.items[self.curSelectedItem].function)
-            eval(self.curFolder.items[self.curSelectedItem].function+'()')
+                print('eval', self.curFolder.items[
+                      self.curSelectedItem].function)
+            eval(self.curFolder.items[self.curSelectedItem].function + '()')
+
 
 class LCD(Thread):
 
     def __init__(self, hub):
-		Thread.__init__(self)
-		global stopped
-		global lcdHUB
-		
-		stopped = False
-		self.hub = hub
-		lcdHUB = hub
-		
+        Thread.__init__(self)
+        global stopped
+        global lcdHUB
+
+        stopped = False
+        self.hub = hub
+        lcdHUB = hub
+
     def stop(self):
-		global stopped
-		stopped = True
+        global stopped
+        stopped = True
 
     def run(self):
-        uiItems = Folder('root','')
-        dom = parse(configfile) # parse an XML file by name
+        uiItems = Folder('root', '')
+        dom = parse(configfile)  # parse an XML file by name
         top = dom.documentElement
 
         ProcessNode(top, uiItems)
@@ -505,21 +545,19 @@ class LCD(Thread):
         self.display = Display(uiItems)
         self.display.display()
 
-        LcdRed()
+        LcdBlue()
 
-        #Enters the first Menu
+        # Enters the first Menu
         self.display.update('r')
         self.display.display()
-
-        
 
         if DEBUG:
             print('start while')
         self.loop()
 
     def loop(self):
-	global stopped
-		
+        global stopped
+
         while not stopped:
 
             if (lcd.buttonPressed(lcd.LEFT)):

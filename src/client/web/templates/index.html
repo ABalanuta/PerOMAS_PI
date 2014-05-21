@@ -147,8 +147,30 @@
 
   			{% for device in present_devices %}
   				<tr class="success">
-  					<td>User Xpto</td>
-					<td>{{device}}</td>
+  					<td class="text-left">User Xpto</td>
+					<td class="text-left">{{ device }}</td>
+				</tr>
+			{% endfor %}
+
+		</table>
+
+
+		<h2><b>Logs</2></h3>
+		<table class="table table-condensed table-bordered">
+
+  			<thead>
+  				<tr>
+      				<th>Timestamp</th>
+      				<th>User</th>
+      				<th>Message</th>
+    			</tr>
+  			</thead>
+
+  			{% for log in logs %}
+  				<tr>
+  					<td class="text-left">{{ log[0] }}</td>
+					<td class="text-left">{{ log[1] }}</td>
+					<td class="text-left">{{ log[2].encode('ascii', 'ignore') }}</td>
 				</tr>
 			{% endfor %}
 

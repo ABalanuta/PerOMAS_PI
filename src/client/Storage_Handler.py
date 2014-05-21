@@ -29,7 +29,7 @@ class StorageHandler():
 		
 		self.hub = hub
 		#self.delete_database(self.DB)
-		self.create_database(self.DB)
+		#self.create_database(self.DB)
 
 	def create_database(self, DB):
 		if self.DEBUG:
@@ -75,16 +75,15 @@ class StorageHandler():
 		#Try to create the empty Tables if they dont already exist
 		try:
 			#Users
+			c.execute('CREATE TABLE Logs (TimeStamp TIMESTAMP, Username TEXT, Message TEXT)')
 			c.execute('CREATE TABLE Users (Username TEXT, Salt TEXT, Digest TEXT)')
 			c.execute('CREATE TABLE BTDevices (BTDevice TEXT, Username TEXT)')
-
 
 			#Settings
 			c.execute('CREATE TABLE Settings (ID TEXT, PickeRepresentation TEXT)')
 
 			#Data
-			c.execute('CREATE TABLE '+DataType.TEMPERATURE+' (TimeStamp TIMESTAMP, Temperature REAL)')
-			c.execute('CREATE TABLE '+DataType.HUMIDITY+' (TimeStamp TIMESTAMP, Humidity REAL)')
+			c.execute('CREATE TABLE '+DataType.TEMPERATUREHUMIDITY+' (TimeStamp TIMESTAMP, Temperature REAL, Humidity REAL)')
 			c.execute('CREATE TABLE '+DataType.LUMINOSITY+' (TimeStamp TIMESTAMP, Luminosity REAL)')
 			c.execute('CREATE TABLE '+DataType.CURRENT+' (TimeStamp TIMESTAMP, Current REAL)')
 			c.execute('CREATE TABLE '+DataType.BT_PRESENCE+' (TimeStamp TIMESTAMP, MAC TEXT)')
@@ -151,11 +150,16 @@ class StorageHandler():
 		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
 		c = conn.cursor()
 
-		c.execute("SELECT TimeStamp, Temperature, Humidity FROM Temperature NATURAL JOIN Humidity WHERE TIMESTAMP > CURDATE() - INTERVAL 1 DAY ")
+		c.execute("SELECT TimeStamp, Temperature, Humidity FROM TemperatureHumidity WHERE TIMESTAMP > CURRENT_TIMESTAMP() - INTERVAL 1 DAY ")
 		data["TempHumid"] = c.fetchall()
 
-		c.execute("SELECT * FROM Luminosity WHERE TIMESTAMP > CURDATE() - INTERVAL 1 DAY ")
+		c.execute("SELECT * FROM Luminosity WHERE TIMESTAMP > CURRENT_TIMESTAMP() - INTERVAL 1 DAY ")
 		data["Luminosity"] = c.fetchall()
+
+		c.execute("SELECT * FROM Current WHERE TIMESTAMP > CURRENT_TIMESTAMP() - INTERVAL 1 DAY ")
+		data["Current"] = c.fetchall()
+
+		
 		conn.commit()
 		conn.close()
 		return data
@@ -182,6 +186,27 @@ class StorageHandler():
 		c.execute('INSERT INTO Settings VALUES (%s, %s)', values)
 		conn.commit()
 		conn.close()
+
+	def log(self, msg, user = "Pi Robot"):
+
+		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
+		c = conn.cursor()
+		values = (datetime.now(), user, msg.encode('ascii', 'ignore'))
+		c.execute('INSERT INTO Logs VALUES (%s, %s, %s)', values)
+		conn.commit()
+		conn.close()
+	
+	def getLogs(self, num):
+
+		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
+		c = conn.cursor()
+		values = (num)
+		c.execute('SELECT * FROM Logs ORDER BY TimeStamp DESC LIMIT %s', values)
+		data = c.fetchall()
+		conn.commit()
+		conn.close()
+		return data
+
 
 	#Bogus method
 	def stop(self):

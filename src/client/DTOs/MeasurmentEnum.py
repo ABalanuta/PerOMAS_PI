@@ -7,8 +7,7 @@ __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 class DataType:
 	
-	TEMPERATURE 	= "Temperature"
-	HUMIDITY		= "Humidity"
+	TEMPERATUREHUMIDITY 	= "TemperatureHumidity"
 	LUMINOSITY		= "Luminosity"
 	CURRENT			= "Current"
 	BT_PRESENCE		= "BluetoothPresence"

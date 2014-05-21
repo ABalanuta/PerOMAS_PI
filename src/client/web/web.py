@@ -80,6 +80,7 @@ def index():
     actual_current = "--"
     ac_speed = "--"
     present_devices = None
+    logs = getLogData(20)
 
     if app.config["HUB"]:
         hub = app.config["HUB"]
@@ -108,7 +109,8 @@ def index():
                            lux=actual_luminosity,
                            current=actual_current,
                            speed=ac_speed,
-                           present_devices=present_devices
+                           present_devices=present_devices,
+                           logs=logs
                            )
 
 
@@ -205,7 +207,7 @@ def load_user(id):
 def before_request():
     g.user = current_user
 
-@app.cache.cached(timeout=50, key_prefix='GraphData')
+#@app.cache.cached(timeout=30, key_prefix='GraphData')
 def getGraphData():
 
     if app.config["HUB"]:
@@ -216,24 +218,46 @@ def getGraphData():
     else:
         return {}
 
+@app.cache.cached(timeout=30, key_prefix='LogData')
+def getLogData(num):
+    if app.config["HUB"]:
+        hub = app.config["HUB"]
+
+        if "STORAGE HANDLER" in hub.keys():
+            return hub["STORAGE HANDLER"].getLogs(num)
+    else:
+        return {}
 
 def process_index_post():
 
-    # print str(request.form.keys())
+    if app.config["HUB"]:
+        hub = app.config["HUB"]
 
-    if "HUB" in app.config.keys() and app.config["HUB"]:
+        if "RELAY" in hub.keys() and "STORAGE HANDLER" in hub.keys():
+            
+            relay = hub["RELAY"]
+            storage = hub["STORAGE HANDLER"]
+            user = g.user.username
 
-        if "RELAY" in app.config["HUB"].keys():
-
-            relay = app.config["HUB"]["RELAY"]
             if "AC_OFF" in request.form.keys():
-                relay.set_ac_speed(0)
+                if relay.get_ac_speed() != 0:
+                    relay.set_ac_speed(0)
+                    storage.log("Turned OFF AC Fan", user)
+
             elif "AC_1" in request.form.keys():
-                relay.set_ac_speed(1)
+                if relay.get_ac_speed() != 1:
+                    relay.set_ac_speed(1)
+                    storage.log("Turned AC Fan to speed 1", user)
+
             elif "AC_2" in request.form.keys():
-                relay.set_ac_speed(2)
+                if relay.get_ac_speed() != 2:
+                    relay.set_ac_speed(2)
+                    storage.log("Turned AC Fan to speed 2", user)
+
             elif "AC_3" in request.form.keys():
-                relay.set_ac_speed(3)
+                if relay.get_ac_speed() != 3:
+                    relay.set_ac_speed(3)
+                    storage.log("Turned AC Fan to speed 3", user)
 
 
 class WebHandler(Thread):

@@ -68,9 +68,7 @@ class ScheduleManager(Thread):
 				t_vmean = round(mean(t_values), 1)
 				h_vmean = round(mean(h_values), 1)
 				db = self.hub["STORAGE HANDLER"]
-				timestamp = datetime.now()
-				db.insertValue(MesurmentDTO(str(timestamp), DataType.TEMPERATURE, [t_vmean]))
-				db.insertValue(MesurmentDTO(str(timestamp), DataType.HUMIDITY, [h_vmean]))
+				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.TEMPERATUREHUMIDITY, [t_vmean, h_vmean]))
 			
 		else:
 			print "Scheduler: Save_TempHumid_to_DB locating TEMPERATURE or HUMIDITY or STORAGE object"
