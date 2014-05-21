@@ -2,182 +2,283 @@
 
 {% block content %}
 
-<div class="well well-lg" style="max-width:900px;">		
-	<div class="row">
 
-		<h2><b>Ambient</2></h3>
+<h2><b>Ambient</2></h3>
 
 
-		<div class="col-md-4">
-			<div class="panel panel-primary">
-				<div class="panel-heading">
-					<h3 class="panel-title"><b>Temperature</b></h3>
-				</div>
-				<div class="panel-body">
-					<h3>{{temp}} ºC </h3>
-				</div>
-			</div>
-		</div>
+	<div class="well well-lg" style="max-width:900px;">		
+		<div class="row">
 
 
-		<div class="col-md-4">
-			<div class="panel panel-primary">
 
-				<div class="panel-heading">
-					<h3 class="panel-title"><b>Relative Humidity</b></h3>
-				</div>
-				<div class="panel-body">
-					<h3>{{humid}} %</h3>
+
+			<div class="col-md-3">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h3 class="panel-title"><b>Temperature</b></h3>
+					</div>
+					<div class="panel-body">
+						<h3>{{temp}} ºC </h3>
+					</div>
 				</div>
 			</div>
-		</div>
 
 
-		<div class="col-md-4">
-			<div class="panel panel-primary">
+			<div class="col-md-3">
+				<div class="panel panel-primary">
 
-				<div class="panel-heading">
-					<h3 class="panel-title"><b>Last Update</b></h3>
+					<div class="panel-heading">
+						<h3 class="panel-title"><b>Relative Humidity</b></h3>
+					</div>
+					<div class="panel-body">
+						<h3>{{humid}} %</h3>
+					</div>
 				</div>
-
-				<div class="panel-body">
-					<h3>{{last_update}}</h3>
-				</div>
-
 			</div>
-		</div>
 
 
+			<div class="col-md-3">
+				<div class="panel panel-primary">
 
-		<div class="col-md-4">
-			<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h3 class="panel-title"><b>Luminosity</b></h3>
+					</div>
 
-				<div class="panel-heading">
-					<h3 class="panel-title"><b>Luminosity</b></h3>
+					<div class="panel-body">
+						<h3>{{lux}} Lux</h3>
+					</div>
+
 				</div>
-
-				<div class="panel-body">
-					<h3>{{lux}} Lux</h3>
-				</div>
-
 			</div>
-		</div>
-		
 
-		<div class="col-md-4">
-			<div class="panel panel-primary">
 
-				<div class="panel-heading">
-					<h3 class="panel-title"><b>Current</b></h3>
+			<div class="col-md-3">
+				<div class="panel panel-primary">
+
+					<div class="panel-heading">
+						<h3 class="panel-title"><b>Current</b></h3>
+					</div>
+
+					<div class="panel-body">
+						<h3>{{current}} Watts</h3>
+					</div>
+
 				</div>
-
-				<div class="panel-body">
-					<h3>{{current}} Watts</h3>
-				</div>
-
 			</div>
-		</div>
 
-    {% if g.user.username %}
-		<div class="col-md-4">
-			<div class="panel panel-primary">
+			<div class="col-md-4">
+				<div class="panel panel-primary">
 
-				<div class="panel-heading">
-					<h3 class="panel-title"><b>AC control</b></h3>
+					<div class="panel-heading">
+						<h3 class="panel-title"><b>Last Update</b></h3>
+					</div>
+
+					<div class="panel-body">
+						<h3>{{last_update}}</h3>
+					</div>
+
 				</div>
-
-				<div class="panel-body">
-					<form method="POST">
-
-						{% if speed == 0 %}
-						<button type="submit" name="AC_OFF" class="btn btn-primary btn-lg disabled">
-  							<h5><b>OFF</b></h5>
-						</button>
-						{% else %}
-						<button type="submit" name="AC_OFF" class="btn btn-default btn-lg">
-  							<h5><b>OFF</b></h5>
-						</button>
-						{% endif %}
-
-						{% if speed == 1 %}
-						<button type="submit" name="AC_1" class="btn btn-success btn-lg disabled">
-  							<h5><b>1</b></h5>
-						</button>
-						{% else %}
-						<button type="submit" name="AC_1" class="btn btn-default btn-lg">
-  							<h5><b>1</b></h5>
-						</button>
-						{% endif %}
-
-						{% if speed == 2 %}
-						<button type="submit" name="AC_2" class="btn btn-warning btn-lg disabled">
-  							<h5><b>2</b></h5>
-						</button>
-						{% else %}
-						<button type="submit" name="AC_2" class="btn btn-default btn-lg">
-  							<h5><b>2</b></h5>
-						</button>
-						{% endif %}
-
-						{% if speed == 3 %}
-						<button type="submit" name="AC_3" class="btn btn-danger btn-lg disabled">
-  							<h5><b>3</b></h5>
-						</button>
-						{% else %}
-						<button type="submit" name="AC_3" class="btn btn-default btn-lg">
-  							<h5><b>3</b></h5>
-						</button>
-						{% endif %}
-					<form>
-				</div>
-
 			</div>
-		</div>
+			<div class="col-md-4">
+				<div class="panel panel-primary">
 
-		<h2><b>Presence</2></h3>
-		
-		<table class="table table-condensed table-bordered">
+					<div class="panel-heading">
+						<h3 class="panel-title"><b>AC Mode</b></h3>
+					</div>
 
-  			<thead>
-  				<tr>
-      				<th>Username</th>
-      				<th>Device</th>
-    			</tr>
-  			</thead>
+					<div class="panel-body">
+						<form method="POST">
 
-  			{% for device in present_devices %}
-  				<tr class="success">
-  					<td class="text-left">User Xpto</td>
-					<td class="text-left">{{ device }}</td>
-				</tr>
-			{% endfor %}
+							<div class="btn-group">
 
-		</table>
+								{% if mode == "Auto" %}
+								<button type="submit" name="AC_Auto" class="btn btn-primary btn-lg disabled">
+									<b>Auto</b>
+								</button>
+								{% else %}
+								<button type="submit" name="AC_Auto" class="btn btn-default btn-lg">
+									<b>Auto</b>
+								</button>
+								{% endif %}
+
+								{% if mode == "Manual" %}
+								<button type="submit" name="AC_Manual" class="btn btn-primary btn-lg disabled">
+									<b>Manual</b>
+								</button>
+								{% else %}
+								<button type="submit" name="AC_Manual" class="btn btn-default btn-lg">
+									<b>Manual</b>
+								</button>
+								{% endif %}
+
+							</div>
+
+							<form>
+
+							</div>
+						</div>
+					</div>
 
 
-		<h2><b>Logs</2></h3>
-		<table class="table table-condensed table-bordered">
+					{% if g.user.username and mode != "Auto" %}
+					<div class="col-md-4">
+						<div class="panel panel-primary">
 
-  			<thead>
-  				<tr>
-      				<th>Timestamp</th>
-      				<th>User</th>
-      				<th>Message</th>
-    			</tr>
-  			</thead>
+							<div class="panel-heading">
+								<h3 class="panel-title"><b>AC speed</b></h3>
+							</div>
 
-  			{% for log in logs %}
-  				<tr>
-  					<td class="text-left">{{ log[0] }}</td>
-					<td class="text-left">{{ log[1] }}</td>
-					<td class="text-left">{{ log[2].encode('ascii', 'ignore') }}</td>
-				</tr>
-			{% endfor %}
+							<div class="panel-body">
 
-		</table>
+								<form method="POST">
 
-    {% endif %}
-    
-</div>
+									<div class="btn-group">
 
-{% endblock %}
+
+										{% if speed == 0 %}
+										<button type="submit" name="AC_OFF" class="btn btn-primary btn-lg disabled">
+											<b>OFF</b>
+										</button>
+										{% else %}
+										<button type="submit" name="AC_OFF" class="btn btn-default btn-lg">
+											<b>OFF</b>
+										</button>
+										{% endif %}
+
+										{% if speed == 1 %}
+										<button type="submit" name="AC_1" class="btn btn-success btn-lg disabled">
+											<b>1</b>
+										</button>
+										{% else %}
+										<button type="submit" name="AC_1" class="btn btn-default btn-lg">
+											<b>1</b>
+										</button>
+										{% endif %}
+
+										{% if speed == 2 %}
+										<button type="submit" name="AC_2" class="btn btn-warning btn-lg disabled">
+											<b>2</b>
+										</button>
+										{% else %}
+										<button type="submit" name="AC_2" class="btn btn-default btn-lg">
+											<b>2</b>
+										</button>
+										{% endif %}
+
+										{% if speed == 3 %}
+										<button type="submit" name="AC_3" class="btn btn-danger btn-lg disabled">
+											<b>3</b>
+										</button>
+										{% else %}
+										<button type="submit" name="AC_3" class="btn btn-default btn-lg">
+											<b>3</b>
+										</button>
+										{% endif %}
+									</div>
+									<form>
+									</div>
+								</div>
+							</div>
+							{% endif %}
+
+
+							{% if g.user.username and setpoint and mode == "Auto" %}
+							<div class="col-md-4">
+								<div class="panel panel-primary">
+
+									<div class="panel-heading">
+										<h3 class="panel-title"><b>AC Setpoint</b></h3>
+									</div>
+
+									<div class="panel-body">
+
+										<form method="POST" name="setpointForm">
+
+											<div id="rangeslider"></div>
+											<br>
+											
+<button type="submit" id="ButtonSetpoint" name="Setpoint" class="btn btn-primary btn-lg" value={{setpoint[0]}}|{{setpoint[1]}}>
+												Save: <span id="rangeval">{{ setpoint[0] }} - {{ setpoint[1] }}</span>
+											</button>
+
+											<form>
+												<script>
+												$(function(){
+													$('#rangeslider').slider({
+														range: true,
+														min: 18.0,
+														step: 0.2,
+														max: 28.0,
+														values: [ {{ setpoint[0] }}, {{ setpoint[1] }} ],
+														slide: function( event, ui ) {
+															$('#rangeval').html(ui.values[0].toFixed(1)+" - "+ui.values[1].toFixed(1));
+															document.getElementById('ButtonSetpoint').value = ui.values[0].toFixed(1)+"|"+ui.values[1].toFixed(1);
+														}
+													});
+												});
+												</script>
+											</div>
+										</div>
+									</div>
+									{% endif %}
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+
+
+					{% if g.user.username %}
+					<h2><b>Presence</2></h3>
+						<div class="well well-lg" style="max-width:900px;">		
+							<div class="row">
+
+								<table class="table table-condensed table-bordered">
+
+									<thead>
+										<tr>
+											<th>Username</th>
+											<th>Device</th>
+										</tr>
+									</thead>
+
+									{% for device in present_devices %}
+									<tr class="success">
+										<td class="text-left">User Xpto</td>
+										<td class="text-left">{{ device }}</td>
+									</tr>
+									{% endfor %}
+
+								</table>
+							</div>
+						</div>
+
+						<h2><b>Logs</2></h3>
+							<div class="well well-lg" style="max-width:900px;">		
+								<div class="row">
+									<table class="table table-condensed table-bordered">
+
+										<thead>
+											<tr>
+												<th>Timestamp</th>
+												<th>User</th>
+												<th>Message</th>
+											</tr>
+										</thead>
+
+										{% for log in logs %}
+										<tr>
+											<td class="text-left">{{ log[0] }}</td>
+											<td class="text-left">{{ log[1] }}</td>
+											<td class="text-left">{{ log[2].encode('ascii', 'ignore') }}</td>
+										</tr>
+										{% endfor %}
+
+									</table>
+
+									{% endif %}
+
+								</div>
+
+								{% endblock %}

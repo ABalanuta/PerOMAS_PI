@@ -21,6 +21,7 @@ from communication.Pub_Sub import MQTTC
 from web.web import *
 from Scheduler_Manager import ScheduleManager
 from Storage_Handler import StorageHandler
+from Logic_Engine import Logic_Engine
 
 
 
@@ -137,6 +138,13 @@ if __name__ == '__main__':
 		hub["SCHEDULE MANAGER"] = sm
 		if DEBUG:
 			print "Scheduler Manager started automation"
+
+		#Starts the Logic Engine
+		le = Logic_Engine(hub)
+		le.start()
+		hub["LOGIC ENGINE"] = le
+		if DEBUG:
+			print "Logic Engine started automation"
 		
 		#Starts Web Server
 		#Must be last (Blocking)

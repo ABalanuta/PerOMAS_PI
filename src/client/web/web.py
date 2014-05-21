@@ -79,8 +79,11 @@ def index():
     actual_luminosity = "--"
     actual_current = "--"
     ac_speed = "--"
+    mode = "--"
+    setpoint = None
     present_devices = None
     logs = getLogData(20)
+
 
     if app.config["HUB"]:
         hub = app.config["HUB"]
@@ -102,12 +105,18 @@ def index():
         if "BLUETOOTH" in hub.keys():
             present_devices = hub["BLUETOOTH"].get_traked_devices()
 
+        if "LOGIC ENGINE" in hub.keys():
+            mode = hub["LOGIC ENGINE"].getACMode()
+            setpoint = hub["LOGIC ENGINE"].get_AC_Setpoint()
+
     return render_template("index.html",
                            temp=actual_temperature,
                            humid=actual_humidity,
                            last_update=last_update,
                            lux=actual_luminosity,
                            current=actual_current,
+                           mode=mode,
+                           setpoint=setpoint,
                            speed=ac_speed,
                            present_devices=present_devices,
                            logs=logs
@@ -232,12 +241,42 @@ def process_index_post():
 
     if app.config["HUB"]:
         hub = app.config["HUB"]
+        user = g.user.username
+        storage = None
+        relay = None
+        logic = None
 
-        if "RELAY" in hub.keys() and "STORAGE HANDLER" in hub.keys():
-            
-            relay = hub["RELAY"]
+        if "STORAGE HANDLER" in hub.keys():
             storage = hub["STORAGE HANDLER"]
-            user = g.user.username
+
+        if "LOGIC ENGINE" in hub.keys():
+            logic = hub["LOGIC ENGINE"]
+        
+        if "RELAY" in hub.keys():
+            relay = hub["RELAY"]
+
+        if logic and storage:
+
+            if "Setpoint" in request.form.keys():
+                new_setpoint = [float(request.form["Setpoint"].split('|')[0]), float(request.form["Setpoint"].split('|')[1])]
+                old_setpoint = logic.get_AC_Setpoint()
+
+                if new_setpoint[0] != old_setpoint[0] or new_setpoint[1] != old_setpoint[1]:
+                    print "Diff"
+                    logic.set_AC_Setpoint(new_setpoint[0], new_setpoint[1])
+                    storage.log("AC Setpoint changed to Min="+str(new_setpoint[0])+" and Max:"+str(new_setpoint[1]), user)
+
+            if "AC_Auto" in request.form.keys():
+                if logic.getACMode() != "Auto":
+                    logic.setACMode("Auto")
+                    storage.log("Turned Automatic AC Mode", user)
+                
+            elif "AC_Manual" in request.form.keys():
+                if logic.getACMode() != "Manual":
+                    logic.setACMode("Manual")
+                    storage.log("Turned Manual AC Mode", user)
+
+        if relay and storage:
 
             if "AC_OFF" in request.form.keys():
                 if relay.get_ac_speed() != 0:

@@ -13,10 +13,14 @@ from time import sleep
 class Logic_Engine(Thread):
 
 	DEBUG 					= False
-	SLEEP_BETWEEN_CHECKS 	= 0.5	#sleeps X seconds befor cheking the need of executing any task
+	SLEEP_BETWEEN_CHECKS 	= 1	#sleeps X seconds befor cheking the need of executing any task
 
 	def __init__(self, hub):
 		Thread.__init__(self)
+		self.hub = hub
+		self.ac_mode_auto = True
+		self.ac_min_target = 22
+		self.ac_max_target = 24.5
 
 	def stop(self):
 		self.stopped = True
@@ -30,7 +34,54 @@ class Logic_Engine(Thread):
 				sleep(self.SLEEP_BETWEEN_CHECKS)
 			
 	def update(self):
-		print "Update"
+		if self.DEBUG:
+			print "Update"
+
+		if self.ac_mode_auto:
+			self.checkTermostatLogic()
+
+
+	def checkTermostatLogic(self):
+
+		if self.hub["TEMPERATURE"] and self.hub["RELAY"]:
+
+			curr_temp = self.hub["TEMPERATURE"].getTemperature()
+			relay = self.hub["RELAY"]
+
+			#Turn ON Fan if too Hot
+			if curr_temp > self.ac_max_target:
+				relay.set_ac_speed(1)
+			#Turn OFF FAN if too Cold
+			elif curr_temp < self.ac_min_target:
+				relay.set_ac_speed(0)
+
+			#Turn OFF FAN if temp Perfect
+			else:
+				relay.set_ac_speed(0)
+
+		else:
+			print "Error, no TEMPERATURE Sensor or Relay Object"
+
+	def getACMode(self):
+		if self.ac_mode_auto:
+			return "Auto"
+		else:
+			return "Manual"
+
+	def setACMode(self, mode):
+		if mode == "Auto":
+			self.ac_mode_auto = True
+		elif mode == "Manual":
+			self.ac_mode_auto = False
+
+	def set_AC_Setpoint(self, ac_min, ac_max):
+		self.ac_min_target = float(ac_min)
+		self.ac_max_target = float(ac_max)
+		if self.DEBUG:
+			print "New AC setpoint", self.ac_min_target, self.ac_max_target 
+
+	def get_AC_Setpoint(self):
+		return [self.ac_min_target, self.ac_max_target]
 
 #Runs only if called
 if __name__ == "__main__":
