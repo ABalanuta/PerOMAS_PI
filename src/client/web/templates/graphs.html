@@ -28,19 +28,19 @@
 					</div>
 				</div>
 
-        <div class="panel panel-primary">
-          <div class="panel-heading">
-            <h3 class="panel-title">Current</h3>
-          </div>
-          <div class="panel-body">
-            <div id="graphdivCurrent" style="width:800px; height:300px;"></div>
-          </div>
-        </div>
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h3 class="panel-title">Current</h3>
+					</div>
+					<div class="panel-body">
+						<div id="graphdivCurrent" style="width:800px; height:300px;"></div>
+					</div>
+				</div>
 
 
 				<script type="text/javascript">
 
-					g = new Dygraph(
+				g = new Dygraph(
 
 	    			// containing div
 	    			document.getElementById("graphdiv"),
@@ -56,21 +56,21 @@
 	    				//labelsSeparateLines: true,
 	    				rollPeriod: 3,
 	    				digitsAfterDecimal: 1,
-      					showRoller: true,
-      					fillGraph: true,
+	    				showRoller: true,
+	    				fillGraph: true,
       					//stepPlot: true,
 
-	    				series : {
+      					series : {
 
-	    					Humidity : {
-	    						axis : 'y2'
-	    					}
-	    				}
+      						Humidity : {
+      							axis : 'y2'
+      						}
+      					}
 
-	    			}
-	    			);
+      				}
+      				);
 
-					g2 = new Dygraph(
+				g2 = new Dygraph(
 
 	    			// containing div
 	    			document.getElementById("graphdivLuminosity"),
@@ -85,68 +85,67 @@
 	    				//labelsSeparateLines: true,
 	    				rollPeriod: 1,
 	    				digitsAfterDecimal: 1,
-      					showRoller: true,
-      					fillGraph: true,
-      					drawPoints: true,
+	    				showRoller: true,
+	    				fillGraph: true,
+	    				drawPoints: true,
       					//stepPlot: true,
-	    			}
-	    			);
+      				}
+      				);
 
-          g3 = new Dygraph(
+				g3 = new Dygraph(
 
             // containing div
             document.getElementById("graphdivCurrent"),
             data_watt,
             {
-              ylabel: 'Current (Watt)',
-              labels: ["Date", "Current"], 
-              labelsDivStyles: { 'textAlign': 'center' },
-              colors: ["green"], 
+            	ylabel: 'Current (Watt)',
+            	labels: ["Date", "Current"], 
+            	labelsDivStyles: { 'textAlign': 'center' },
+            	colors: ["green"], 
               //showRangeSelector: true,
               //strokeWidth: 1.5,
               //labelsSeparateLines: true,
               rollPeriod: 15,
               digitsAfterDecimal: 1,
-                showRoller: true,
-                fillGraph: true,
-                drawPoints: true,
+              showRoller: true,
+              fillGraph: true,
+              drawPoints: true,
                 //stepPlot: true,
             }
             );
 
 
-					function data_temp() {
-						return "" +
+				function data_temp() {
+					return "" +
 
-						{% for points in data.TempHumid %}
-							"{{points[0]}}, {{points[1]}}, {{points[2]}}\n" +
-						{% endfor %}
-						
-						"";
-					}
+					{% for points in data.TempHumid %}
+					"{{points[0]}}, {{points[1]}}, {{points[2]}}\n" +
+					{% endfor %}
 
-					function data_lux() {
-						return "" +
+					"";
+				}
 
-						{% for points in data.Luminosity %}
-							"{{points[0]}}, {{points[1]}}\n" +
-						{% endfor %}
-						
-						"";
-					}
+				function data_lux() {
+					return "" +
 
-          function data_watt() {
-            return "" +
+					{% for points in data.Luminosity %}
+					"{{points[0]}}, {{points[1]}}\n" +
+					{% endfor %}
 
-            {% for points in data.Current %}
-              "{{points[0]}}, {{points[1]}}\n" +
-            {% endfor %}
-            
-            "";
-          }
+					"";
+				}
+
+				function data_watt() {
+					return "" +
+
+					{% for points in data.Current %}
+					"{{points[0]}}, {{points[1]}}\n" +
+					{% endfor %}
+
+					"";
+				}
 
 				</script>
-
 			</div>
 		</div>
 	</div>
