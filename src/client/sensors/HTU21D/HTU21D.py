@@ -40,18 +40,27 @@ class TempHumid(Thread):
 			self.update()
 			sleep(self.update_interval)
 
+
 	def update(self):
-		try:
-			self.temp = self.executable.read_temperature() - 1.9
+
+		while True:
+
+			try:
+				t = self.executable.read_temperature() - 1.9
+				h = self.executable.read_humidity()  + 4
+			except:
+				print str(datetime.now()), "HTU21D sensor Read Error"
+				sleep(0.05)
+				continue
+			
+			self.temp = t
 			self.temperature_memory_values.append(self.temp)
 
-			self.humid = self.executable.read_humidity()  + 4
+			self.humid = h
 			self.humidity_memory_values.append(self.humid)
-		
 			self.last_update = datetime.now()
+			break
 
-		except:
-			print "HTU21D sensor Read Error"
 
 	#Dumps the cache of temperature values
 	def dumpTemperatureMemoryValues(self):

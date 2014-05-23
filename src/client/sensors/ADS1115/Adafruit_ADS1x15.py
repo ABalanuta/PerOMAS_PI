@@ -507,7 +507,13 @@ class ADS1x15:
   def getLastConversionResults(self):
     "Returns the last ADC conversion result in mV"
     # Read the conversion results
-    result = self.i2c.readList(self.__ADS1015_REG_POINTER_CONVERT, 2)
+    while True:
+      result = self.i2c.readList(self.__ADS1015_REG_POINTER_CONVERT, 2)
+      if isinstance(list(), type(result)):
+        break
+      time.sleep(0.05)
+      print str(datetime.now()), "ADC sensor Read Error"
+
     if (self.ic == self.__IC_ADS1015):
     	# Shift right 4 bits for the 12-bit ADS1015 and convert to mV
     	return ( ((result[0] << 8) | (result[1] & 0xFF)) >> 4 )*self.pga/2048.0
