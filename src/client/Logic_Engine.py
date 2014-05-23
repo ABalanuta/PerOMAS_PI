@@ -14,14 +14,14 @@ class Logic_Engine(Thread):
 
 	DEBUG 					= False
 	SLEEP_BETWEEN_CHECKS 	= 1	#sleeps X seconds befor cheking the need of executing any task
-	MARGIN 					= 0.2
+	MARGIN 					= 0.3
 
 	def __init__(self, hub):
 		Thread.__init__(self)
 		self.hub = hub
 		self.ac_mode_auto = True
 		self.ac_min_target = 20
-		self.ac_max_target = 28
+		self.ac_max_target = 23
 
 	def stop(self):
 		self.stopped = True
@@ -57,14 +57,15 @@ class Logic_Engine(Thread):
 			#	return
 
 			#Turn ON Fan if too Hot
-			if curr_temp > self.ac_max_target:
+			if curr_temp > self.ac_max_target+self.MARGIN:
 				relay.set_ac_speed(1)
+
 			#Turn OFF FAN if too Cold
 			elif curr_temp < self.ac_min_target:
 				relay.set_ac_speed(0)
 
 			#Turn OFF FAN if temp Perfect
-			else:
+			elif curr_temp < self.ac_max_target-self.MARGIN:
 				relay.set_ac_speed(0)
 
 		else:

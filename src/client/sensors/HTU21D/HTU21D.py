@@ -43,7 +43,7 @@ class TempHumid(Thread):
 
 	def update(self):
 
-		while True:
+		while not self.stopped:
 
 			try:
 				t = self.executable.read_temperature() - 1.9

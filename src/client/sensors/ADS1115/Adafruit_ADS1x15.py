@@ -512,7 +512,7 @@ class ADS1x15:
       if isinstance(list(), type(result)):
         break
       time.sleep(0.05)
-      print str(datetime.now()), "ADC sensor Read Error"
+      print "ADC sensor Read Error"
 
     if (self.ic == self.__IC_ADS1015):
     	# Shift right 4 bits for the 12-bit ADS1015 and convert to mV
