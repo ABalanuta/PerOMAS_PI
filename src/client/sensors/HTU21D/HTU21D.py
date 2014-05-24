@@ -80,7 +80,7 @@ class TempHumid(Thread):
 		return self.humid
 
 	def getLastUpdate(self):
-		return str(self.last_update).split(".")[0]
+		return str(self.last_update).split(".")[0].split()[1]
 
 #Runs only if called
 if __name__ == "__main__":

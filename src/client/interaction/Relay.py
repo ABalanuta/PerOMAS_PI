@@ -67,6 +67,30 @@ class Relay():
 					break			
 		return on_speed
 
+	def get_ac_mode(self):
+		
+		mode = self.RELAY["AC_HEAT_COOL"]["State"]
+
+		if mode:
+			return "Heat"
+		else:
+			return "Cool"
+
+	
+	def set_ac_mode(self, mode):
+
+		pin = self.RELAY["AC_HEAT_COOL"]["Pin"]
+		
+		if mode == "Heat":
+			self.RELAY["AC_HEAT_COOL"]["State"] = True
+			GPIO.output(pin, True)
+
+		elif mode == "Cool":
+			self.RELAY["AC_HEAT_COOL"]["State"] = False
+			GPIO.output(pin, False)
+
+
+
 	#def set_lights_x1_state(self, state):
 	#	if self.DEBUG:
 	#		print "Relay: set_lights_x1_state:", state

@@ -1,287 +1,256 @@
 {% extends "base.html" %}
-
 {% block content %}
-
-
 <h2><b>Ambient</2></h3>
-
-
-	<div class="well well-lg" style="max-width:900px;">		
-		<div class="row">
-
-
-
-
-			<div class="col-md-3">
-				<div class="panel panel-primary">
-					<div class="panel-heading">
-						<h3 class="panel-title"><b>Temperature</b></h3>
-					</div>
-					<div class="panel-body">
-						<h3>{{temp}} ºC </h3>
-					</div>
+<div class="well container-fluid" style="max-width:900px;" >
+	<div class="row">
+		<div class="col-md-3">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><b>Temperature</b></h3>
+				</div>
+				<div class="panel-body">
+					<h4><b>{{temp}} ºC </b></h4>
 				</div>
 			</div>
-
-
-			<div class="col-md-3">
-				<div class="panel panel-primary">
-
-					<div class="panel-heading">
-						<h3 class="panel-title"><b>Relative Humidity</b></h3>
-					</div>
-					<div class="panel-body">
-						<h3>{{humid}} %</h3>
-					</div>
+		</div>
+		<div class="col-md-3">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><b>Relative Humidity</b></h3>
+				</div>
+				<div class="panel-body">
+					<h4><b>{{humid}} %</b></h4>
 				</div>
 			</div>
-
-
-			<div class="col-md-3">
-				<div class="panel panel-primary">
-
-					<div class="panel-heading">
-						<h3 class="panel-title"><b>Luminosity</b></h3>
-					</div>
-
-					<div class="panel-body">
-						<h3>{{lux}} Lux</h3>
-					</div>
-
+		</div>
+		<div class="col-md-3">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><b>Luminosity</b></h3>
+				</div>
+				<div class="panel-body">
+					<h4><b>{{lux}} Lux</b></h4>
 				</div>
 			</div>
-
-
-			<div class="col-md-3">
-				<div class="panel panel-primary">
-
-					<div class="panel-heading">
-						<h3 class="panel-title"><b>Current</b></h3>
-					</div>
-
-					<div class="panel-body">
-						<h3>{{current}} Watts</h3>
-					</div>
-
+		</div>
+		<div class="col-md-3">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><b>Power</b></h3>
+				</div>
+				<div class="panel-body">
+					<h4><b>{{current}} Watts</b></h4>
 				</div>
 			</div>
-
-			<div class="col-md-4">
-				<div class="panel panel-primary">
-
-					<div class="panel-heading">
-						<h3 class="panel-title"><b>Last Update</b></h3>
-					</div>
-
-					<div class="panel-body">
-						<h3>{{last_update}}</h3>
-					</div>
-
+		</div>
+		<div class="col-md-3">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><b>Last Update</b></h3>
+				</div>
+				<div class="panel-body">
+					<h4><b>{{last_update}}</b></h4>
 				</div>
 			</div>
-
-			{% if g.user.username %}
-			<div class="col-md-4">
-				<div class="panel panel-primary">
-
-					<div class="panel-heading">
-						<h3 class="panel-title"><b>AC Mode</b></h3>
-					</div>
-
-					<div class="panel-body">
-						<form method="POST">
-
-							<div class="btn-group">
-
-								{% if mode == "Auto" %}
-								<button type="submit" name="AC_Auto" class="btn btn-primary btn-lg disabled">
-									<b>Auto</b>
-								</button>
-								{% else %}
-								<button type="submit" name="AC_Auto" class="btn btn-default btn-lg">
-									<b>Auto</b>
-								</button>
-								{% endif %}
-
-								{% if mode == "Manual" %}
-								<button type="submit" name="AC_Manual" class="btn btn-primary btn-lg disabled">
-									<b>Manual</b>
-								</button>
-								{% else %}
-								<button type="submit" name="AC_Manual" class="btn btn-default btn-lg">
-									<b>Manual</b>
-								</button>
-								{% endif %}
-
-							</div>
-
-							<form>
-
-							</div>
+		</div>
+		{% if g.user.username %}
+		<div class="col-md-3">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><b>AC Mode</b></h3>
+				</div>
+				<div class="panel-body">
+					<form method="POST">
+						<div class="btn-group vcenter">
+							{% if mode == "Auto" %}
+							<button type="submit" name="AC_Auto" class="btn btn-primary disabled">
+							<b>Auto</b>
+							</button>
+							{% else %}
+							<button type="submit" name="AC_Auto" class="btn btn-default">
+							<b>Auto</b>
+							</button>
+							{% endif %}
+							{% if mode == "Manual" %}
+							<button type="submit" name="AC_Manual" class="btn btn-primary disabled">
+							<b>Manual</b>
+							</button>
+							{% else %}
+							<button type="submit" name="AC_Manual" class="btn btn-default">
+							<b>Manual</b>
+							</button>
+							{% endif %}
+						</div>
+						<form>
 						</div>
 					</div>
-					{% endif %}
-
-					{% if g.user.username and mode != "Auto" %}
-					<div class="col-md-4">
-						<div class="panel panel-primary">
-
-							<div class="panel-heading">
-								<h3 class="panel-title"><b>AC speed</b></h3>
-							</div>
-
-							<div class="panel-body">
-								<br>
-								<form method="POST">
-
+				</div>
+				{% endif %}
+				{% if g.user.username and mode != "Auto" %}
+				<div class="col-md-6">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h3 class="panel-title"><b>AC Control</b></h3>
+						</div>
+						<div class="panel-body">
+							<form method="POST">
+								<div class="row vcenter">
 									<div class="btn-group">
-
-
+										{% if ac_heat_or_cool == "Cool" %}
+										<button type="submit" name="AC_COOL" class="btn btn-info disabled">
+										<span class="glyphicon glyphicon-asterisk"></span>
+										<b>Cool</b>
+										</button>
+										{% else %}
+										<button type="submit" name="AC_COOL" class="btn btn-info">
+										<span class="glyphicon glyphicon-asterisk"></span>
+										<b>Cool</b>
+										</button>
+										{% endif %}
+										{% if ac_heat_or_cool == "Heat" %}
+										<button type="submit" name="AC_HEAT" class="btn btn-danger disabled">
+										<span class="glyphicon glyphicon-fire"></span>
+										<b>Heat</b>
+										</button>
+										{% else %}
+										<button type="submit" name="AC_HEAT" class="btn btn-danger">
+										<span class="glyphicon glyphicon-fire"></span>
+										<b>Heat</b>
+										</button>
+										{% endif %}
+									</div>
+									
+									
+									<div class="btn-group" style="margin-left: 20px;">
 										{% if speed == 0 %}
-										<button type="submit" name="AC_OFF" class="btn btn-primary btn-lg disabled">
-											<b>OFF</b>
+										<button type="submit" name="AC_OFF" class="btn btn-primary disabled">
+										<b>OFF</b>
 										</button>
 										{% else %}
-										<button type="submit" name="AC_OFF" class="btn btn-default btn-lg">
-											<b>OFF</b>
+										<button type="submit" name="AC_OFF" class="btn btn-default">
+										<b>OFF</b>
 										</button>
 										{% endif %}
-
 										{% if speed == 1 %}
-										<button type="submit" name="AC_1" class="btn btn-success btn-lg disabled">
-											<b>1</b>
+										<button type="submit" name="AC_1" class="btn btn-success disabled">
+										<b>1</b>
 										</button>
 										{% else %}
-										<button type="submit" name="AC_1" class="btn btn-default btn-lg">
-											<b>1</b>
+										<button type="submit" name="AC_1" class="btn btn-default">
+										<b>1</b>
 										</button>
 										{% endif %}
-
 										{% if speed == 2 %}
-										<button type="submit" name="AC_2" class="btn btn-warning btn-lg disabled">
-											<b>2</b>
+										<button type="submit" name="AC_2" class="btn btn-warning  disabled">
+										<b>2</b>
 										</button>
 										{% else %}
-										<button type="submit" name="AC_2" class="btn btn-default btn-lg">
-											<b>2</b>
+										<button type="submit" name="AC_2" class="btn btn-default ">
+										<b>2</b>
 										</button>
 										{% endif %}
-
 										{% if speed == 3 %}
-										<button type="submit" name="AC_3" class="btn btn-danger btn-lg disabled">
-											<b>3</b>
+										<button type="submit" name="AC_3" class="btn btn-danger disabled">
+										<b>3</b>
 										</button>
 										{% else %}
-										<button type="submit" name="AC_3" class="btn btn-default btn-lg">
-											<b>3</b>
+										<button type="submit" name="AC_3" class="btn btn-default">
+										<b>3</b>
 										</button>
 										{% endif %}
 									</div>
-									<form>
-									</div>
+									
 								</div>
-								<span></span>
 							</div>
-							{% endif %}
-
-
-							{% if g.user.username and setpoint and mode == "Auto" %}
-							<div class="col-md-4">
-								<div class="panel panel-primary">
-
-									<div class="panel-heading">
-										<h3 class="panel-title"><b>AC Setpoint</b></h3>
-									</div>
-
-									<div class="panel-body">
-
-										<form method="POST" name="setpointForm">
-
-											<div id="rangeslider"></div>
-											<br>
-											
-<button type="submit" id="ButtonSetpoint" name="Setpoint" class="btn btn-primary " value={{setpoint[0]}}|{{setpoint[1]}}>
+							<form>
+							</div>
+						</div>
+						{% endif %}
+						{% if g.user.username and setpoint and mode == "Auto" %}
+						<div class="col-md-6">
+							<div class="panel panel-primary">
+								<div class="panel-heading">
+									<h3 class="panel-title"><b>AC Setpoint</b></h3>
+								</div>
+								<div class="panel-body">
+									<form method="POST" name="setpointForm">
+										<div class="row">
+											<div class="col-md-7 vcenter">
+												<div id="rangeslider"></div>
+												
+											</div>
+											<div class="col-md-1 vcenter">
+												<button type="submit" id="ButtonSetpoint" name="Setpoint" class="btn btn-primary " value={{setpoint[0]}}|{{setpoint[1]}}>
 												Save: <span id="rangeval">{{ setpoint[0] }} - {{ setpoint[1] }}</span>
-											</button>
-
-											<form>
-												<script>
-												$(function(){
-													$('#rangeslider').slider({
-														range: true,
-														min: 18.0,
-														step: 0.5,
-														max: 28.0,
-														values: [ {{ setpoint[0] }}, {{ setpoint[1] }} ],
-														slide: function( event, ui ) {
-															$('#rangeval').html(ui.values[0].toFixed(1)+" - "+ui.values[1].toFixed(1));
-															document.getElementById('ButtonSetpoint').value = ui.values[0].toFixed(1)+"|"+ui.values[1].toFixed(1);
-														}
-													});
-												});
-												</script>
+												</button>
 											</div>
 										</div>
+										
+										
+										
+										<form>
+											<script>
+											$(function(){
+												$('#rangeslider').slider({
+													range: true,
+													min: 18.0,
+													step: 0.5,
+													max: 28.0,
+													values: [ {{ setpoint[0] }}, {{ setpoint[1] }} ],
+													slide: function( event, ui ) {
+														$('#rangeval').html(ui.values[0].toFixed(1)+" - "+ui.values[1].toFixed(1));
+														document.getElementById('ButtonSetpoint').value = ui.values[0].toFixed(1)+"|"+ui.values[1].toFixed(1);
+													}
+												});
+											});
+											</script>
+										</div>
 									</div>
-									{% endif %}
 								</div>
+								{% endif %}
 							</div>
 						</div>
 					</div>
-
-
-
-
-					{% if g.user.username %}
-					<h2><b>Presence</2></h3>
-						<div class="well well-lg" style="max-width:900px;">		
-							<div class="row">
-
-								<table class="table table-condensed table-bordered">
-
-									<thead>
-										<tr>
-											<th>Username</th>
-											<th>Device</th>
-										</tr>
-									</thead>
-
-									{% for device in present_devices %}
-									<tr class="success">
-										<td class="text-left">User Xpto</td>
-										<td class="text-left">{{ device }}</td>
-									</tr>
-									{% endfor %}
-
-								</table>
-							</div>
-						</div>
-
-						<h2><b>Logs</2></h3>
-							<div class="well well-lg" style="max-width:900px;">		
-								<div class="row">
-									<table class="table table-condensed table-bordered">
-
-										<thead>
-											<tr>
-												<th>Timestamp</th>
-												<th>User</th>
-												<th>Message</th>
-											</tr>
-										</thead>
-
-										{% for log in logs %}
-										<tr>
-											<td class="text-left">{{ log[0] }}</td>
-											<td class="text-left">{{ log[1] }}</td>
-											<td class="text-left">{{ log[2].encode('ascii', 'ignore') }}</td>
-										</tr>
-										{% endfor %}
-
-									</table>
-
-									{% endif %}
-
-								</div>
-
-								{% endblock %}
+				</div>
+				{% if g.user.username %}
+				<h2><b>Presence</2></h3>
+				<div class="well well-lg" style="max-width:900px;">
+					<div class="row">
+						<table class="table table-condensed table-bordered">
+							<thead>
+								<tr>
+									<th>Username</th>
+									<th>Device</th>
+								</tr>
+							</thead>
+							{% for device in present_devices %}
+							<tr class="success">
+								<td class="text-left">User Xpto</td>
+								<td class="text-left">{{ device }}</td>
+							</tr>
+							{% endfor %}
+						</table>
+					</div>
+				</div>
+				<h2><b>Logs</2></h3>
+				<div class="well well-lg" style="max-width:900px;">
+					<div class="row">
+						<table class="table table-condensed table-bordered">
+							<thead>
+								<tr>
+									<th>Timestamp</th>
+									<th>User</th>
+									<th>Message</th>
+								</tr>
+							</thead>
+							{% for log in logs %}
+							<tr>
+								<td class="text-left">{{ log[0] }}</td>
+								<td class="text-left">{{ log[1] }}</td>
+								<td class="text-left">{{ log[2].encode('ascii', 'ignore') }}</td>
+							</tr>
+							{% endfor %}
+						</table>
+						{% endif %}
+					</div>
+					{% endblock %}

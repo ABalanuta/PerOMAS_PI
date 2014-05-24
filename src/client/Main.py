@@ -170,7 +170,10 @@ if __name__ == '__main__':
 			#	print "\t", device["Name"], "seen ", (datetime.now() - device["Last seen"]).total_seconds(), "seconds ago !"
 			#print "\n"
 			
-	except:
+	except Exception as inst:
+		print "Exception"
+		print type(inst)     # the exception instance
+		print inst.args      # arguments stored in .args
 		raise
 
 

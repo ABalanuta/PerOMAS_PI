@@ -79,10 +79,11 @@ def index():
     actual_luminosity = "--"
     actual_current = "--"
     ac_speed = "--"
-    mode = "--"
-    setpoint = None
+    ac_mode = "--"
+    ac_setpoint = None
+    ac_heat_or_cool = None
     present_devices = None
-    logs = getLogData(20)
+    logs = getLogData(10)
 
 
     if app.config["HUB"]:
@@ -101,13 +102,14 @@ def index():
 
         if "RELAY" in hub.keys():
             ac_speed = hub["RELAY"].get_ac_speed()
+            ac_heat_or_cool = hub["RELAY"].get_ac_mode()
 
         if "BLUETOOTH" in hub.keys():
             present_devices = hub["BLUETOOTH"].get_traked_devices()
 
         if "LOGIC ENGINE" in hub.keys():
-            mode = hub["LOGIC ENGINE"].getACMode()
-            setpoint = hub["LOGIC ENGINE"].get_AC_Setpoint()
+            ac_mode = hub["LOGIC ENGINE"].getACMode()
+            ac_setpoint = hub["LOGIC ENGINE"].get_AC_Setpoint()
 
     return render_template("index.html",
                            temp=actual_temperature,
@@ -115,10 +117,11 @@ def index():
                            last_update=last_update,
                            lux=actual_luminosity,
                            current=actual_current,
-                           mode=mode,
-                           setpoint=setpoint,
+                           mode=ac_mode,
+                           setpoint=ac_setpoint,
                            speed=ac_speed,
                            present_devices=present_devices,
+                           ac_heat_or_cool=ac_heat_or_cool,
                            logs=logs
                            )
 
@@ -227,7 +230,7 @@ def getGraphData():
     else:
         return {}
 
-@app.cache.cached(timeout=30, key_prefix='LogData')
+@app.cache.cached(timeout=10, key_prefix='LogData')
 def getLogData(num):
     if app.config["HUB"]:
         hub = app.config["HUB"]
@@ -255,6 +258,8 @@ def process_index_post():
         if "RELAY" in hub.keys():
             relay = hub["RELAY"]
 
+        print request.form.keys()
+
         if logic and storage:
 
             if "Setpoint" in request.form.keys():
@@ -276,6 +281,16 @@ def process_index_post():
                     storage.log("Turned Manual AC Mode", user)
 
         if relay and storage:
+            
+            if "AC_COOL" in request.form.keys():
+                if relay.get_ac_mode() != "Cool":
+                    relay.set_ac_mode("Cool")
+                    storage.log("Changed AC Mode to Cooling", user)
+
+            if "AC_HEAT" in request.form.keys():
+                if relay.get_ac_mode() != "Heat":
+                    relay.set_ac_mode("Heat")
+                    storage.log("Changed AC Mode to Heating", user)
 
             if "AC_OFF" in request.form.keys():
                 if relay.get_ac_speed() != 0:

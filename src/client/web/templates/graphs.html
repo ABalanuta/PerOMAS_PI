@@ -30,7 +30,7 @@
 
 				<div class="panel panel-primary">
 					<div class="panel-heading">
-						<h3 class="panel-title">Current</h3>
+						<h3 class="panel-title">Power</h3>
 					</div>
 					<div class="panel-body">
 						<div id="graphdivCurrent" style="width:800px; height:300px;"></div>
@@ -98,14 +98,14 @@
             document.getElementById("graphdivCurrent"),
             data_watt,
             {
-            	ylabel: 'Current (Watt)',
-            	labels: ["Date", "Current"], 
+            	ylabel: 'Power (Watt)',
+            	labels: ["Date", "Power"], 
             	labelsDivStyles: { 'textAlign': 'center' },
             	colors: ["green"], 
               //showRangeSelector: true,
               //strokeWidth: 1.5,
               //labelsSeparateLines: true,
-              rollPeriod: 15,
+              rollPeriod: 1,
               digitsAfterDecimal: 1,
               showRoller: true,
               fillGraph: true,
