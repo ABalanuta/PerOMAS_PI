@@ -217,7 +217,7 @@ class BTDetector(Thread):
 		if MAC not in self.traking_devices:
 			self.traking_devices.add(MAC)
 
-			if self. db:
+			if self.db:
 				while "STORAGE HANDLER" not in self.hub.keys():
 					sleep(0.2)
 
@@ -234,7 +234,7 @@ class BTDetector(Thread):
 	def get_discovered_devices(self):		
 		return self.seen_devices
 	
-	#returns a list of trackeddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd devices that where observed lastly
+	#returns a list of tracked devices that where observed lastly
 	def get_traked_devices(self):
 		
 		ret = []
