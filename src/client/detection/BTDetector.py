@@ -246,7 +246,7 @@ class BTDetector(Thread):
 	def get_discovered_devices(self):		
 		return self.seen_devices
 	
-	#returns a list of trackeddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd devices that where observed lastly
+	#returns a list of tracked devices that where observed lastly
 	def get_traked_devices(self):
 		
 		ret = []

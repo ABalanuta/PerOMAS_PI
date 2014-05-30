@@ -11,6 +11,7 @@ import time, signal, sys
 from time import sleep
 from datetime import datetime
 from sensors.HTU21D.HTU21D import TempHumid #Temp/Humid
+from sensors.OPENWEATHERMAPAPI.OpenWeatherMapAPI import OpenWeatherMapAPI #Exterior Temp/Humid
 from sensors.TSL2561.TSL2561 import TSL2561	#Lux
 from sensors.ADS1115.ADS1115 import ADS1115	#Current
 from detection.WifiLocation import WifiDetector
@@ -45,13 +46,6 @@ if __name__ == '__main__':
 
 				if value.stop:
 					value.stop()
-
-		#Storage stops Last
-		#if "STORAGE HANDLER" in hub.keys():
-		#	if DEBUG:
-		#		print "Stopping STORAGE HANDLER"
-		#	hub["STORAGE HANDLER"].stop()
-				
 		sys.exit(0)
 	
 	signal.signal(signal.SIGINT, signal_handler)
@@ -81,6 +75,14 @@ if __name__ == '__main__':
 		if DEBUG:
 			print "T/H sensor is ON"
 
+		#Start Extenal Temperature/Humidity Sensor
+		ext_th = OpenWeatherMapAPI(hub)
+		hub["EXTERNAL TEMPERATURE"] = ext_th
+		hub["EXTERNAL HUMIDITY"] = ext_th
+		if DEBUG:
+			print "External T/H sensor is ON"
+
+		
 		#Start Luminosity Sensor
 		lux = TSL2561(hub)
 		lux.start()
@@ -175,8 +177,5 @@ if __name__ == '__main__':
 		print type(inst)     # the exception instance
 		print inst.args      # arguments stored in .args
 		raise
-
-
-
-
-
+	
+	print "The End"

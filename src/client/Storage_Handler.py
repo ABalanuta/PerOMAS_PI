@@ -84,6 +84,7 @@ class StorageHandler():
 
 			#Data
 			c.execute('CREATE TABLE '+DataType.TEMPERATUREHUMIDITY+' (TimeStamp TIMESTAMP, Temperature REAL, Humidity REAL)')
+			c.execute('CREATE TABLE '+DataType.EXTERIOR_TEMPERATURE_HUMIDITY+' (TimeStamp TIMESTAMP, Temperature REAL, Humidity REAL)')
 			c.execute('CREATE TABLE '+DataType.LUMINOSITY+' (TimeStamp TIMESTAMP, Luminosity REAL)')
 			c.execute('CREATE TABLE '+DataType.CURRENT+' (TimeStamp TIMESTAMP, Current REAL)')
 			c.execute('CREATE TABLE '+DataType.BT_PRESENCE+' (TimeStamp TIMESTAMP, MAC TEXT)')
