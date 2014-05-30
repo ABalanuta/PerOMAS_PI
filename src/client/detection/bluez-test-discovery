@@ -1,0 +1,85 @@
+#!/usr/bin/python
+
+import gobject
+
+import dbus
+import dbus.mainloop.glib
+from optparse import OptionParser, make_option
+from threading import Thread
+from datetime import datetime
+
+class BlueZ(Thread):
+
+
+	def __init__(self):
+		Thread.__init__(self)
+
+		self.seen = []
+
+		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
+		bus = dbus.SystemBus()
+		manager = dbus.Interface(bus.get_object("org.bluez", "/"),
+								"org.bluez.Manager")
+
+		option_list = [
+				make_option("-i", "--device", action="store",
+						type="string", dest="dev_id"),
+				]
+		parser = OptionParser(option_list=option_list)
+
+		(options, args) = parser.parse_args()
+
+		if options.dev_id:
+			adapter_path = manager.FindAdapter(options.dev_id)
+		else:
+			adapter_path = manager.DefaultAdapter()
+
+		self.adapter = dbus.Interface(bus.get_object("org.bluez", adapter_path),
+								"org.bluez.Adapter")
+
+		bus.add_signal_receiver(self.device_found,
+				dbus_interface = "org.bluez.Adapter",
+						signal_name = "DeviceFound")
+
+		bus.add_signal_receiver(self.property_changed,
+				dbus_interface = "org.bluez.Adapter",
+						signal_name = "PropertyChanged")
+
+
+
+	def device_found(self, address, properties):
+		for key in properties.keys():
+			
+			if (key == "Name" or key == "Address"):
+				value = properties[key]
+				print "    %s = %s" % (key, value)
+				self.seen.append(str(value))
+
+	def property_changed(self, name, value):
+		if (name == "Discovering" and not value):
+			self.mainloop.quit()
+
+
+	def run_once(self):
+		self.adapter.StartDiscovery()
+		
+		self.mainloop = gobject.MainLoop()
+		self.mainloop.run()
+
+if __name__ == '__main__':
+
+	
+	b = BlueZ()
+
+	x = 0
+
+	try:
+		while True:
+			print x, "|", str(datetime.now()).split(".")[0]
+			b.run_once()
+			x = x+1
+	except:
+		print b.seen
+
+
