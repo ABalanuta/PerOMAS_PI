@@ -26,10 +26,16 @@ class OpenWeatherMapAPI():
         self.updateValues()	# Runs one time
 
     def updateValues(self):
-        resp = urlopen(self.QUERY_PAGE + self.LOCATION + "&units=" + self.UNITS + "&APPID=" + self.APPID)
-        json = decode_json(resp.read())
+        
+        json = None
+        
+        try:
+            resp = urlopen(self.QUERY_PAGE + self.LOCATION + "&units=" + self.UNITS + "&APPID=" + self.APPID)
+            json = decode_json(resp.read())
+        except:
+            pass
 
-        if "main" in json.keys():
+        if json and "main" in json.keys():
 
             self.last_update = datetime.now()
 
