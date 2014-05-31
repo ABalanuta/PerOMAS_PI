@@ -16,7 +16,7 @@ from threading import Thread
 from datetime import datetime
 
 #Debugging Mode
-DEBUG = False
+DEBUG = True
 
 class BTExecutor(Thread):
 	
@@ -29,41 +29,29 @@ class BTExecutor(Thread):
 		#print "BTExecutor thread init"
 
 	def run(self):
-		p = subprocess.Popen('sudo bluez-test-discovery', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, preexec_fn=os.setsid)
+		print 1
+		p = subprocess.Popen('sudo hcitool scan', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, preexec_fn=os.setsid)
+		print 2
 		self.proc = p
 		lines = p.stdout.readlines()
-		found_name = []
-		found_mac = []
-		found_rssi = []
-		
-		#Find devices and their parameters
-		for line in lines:
-			if "Name" in line:
-				if len(line.split()) > 2: #Name could be null
-					found_name += [' '.join(line.split()[2:])]
-				else:
-					found_name += [""]
-			if "Address" in line:
-				found_mac += [line.split()[2]]
-			if "RSSI" in line:
-				found_rssi += [line.split()[2]]
-		
-		#Put device parameters in a dictionary
+		print 3
+		print lines 
 		found = list()
-		for x in range(0, len(found_name)):
-			device = dict()
-			device['Address'] = found_mac[x]
-			device['Name'] = found_name[x]
-			device['RSSI'] = found_rssi[x]
-			device['Quality'] = int((int(found_rssi[x])+97)*1.325)
-			
-			#Filter duplicates
-			for dev in found:
-				if device['Address'] == dev['Address']:
-					continue
-			
-			found.append(device)
-		
+		print 4
+
+		if len(lines) > 1:
+			lines = lines[1:]
+			for line in lines:
+				parts = line.split()
+				device = dict()
+				device['Address'] = parts[0]
+				if len(parts) > 1:
+					device['Name'] = ' '.join(parts[1:])
+				else:
+					device['Name'] = 'NONE'
+				found.append(device)
+
+		print found		
 		# make it the returning values
 		self.value = found
 
@@ -117,7 +105,7 @@ class BTDetector(Thread):
 			
 			if DEBUG:
 				print "\n-----------------------------------"
-				
+			sleep(0.5)
 			exe = BTExecutor()
 			exe.start()
 			self.running_exe = exe
@@ -125,7 +113,7 @@ class BTDetector(Thread):
 
 			if self.stopped:
 				break
-
+			print "exe.value", exe.value
 			if isinstance(exe.value, list):
 
 				self.last_update = datetime.now()
@@ -229,7 +217,7 @@ class BTDetector(Thread):
 		if MAC not in self.traking_devices:
 			self.traking_devices.add(MAC)
 
-			if self. db:
+			if self.db:
 				while "STORAGE HANDLER" not in self.hub.keys():
 					sleep(0.2)
 
@@ -261,15 +249,16 @@ class BTDetector(Thread):
 if __name__ == "__main__":
 
 	started = datetime.now()
+	d = BTDetector(None,db=False)
 	try:
 		print "#TEST#"
 		print "#Starting#"
-		d = BTDetector(None,db=False)
 		d.start()
 		sleep(60*60*24*356)
 		
 	except:
 		print "Exception"
+	
 	finally:
 		d.stop()
 		print "#Sttoped#\n\n"
