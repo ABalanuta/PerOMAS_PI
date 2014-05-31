@@ -8,7 +8,6 @@ __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 import os
 from time import sleep
 from datetime import datetime
-from threading import Lock
 from pickle import dumps, loads
 from DTOs.MesurmentDTO import MesurmentDTO
 from DTOs.MeasurmentEnum import DataType
