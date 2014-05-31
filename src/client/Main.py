@@ -4,7 +4,7 @@
 Starts the different modules composing the Application
 """
 __author__ = "Artur Balanuta"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 import time, signal, sys
@@ -46,12 +46,9 @@ if __name__ == '__main__':
 
 				if value.stop:
 					value.stop()
+				print "\t\t\t\tDone"
+
 		sys.exit(0)
-	
-	signal.signal(signal.SIGINT, signal_handler)
-	#print 'Press Ctrl+C to exit'
-	
-	
 	
 	if DEBUG:
 		print "-> Starting Client <-"
@@ -60,6 +57,8 @@ if __name__ == '__main__':
 		
 		#Main object used for sharing
 		hub = dict()
+		signal.signal(signal.SIGINT, signal_handler)
+		#print 'Press Ctrl+C to exit'
 
 		#Starts the Storage Handler
 		sh = StorageHandler(hub)
@@ -158,19 +157,6 @@ if __name__ == '__main__':
 				print "Web interface started"
 
 		print "ALL DONE"
-		
-		while True:
-			sleep(4)
-		#	print hub["TEMPERATURE"].getTemperature()
-			# TEmp and Humid
-			#print "\n#Temp and Humidity"
-			#print "\t", hub.temp_humid.temp, "C ", hub.temp_humid.humid, "% Last Update:", hub.temp_humid.last_update
-			
-			# Detected BT devices
-			#print "#Last seen BT devices"
-			#for device in hub.bt.seen_devices:
-			#	print "\t", device["Name"], "seen ", (datetime.now() - device["Last seen"]).total_seconds(), "seconds ago !"
-			#print "\n"
 			
 	except Exception as inst:
 		print "Exception"

@@ -11,7 +11,7 @@ from time import sleep
 
 class BlueZ(Thread):
 
-	DEBUG = False
+	DEBUG = True
 
 	def __init__(self, hub, db=True):
 		Thread.__init__(self)
@@ -78,12 +78,12 @@ class BlueZ(Thread):
 		if self.DEBUG:
 			print  str(datetime.now()).split(".")[0], "Found", device["Address"], device["Name"]
 
-		self.update_lock.acquire(True)
+		#self.update_lock.acquire(True)
 		self.update_seen_devices(device)
-		self.update_lock.release()
+		#self.update_lock.release()
 
 		if device["Address"] in self.traking_devices:
-			self.bluetooth_memory_values.add(addr)
+			self.bluetooth_memory_values.add(device["Address"])
 
 	def update_seen_devices(self, device):
 
@@ -102,10 +102,10 @@ class BlueZ(Thread):
 
 	def property_changed(self, name, value):
 		if self.DEBUG:
-			print name, value
+			print name, value, str(datetime.now()).split(".")[0]
 		if (name == "Discovering" and not value):
-			#self.mainloop.quit()
-			self.scan_done = True
+			self.mainloop.quit()
+
 
 	def stop(self):
 		if self.DEBUG:
@@ -119,10 +119,13 @@ class BlueZ(Thread):
 			self.get_traked_devices_from_db()
 
 		self.adapter.StartDiscovery()
-		self.mainloop = gobject.MainLoop()
-		self.scan_done = False
-		self.mainloop.run()
-
+		
+		while not self.stopped:
+			print "1", str(datetime.now()).split(".")[0]
+			self.mainloop = gobject.MainLoop()
+			self.mainloop.run()
+			print "2", str(datetime.now()).split(".")[0]
+			
 	def reset_interface(self):
 		if DEBUG:
 			print "Reset_interface()"
@@ -198,8 +201,13 @@ if __name__ == '__main__':
 
 	x = 0
 	b.start()
-	sleep(10)
-	b.stop()
+	try:
+		sleep(45)
+	except:
+		pass
+	finally:
+		b.stop()
+	
 	#sleep(60*60*24*365)
 	#try:
 	#	while True:

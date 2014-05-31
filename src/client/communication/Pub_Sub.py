@@ -61,8 +61,11 @@ class MQTTC(Thread):
 		self._mqttc.publish(self.ZONE+"/"+self.hostname+"/"+topic, payload, qos)
 
 	def stop(self):
+		print "MQTT Stoped1"
 		self.stopped = True
 		self._mqttc.disconnect()
+		if self.DEBUG:
+			print "MQTT Stoped"
 	
 	def run(self):
 		self.stopped = False
@@ -70,7 +73,7 @@ class MQTTC(Thread):
 
 		while not self.stopped:
 			self.update()
-			sleep(0.1)
+			sleep(0.2)
 			
 	def update(self):
 		rc = self._mqttc.loop()
