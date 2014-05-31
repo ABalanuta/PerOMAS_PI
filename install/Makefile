@@ -50,6 +50,7 @@ web:
 	sudo pip install Flask-Cache
 	sudo pip install flask-compress
 	sudo pip install Flask-Login
+	sudo pip install tornado
 	#pip install flask-login
 	#pip install flask-openid
 	#pip install sqlalchemy

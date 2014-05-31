@@ -5,6 +5,9 @@ __author__ = "Artur Balanuta"
 __version__ = "1.0.2"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
+from tornado.wsgi import WSGIContainer
+from tornado.httpserver import HTTPServer
+from tornado.ioloop import IOLoop
 
 from flask import Flask, request, render_template, flash, redirect, send_from_directory, url_for, g
 from flask.ext.cache import Cache, make_template_fragment_key
@@ -324,9 +327,9 @@ class WebHandler(Thread):
             CSRF_ENABLED=True,
             SECRET_KEY='2c1de198f4d30fa5d342ab60c31eeb308sb6de0f063e20efb9322940e3888d51c'
         )
-        self.server = Process(target=app.run(debug=True,
-                                             host='0.0.0.0',
-                                             use_reloader=False))
+        http_server = HTTPServer(WSGIContainer(app))
+        http_server.listen(5000)
+        self.server = Process(target=IOLoop.instance().start())
 
     def run(self):
         self.server.start()
