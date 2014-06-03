@@ -1,4 +1,4 @@
-all: profile update i2c gpio temp_humid_sensor startup pubsub network bluetooth snmp web mesh mysql hostname boot reboot
+all: profile update i2c gpio temp_humid_sensor startup pubsub network bluetooth snmp web mesh mysql hostname tft boot reboot
 
 profile:
 	git config --global user.email AliensGoo@users.noreply.github.com
@@ -17,6 +17,16 @@ i2c:
 	sudo cp raspi-blacklist.conf /etc/modprobe.d/raspi-blacklist.conf
 	sudo aptitude install python-smbus i2c-tools -y
 
+tft:
+	wget http://adafruit-download.s3.amazonaws.com/libraspberrypi-bin-adafruit.deb
+	wget http://adafruit-download.s3.amazonaws.com/libraspberrypi-dev-adafruit.deb
+	wget http://adafruit-download.s3.amazonaws.com/libraspberrypi-doc-adafruit.deb
+	wget http://adafruit-download.s3.amazonaws.com/libraspberrypi0-adafruit.deb
+	wget http://adafruit-download.s3.amazonaws.com/raspberrypi-bootloader-adafruit-112613.deb
+	sudo dpkg -i -B *.deb
+	sudo mv /usr/share/X11/xorg.conf.d/99-fbturbo.conf /tmp/99-fbturbo.conf
+	sudo cp adafruit.conf /etc/modprobe.d/adafruit.conf
+	
 pubsub:
 	sudo apt-get install python-mosquitto -y
 
