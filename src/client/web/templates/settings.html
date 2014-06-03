@@ -5,6 +5,62 @@
 <div class="well well-lg" style="max-width:900px;">		
 	<div class="row">
 
+
+		<h2>EE</h2>
+
+				<div class="col-md-12">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h3 class="panel-title"><b>Select you Phone</b></h3>
+				</div>
+				<div class="panel-body">
+
+
+					<table class="table table-condensed table-bordered">
+							<thead>
+								<tr>
+									<th>Name</th>
+									<th>MAC</th>
+									<th>RSSI</th>
+									<th>Signal</th>
+									<th>Last Seen</th>
+								</tr>
+							</thead>
+							{% for device in last_seen_devices %}
+							<tr class="success">
+								<td class="text-left">{{ device.Name }}</td>
+								<td class="text-left">{{ device.Address }}</td>
+								<td class="text-left">{{ device.RSSI }}</td>
+								<td class="text-left">{{ device.Quality }}</td>
+								<td class="text-left">{{ device.LastSeen }}</td>
+							</tr>
+							{% endfor %}
+						</table>
+
+					<h4><b></b></h4>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		<!--
 		<h2>Your Temperature Goal</h2>
 		<br>
 		<div id="rangedval">
@@ -34,7 +90,7 @@
 			</script>
 
 
-
+			
 			<style>
 			
 			/*Slider Styles*/
@@ -76,6 +132,7 @@
 		/*End Slider Styles*/
 
 		</style>
+	-->
 
 	</div>
 </div>

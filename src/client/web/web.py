@@ -62,12 +62,12 @@ class RegisterForm(Form):
         validators.Required(),
         validators.Length(min=4)
     ])
+    
+
 
 #
 #    Flask Routes
 #
-
-
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
@@ -132,7 +132,18 @@ def index():
 @app.route('/settings')
 @login_required
 def settings():
-    return render_template("settings.html")
+
+    last_seen_devices = []
+
+    if app.config["HUB"]:
+        hub = app.config["HUB"]
+
+        if "BLUETOOTH" in hub.keys():
+            last_seen_devices = hub["BLUETOOTH"].get_discovered_devices()
+
+    return render_template("settings.html",
+                        last_seen_devices=last_seen_devices
+                        )
 
 
 @app.route('/gateway')

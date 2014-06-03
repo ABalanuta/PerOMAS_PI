@@ -30,7 +30,8 @@ class MQTTC(Thread):
 		self._mqttc.on_subscribe = self.mqtt_on_subscribe
 		self._mqttc.on_disconnect = self.mqtt_on_disconnect
 
-	def mqtt_on_connect(self, mqttc, rc):
+	def mqtt_on_connect(self, mqttc, _userdata, rc):
+
 		if rc == 0:
 			if self.DEBUG:
 				print "--Connected ok"
@@ -38,21 +39,21 @@ class MQTTC(Thread):
 		else:
 			print "--Connect Error: "+str(rc)
 
-	def mqtt_on_message(self, mqttc, msg):
+	def mqtt_on_message(self, mqttc, _userdata, msg):
 		print str(msg.qos)+" "+msg.topic+" "+str(msg.payload)
 
-	def mqtt_on_publish(self, mqttc, mid):
+	def mqtt_on_publish(self, mqttc, _userdata, mid):
 		pass
 		#print("mid: "+str(mid))
 
-	def mqtt_on_subscribe(self, mqttc, mid, granted_qos):
+	def mqtt_on_subscribe(self, mqttc, _userdata, mid, granted_qos):
 		pass
 		#print "Subscribed: "+str(mid)+" "+str(granted_qos) 
 
-	def mqtt_on_log(self, mqttc, level, string):
+	def mqtt_on_log(self, mqttc, _userdata, level, string):
 		print string
 
-	def mqtt_on_disconnect(self, mqttc):
+	def mqtt_on_disconnect(self, mqttc, _userdata, rc):
 		if self.DEBUG:
 			print "--Disconected !!!"
 		self.connected = False
