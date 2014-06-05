@@ -7,3 +7,5 @@
 snd-bcm2835
 i2c-bcm2708
 i2c-dev
+spi-bcm2708
+fbtft_device

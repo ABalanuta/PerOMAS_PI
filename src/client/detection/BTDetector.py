@@ -175,7 +175,7 @@ class BTDetector(Thread):
 					break
 			
 			if not duplicate:
-				device["Last seen"] = time_now	
+				device["LastSeen"] = time_now	
 				new_list.append(device)
 		
 		
@@ -188,7 +188,7 @@ class BTDetector(Thread):
 					new_version = True
 			
 			if not new_version:
-				if not (time_now - seen["Last seen"]).total_seconds() > self.seen_timeout:
+				if not (time_now - seen["LastSeen"]).total_seconds() > self.seen_timeout:
 					new_list.append(seen)
 		
 		self.seen_devices = new_list
