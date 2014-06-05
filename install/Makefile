@@ -26,7 +26,13 @@ tft:
 	sudo dpkg -i -B *.deb
 	sudo mv /usr/share/X11/xorg.conf.d/99-fbturbo.conf /tmp/99-fbturbo.conf
 	sudo cp adafruit.conf /etc/modprobe.d/adafruit.conf
-	
+	sudo mkdir /etc/X11/xorg.conf.d
+	sudo cp 99-calibration.conf /etc/X11/xorg.conf.d/99-calibration.conf	
+	sudo cp 95-stmpe.rules /etc/udev/rules.d/95-stmpe.rules
+	sudo rmmod stmpe_ts; sudo modprobe stmpe_ts
+	sudo apt-get install evtest tslib libts-bin -y
+	sudo TSLIB_FBDEVICE=/dev/fb1 TSLIB_TSDEVICE=/dev/input/touchscreen ts_calibrate
+
 pubsub:
 	sudo apt-get install python-mosquitto -y
 
