@@ -187,7 +187,7 @@ class StorageHandler():
 		conn.commit()
 		conn.close()
 
-	def log(self, msg, user = "Pi Robot"):
+	def log(self, msg, user = "System"):
 
 		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
 		c = conn.cursor()

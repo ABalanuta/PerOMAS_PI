@@ -224,7 +224,6 @@ def register():
 
 @login_manager.user_loader
 def load_user(id):
-    print "Load:" + id
     if app.config["USER MANAGER"]:
         um = app.config["USER MANAGER"]
         return um.getUser(id)
@@ -272,17 +271,15 @@ def process_index_post():
         if "RELAY" in hub.keys():
             relay = hub["RELAY"]
 
-        print request.form.keys()
-
         if logic and storage:
 
             if "Setpoint" in request.form.keys():
-                new_setpoint = [float(request.form["Setpoint"].split('|')[0]), float(request.form["Setpoint"].split('|')[1])]
+                new_setpoint = float(request.form["Setpoint"])
                 old_setpoint = logic.get_AC_Setpoint()
 
-                if new_setpoint[0] != old_setpoint[0] or new_setpoint[1] != old_setpoint[1]:
-                    logic.set_AC_Setpoint(new_setpoint[0], new_setpoint[1])
-                    storage.log("AC Setpoint changed to Min="+str(new_setpoint[0])+" and Max:"+str(new_setpoint[1]), user)
+                if new_setpoint != old_setpoint:
+                    logic.set_AC_Setpoint(new_setpoint)
+                    storage.log("AC Setpoint changed to " + str(new_setpoint), user)
 
             if "AC_Auto" in request.form.keys():
                 if logic.getACMode() != "Auto":
@@ -344,7 +341,6 @@ class WebHandler(Thread):
 
     def run(self):
         self.server.start()
-        print "-------------------------------"
 
     def stop(self):
         self.server.join()

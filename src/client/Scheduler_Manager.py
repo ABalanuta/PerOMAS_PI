@@ -33,8 +33,10 @@ class ScheduleManager(Thread):
 	def run(self):
 		self.stopped = False
 		
-		#Append Rutines to the list
+		
+		self.tasks.append(Task(self.log_Startup, 1, one_time_task = True))			# Runs Once
 
+		#Append Rutines to the list
 		self.tasks.append(Task(self.save_TempHumid_to_DB, 5 * 60))							# loop every  5 Min
 		self.tasks.append(Task(self.save_Luminosity_to_DB, 7 * 60))							# loop every  2 Min
 		self.tasks.append(Task(self.save_Current_to_DB, 1 * 60))							# loop every  1 Min
@@ -43,6 +45,7 @@ class ScheduleManager(Thread):
 		self.tasks.append(Task(self.update_and_Save_Exterior_Sensor_Values, 10 * 60))		# loop every 10 Min
 		self.tasks.append(Task(self.send_BT_Presence_to_Gateway, 10))						# loop every 10 Sec
 		
+
 		while not self.stopped:
 			self.update()
 			if not self.stopped:
@@ -160,6 +163,16 @@ class ScheduleManager(Thread):
 		else:
 			print "Scheduler: Save_TempHumid_to_DB Error locating EXTERNAL TEMPERATURE or EXTERNAL HUMIDITY or STORAGE object"
 
+	def log_Startup(self):
+		if self.DEBUG:
+			print "Scheduler: log_Startup"
+
+		if self.hub["STORAGE HANDLER"]:
+			db = self.hub["STORAGE HANDLER"]
+			db.log("System Startup")
+			
+		else:
+			print "Scheduler: Save_TempHumid_to_DB Error locating EXTERNAL TEMPERATURE or EXTERNAL HUMIDITY or STORAGE object"
 
 #Runs only if called
 if __name__ == "__main__":
