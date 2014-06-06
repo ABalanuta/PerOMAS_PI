@@ -13,15 +13,14 @@ from time import sleep, localtime, time
 class Logic_Engine(Thread):
 
 	DEBUG 					= False
-	SLEEP_BETWEEN_CHECKS 	= 1	#sleeps X seconds befor cheking the need of executing any task
+	SLEEP_BETWEEN_CHECKS 	= 1		#sleeps X seconds befor cheking the need of executing any task
 	MARGIN 					= 0.3
 
 	def __init__(self, hub):
 		Thread.__init__(self)
 		self.hub = hub
-		self.ac_mode_auto = False
-		self.ac_min_target = 20
-		self.ac_max_target = 23
+		self.ac_mode_auto = True
+		self.ac_target = 24
 
 	def stop(self):
 		self.stopped = True
@@ -52,20 +51,22 @@ class Logic_Engine(Thread):
 			relay = self.hub["RELAY"]
 
 			#Shuts Down the AC if out of Working Hours
-			#if not self.isWorkingHours():
-			#	relay.set_ac_speed(0)
-			#	return
+			if not self.isWorkingHours():
+				relay.set_ac_speed(0)
+				return
 
 			#Turn ON Fan if too Hot
-			if curr_temp > self.ac_max_target+self.MARGIN:
-				relay.set_ac_speed(1)
+			if curr_temp > self.ac_target+(self.MARGIN*3):
+				relay.set_ac_speed(3)
 
-			#Turn OFF FAN if too Cold
-			elif curr_temp < self.ac_min_target:
-				relay.set_ac_speed(0)
+			elif curr_temp > self.ac_target+self.MARGIN:
+				relay.set_ac_speed(2)
+
+			elif curr_temp > self.ac_target:
+				relay.set_ac_speed(2)
 
 			#Turn OFF FAN if temp Perfect
-			elif curr_temp < self.ac_max_target-self.MARGIN:
+			elif curr_temp < self.ac_target-self.MARGIN:
 				relay.set_ac_speed(0)
 
 		else:
@@ -90,14 +91,13 @@ class Logic_Engine(Thread):
 		elif mode == "Manual":
 			self.ac_mode_auto = False
 
-	def set_AC_Setpoint(self, ac_min, ac_max):
-		self.ac_min_target = float(ac_min)
-		self.ac_max_target = float(ac_max)
+	def set_AC_Setpoint(self, setpoint):
+		self.ac_target = float(setpoint)
 		if self.DEBUG:
-			print "New AC setpoint", self.ac_min_target, self.ac_max_target 
+			print "New AC setpoint", self.ac_target
 
 	def get_AC_Setpoint(self):
-		return [self.ac_min_target, self.ac_max_target]
+		return self.ac_target
 
 #Runs only if called
 if __name__ == "__main__":

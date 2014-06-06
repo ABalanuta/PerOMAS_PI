@@ -16,7 +16,7 @@ from sensors.TSL2561.TSL2561 import TSL2561	#Lux
 from sensors.ADS1115.ADS1115 import ADS1115	#Current
 from detection.WifiLocation import WifiDetector
 from detection.BTDetector import BTDetector
-from interaction.lcd.LCDmenu import LCD
+#from interaction.lcd.LCDmenu import LCD
 from interaction.Relay import Relay
 from communication.Pub_Sub import MQTTC
 from web.web import *
@@ -120,11 +120,11 @@ if __name__ == '__main__':
 			print "Relays are ON"
 		
 		#Starts LCD
-		lcd = LCD(hub)
-		lcd.start()
-		hub["LCD"] = lcd
-		if DEBUG:
-			print "LCD sensor ON"
+		#lcd = LCD(hub)
+		#lcd.start()
+		#hub["LCD"] = lcd
+		#if DEBUG:
+		#	print "LCD sensor ON"
 
 		#Starts The MQTT Listener
 		mqtt = MQTTC(hub)
@@ -150,13 +150,14 @@ if __name__ == '__main__':
 		#Starts Web Server
 		#Must be last (Blocking)
 		if WEB_INTERFACE:
+
+			if DEBUG:
+				print "Starting Web interface"
+
 			wh = WebHandler(hub)
 			wh.start()
 			hub["WEB"] = wh
-			if DEBUG:
-				print "Web interface started"
-
-		print "ALL DONE"
+			
 			
 	except Exception as inst:
 		print "Exception"

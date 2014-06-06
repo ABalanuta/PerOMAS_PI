@@ -180,8 +180,8 @@
 												
 											</div>
 											<div class="col-md-1 vcenter">
-												<button type="submit" id="ButtonSetpoint" name="Setpoint" class="btn btn-primary " value={{setpoint[0]}}|{{setpoint[1]}}>
-												Save: <span id="rangeval">{{ setpoint[0] }} - {{ setpoint[1] }}</span>
+												<button type="submit" id="ButtonSetpoint" name="Setpoint" class="btn btn-primary " value={{ setpoint }}>
+												Save: <span id="rangeval">{{ setpoint }}</span>
 												</button>
 											</div>
 										</div>
@@ -192,14 +192,13 @@
 											<script>
 											$(function(){
 												$('#rangeslider').slider({
-													range: true,
 													min: 18.0,
 													step: 0.5,
 													max: 28.0,
-													values: [ {{ setpoint[0] }}, {{ setpoint[1] }} ],
+													value: [ {{ setpoint }} ],
 													slide: function( event, ui ) {
-														$('#rangeval').html(ui.values[0].toFixed(1)+" - "+ui.values[1].toFixed(1));
-														document.getElementById('ButtonSetpoint').value = ui.values[0].toFixed(1)+"|"+ui.values[1].toFixed(1);
+														$('#rangeval').html(ui.value.toFixed(1));
+														document.getElementById('ButtonSetpoint').value = ui.value.toFixed(1);
 													}
 												});
 											});
