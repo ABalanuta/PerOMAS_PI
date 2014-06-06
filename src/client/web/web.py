@@ -129,10 +129,13 @@ def index():
                            )
 
 
-@app.route('/settings')
+@app.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
 
+    if request.method == 'POST':
+        process_settings_post()
+    
     last_seen_devices = []
 
     if app.config["HUB"]:
@@ -252,6 +255,34 @@ def getLogData(num):
             return hub["STORAGE HANDLER"].getLogs(num)
     else:
         return {}
+
+def process_settings_post():
+
+    if app.config["HUB"]:
+        hub = app.config["HUB"]
+        user = g.user.username
+        storage = None
+        bluetooth = None
+
+        if "STORAGE HANDLER" in hub.keys():
+            storage = hub["STORAGE HANDLER"]
+
+        if "BLUETOOTH" in hub.keys():
+            bluetooth = hub["BLUETOOTH"]
+
+        if storage and bluetooth:
+            if "Phone_Set" in request.form.keys():
+                new_Phone = request.form["Phone_Set"]
+                old_Phone = g.user.get_phone()
+
+                if new_Phone != old_Phone:
+                    g.user.set_phone(new_Phone)
+                    storage.log("Changed Traking Phone from "+old_Phone+" to "+new_Phone, user)
+                    print "Remove me"
+                    bluetooth.track_device(new_Phone)
+
+
+
 
 def process_index_post():
 

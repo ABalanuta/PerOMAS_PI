@@ -10,18 +10,21 @@ import base64
 import hashlib
 import os
 
+
 class PasswordManager():
 
-    STRECHING = 87          #Number of times the Hash function is called
+    STRECHING = 87  # Number of times the Hash function is called
 
     def getDigest(self, user, password, salt=None):
 
         if not salt:
             salt = base64.b64encode(os.urandom(64))
 
-        digest = hashlib.sha512(str(salt) + str(user) + str(password)).hexdigest()
+        digest = hashlib.sha512(
+            str(salt) + str(user) + str(password)).hexdigest()
         for x in range(0, self.STRECHING):
-            digest = hashlib.sha512(str(salt) + str(user) + str(digest)).hexdigest()
+            digest = hashlib.sha512(
+                str(salt) + str(user) + str(digest)).hexdigest()
 
         return salt, digest
 
@@ -31,10 +34,12 @@ class PasswordManager():
 
 class User(object):
 
-    def __init__(self, username, salt, digest):
+    def __init__(self, username, salt, digest, phone=None, hub=None):
+        self.hub = hub
         self.username = username
         self.salt = salt
         self.digest = digest
+        self.phone = phone
 
     def is_authenticated(self):
         return True
@@ -47,10 +52,19 @@ class User(object):
 
     def get_id(self):
         return unicode(self.username)
+    
+    def get_phone(self):
+        return self.phone
+
+    def set_phone(self, mac):
+        self.phone = mac
+        # Alter user in DB
+        if self.hub:
+            db = self.hub["STORAGE HANDLER"]
+            db.alterUser(self)
 
     def __repr__(self):
         return '<User %r>' % (self.username)
-
 
 
 class UserManager():
@@ -64,20 +78,22 @@ class UserManager():
     def addUser(self, username, password):
 
         salt, digest = self.password_manager.getDigest(username, password)
-        newUser = User(username, salt, digest)
+        newUser = User(username, salt, digest, hub=self.hub)
         self.users[username] = newUser
 
-        #Add user do DB
+        # Add user do DB
         if self.hub:
         	db = self.hub["STORAGE HANDLER"]
         	db.addUser(newUser)
 
     def loadUsers(self):
-    	if self.hub:
-        	db = self.hub["STORAGE HANDLER"]
-        	matrix = db.loadUsers()
-        	for x in matrix:
-        		self.users[x[0]]= User(x[0], x[1], x[2])
+        if self.hub:
+            db = self.hub["STORAGE HANDLER"]
+            matrix = db.loadUsers()
+            for x in matrix:
+                self.users[x[0]] = User(x[0], x[1], x[2], phone=x[3], hub=self.hub)
+        else:
+            print "Error Loading Users"
 
     def getUser(self, username):
         if self.existsUser(username):

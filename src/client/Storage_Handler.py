@@ -75,7 +75,7 @@ class StorageHandler():
 		try:
 			#Users
 			c.execute('CREATE TABLE Logs (TimeStamp TIMESTAMP, Username TEXT, Message TEXT)')
-			c.execute('CREATE TABLE Users (Username TEXT, Salt TEXT, Digest TEXT)')
+			c.execute('CREATE TABLE Users (Username TEXT, Salt TEXT, Digest TEXT, Phone TEXT)')
 			c.execute('CREATE TABLE BTDevices (BTDevice TEXT, Username TEXT)')
 
 			#Settings
@@ -125,8 +125,18 @@ class StorageHandler():
 		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
 		c = conn.cursor()
 
-		values = (user.username, user.salt, user.digest)
-		c.execute('INSERT INTO Users VALUES (%s, %s, %s)', values)
+		values = (user.username, user.salt, user.digest, user.phone)
+		c.execute('INSERT INTO Users VALUES (%s, %s, %s, %s)', values)
+
+		conn.commit()
+		conn.close()
+
+	def alterUser(self, user):
+		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
+		c = conn.cursor()
+
+		values = (user.salt, user.digest, user.phone, user.username)
+		c.execute('UPDATE Users SET Salt=%s,Digest=%s,Phone=%s WHERE Username=%s', values)
 
 		conn.commit()
 		conn.close()
