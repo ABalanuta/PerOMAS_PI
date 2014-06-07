@@ -26,10 +26,10 @@ print "Framebuffer size: %d x %d" % (size[0], size[1])
 
 size = (320,240) # Screen Size
 screen = pygame.display.set_mode(size)
-image = pygame.Surface.convert(pygame.image.load('Peromas.jpg'))
-bg  = pygame.transform.scale(image, size)
+#image = pygame.Surface.convert(pygame.image.load('Peromas.jpg'))
+#bg  = pygame.transform.scale(image, size)
 
-bgRect = bg.get_rect()
+#bgRect = bg.get_rect()
 txtColor = (255,255,0)
 txtFont = pygame.font.SysFont("Arial", 30, bold=True)
 txt = txtFont.render('Virtual Keyboard' , 1, txtColor)
@@ -37,10 +37,10 @@ txt = txtFont.render('Virtual Keyboard' , 1, txtColor)
 #txt = txtFont.render('by' , 1, txtColor)
 #bg.blit(txt, (15, 70))
 #txt = txtFont.render('William Phelps' , 1, txtColor)
-bg.blit(txt, (15, 105))
-screen.blit(bg, bgRect)
+#bg.blit(txt, (15, 105))
+#screen.blit(bg, bgRect)
 pygame.display.update()
-sleep(5)
+#sleep(5)
 
 #  ----------------------------------------------------------------
 

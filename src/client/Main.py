@@ -17,6 +17,7 @@ from sensors.ADS1115.ADS1115 import ADS1115	#Current
 from detection.WifiLocation import WifiDetector
 from detection.BTDetector import BTDetector
 #from interaction.lcd.LCDmenu import LCD
+from interaction.pitft.tft_interface import TFT
 from interaction.Relay import Relay
 from communication.Pub_Sub import MQTTC
 from web.web import *
@@ -119,12 +120,19 @@ if __name__ == '__main__':
 		if DEBUG:
 			print "Relays are ON"
 		
+		#Starts TFT
+		tft = TFT(hub)
+		tft.start()
+		hub["TFT"] = tft
+		if DEBUG:
+			print "TFT screen is ON"
+
 		#Starts LCD
 		#lcd = LCD(hub)
 		#lcd.start()
 		#hub["LCD"] = lcd
 		#if DEBUG:
-		#	print "LCD sensor ON"
+		#	print "LCD screen is ON"
 
 		#Starts The MQTT Listener
 		mqtt = MQTTC(hub)
