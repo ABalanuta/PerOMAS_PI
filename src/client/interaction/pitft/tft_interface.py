@@ -17,7 +17,7 @@ from pygame.locals import *
 
 class TFT(Thread):
 
-    FPS             = 20
+    FPS             = 15
     WINDOWWIDTH     = 320
     WINDOWHEIGHT    = 240
     size            = (WINDOWWIDTH, WINDOWHEIGHT)
@@ -86,19 +86,22 @@ class TFT(Thread):
             pygame.mouse.set_visible(False)
         self.FPSCLOCK = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.size)
-        print "Framebuffer size: %d x %d" % (self.size[0], self.size[1])
+        #print "Framebuffer size: %d x %d" % (self.size[0], self.size[1])
         self.draw()
         while not self.stopped:
             self.update()
 
+    def update(self):
+        #print "Update"
+        self.FPSCLOCK.tick(self.FPS)
+        self.handleEvents()
+
+
     def draw(self):
+        print "Draw Screen"
         self.screen.fill(self.BLACK)
         self.menu()
         pygame.display.update()
-
-    def update(self):
-        self.FPSCLOCK.tick(self.FPS)
-        self.handleEvents()
 
     def handleEvents(self):
 
@@ -106,6 +109,7 @@ class TFT(Thread):
         to_draw = False
 
         for event in pevents: # event handling loop
+	    print event
 
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 self.stop()
@@ -142,8 +146,9 @@ class TFT(Thread):
                     self.button_light_2.setSurfaces(self.BTN_BULB_ON)
                     self.button_light_2_s = True
                 to_draw = True
-                
+
         if to_draw:
+            #print "XPTO Draw"
             self.draw()
 
     def menu(self):
