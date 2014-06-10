@@ -2,7 +2,7 @@
 """PITFT interface made using the pygame lib"""
 
 __author__ = "Artur Balanuta"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 import os
@@ -85,7 +85,7 @@ class TFT(Thread):
         if 'armv6l' in platform.uname():
             pygame.mouse.set_visible(False)
         self.FPSCLOCK = pygame.time.Clock()
-        self.screen = pygame.display.set_mode(self.size)
+        self.screen = pygame.display.set_mode(self.size, 0, 32)
         #print "Framebuffer size: %d x %d" % (self.size[0], self.size[1])
         self.draw()
         while not self.stopped:
@@ -109,7 +109,7 @@ class TFT(Thread):
         to_draw = False
 
         for event in pevents: # event handling loop
-	    print event
+	    #print event
 
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 self.stop()
