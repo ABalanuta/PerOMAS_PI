@@ -135,11 +135,11 @@ if __name__ == '__main__':
 		#	print "LCD screen is ON"
 
 		#Starts The MQTT Listener
-		mqtt = MQTTC(hub)
-		mqtt.start()
-		hub["PUBLISHER"] = mqtt
-		if DEBUG:
-			print "MQTT Publisher is ON"
+		#mqtt = MQTTC(hub)
+		#mqtt.start()
+		#hub["PUBLISHER"] = mqtt
+		#if DEBUG:
+		#	print "MQTT Publisher is ON"
 		
 		#Starts the Scheduler Manager
 		sm = ScheduleManager(hub)
