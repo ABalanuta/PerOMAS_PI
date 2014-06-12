@@ -2,7 +2,7 @@
 """Changes the hostname of the raspberryPi based on the MAC"""
 
 __author__ = "Artur Balanuta"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 import os
@@ -28,9 +28,7 @@ for mac, pi in MAC_Address:
 		MyPI = pi
 		break
 
-os.popen("sudo chmod 777 /etc/hosts")
-os.popen("sudo echo '127.0.1.1	'"+MyPI+" >> /etc/hosts")
-os.popen("sudo chmod 644 /etc/hosts")
+os.popen("sudo  sed -i 's/raspberrypi/" + MyPI + "/' /etc/hosts")
 os.popen("sudo echo "+MyPI+" > /etc/hostname")
 
 print "You Need to reboot the Pi"
