@@ -28,7 +28,7 @@ class StorageHandler():
 		
 		self.hub = hub
 		#self.delete_database(self.DB)
-		#self.create_database(self.DB)
+		self.create_database(self.DB)
 
 	def create_database(self, DB):
 		if self.DEBUG:
