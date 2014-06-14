@@ -204,10 +204,11 @@ echo_options:
 6: #// Test X and touchscreen
 
 	#// Touchscreen
-	sudo TSLIB_FBDEVICE=/dev/fb1 TSLIB_TSDEVICE=/dev/input/touchscreen ts_test; true
+	sudo TSLIB_FBDEVICE=/dev/fb1 TSLIB_TSDEVICE=/dev/input/touchscreen ts_calibrate
+	sudo TSLIB_FBDEVICE=/dev/fb1 TSLIB_TSDEVICE=/dev/input/touchscreen ts_test
 
 	#// X
-	startx; true
+	#startx; true
 
 	@echo
 	@echo 'Option 6 DONE'
