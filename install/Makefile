@@ -43,6 +43,8 @@ echo_options:
 
 	#//Update & Upgrade
 	sudo aptitude purge wolfram-engine omxplayer scratch zenity midori -y
+	
+	sudo apt-mark hold raspberrypi-bootloader
 	sudo apt-get update -y 
 	sudo apt-get upgrade -y
 
