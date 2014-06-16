@@ -23,3 +23,9 @@ thesisPI
 	
 	//Delete Default user
 	sudo deluser pi
+	
+	//Clone the repo
+	mkdir git; cd git
+	git clone git@github.com:AliensGoo/thesisPI.git
+	cd thesisPI
+	git checkout dev
