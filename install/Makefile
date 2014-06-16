@@ -44,7 +44,7 @@ echo_options:
 	#//Update & Upgrade
 	sudo aptitude purge wolfram-engine omxplayer scratch zenity midori -y
 	
-	sudo apt-mark hold raspberrypi-bootloader
+	#sudo apt-mark hold raspberrypi-bootloader
 	sudo apt-get update -y 
 	sudo apt-get upgrade -y
 
@@ -61,8 +61,8 @@ echo_options:
 	#Firmware for the pitft
 	#https://github.com/notro/rpi-firmware
 	sudo wget https://raw.github.com/Hexxeh/rpi-update/master/rpi-update -O /usr/bin/rpi-update && sudo chmod +x /usr/bin/rpi-update
-	#sudo REPO_URI=https://github.com/notro/rpi-firmware rpi-update
-	sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=builtin rpi-update
+	sudo REPO_URI=https://github.com/notro/rpi-firmware rpi-update
+	#sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=builtin rpi-update
 
 	@echo
 	@echo 'Reboot the System Manually'
@@ -176,8 +176,9 @@ echo_options:
 	sudo cp conf/modules /etc/modules
 	@echo
 
-	#// Remove Blacklist of I2C
+	#// Remove Blacklist of I2C and spi
 	sudo sed -i 's/blacklist\ i2c-bcm2708/#blacklist\ i2c-bcm2708/' /etc/modprobe.d/raspi-blacklist.conf
+	sudo sed -i 's/blacklist\ spi-bcm2708/#blacklist\ spi-bcm2708/' /etc/modprobe.d/raspi-blacklist.conf
 	@echo
 
 	#// Startup Script
