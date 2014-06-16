@@ -19,8 +19,7 @@ thesisPI
 	exit
 	
 	//Copy SSH Key
-	ssh-copy-id artur-adm@piX
-	ssh artur-adm@piX
+	ssh-copy-id artur-adm@piX ; ssh piX
 	
 	//Delete Default user
 	sudo deluser pi
