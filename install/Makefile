@@ -9,7 +9,8 @@ echo_options:
 	@echo '3: #// Install Software'
 	@echo '4: #// Install Addicional Software (Gateway Only)'
 	@echo '5: #// Configuration Variables'
-	@echo '6: #// Test X and touchscreen'
+	@echo '6: #// Test touchscreen'
+	@echo '7: #// Test x'
 	@echo
 
 
@@ -202,16 +203,16 @@ echo_options:
 	@echo 'Option 5 DONE'
 	@echo
 
-6: #// Test X and touchscreen
+6: #// Test touchscreen
 
 	#// Touchscreen
 	sudo TSLIB_FBDEVICE=/dev/fb1 TSLIB_TSDEVICE=/dev/input/touchscreen ts_calibrate
 	sudo TSLIB_FBDEVICE=/dev/fb1 TSLIB_TSDEVICE=/dev/input/touchscreen ts_test
 
-	#// X
-	#startx; true
-
 	@echo
 	@echo 'Option 6 DONE'
 	@echo
 
+7: #// Test X
+	
+	FRAMEBUFFER=/dev/fb1 startx
