@@ -15,8 +15,8 @@ class Relay():
 						"AC_SPEED_2"		:	{"Pin" : 17, "State" : False},
 						"AC_SPEED_3" 		:	{"Pin" : 27, "State" : False},
 						"AC_HEAT_COOL" 		:	{"Pin" : 22, "State" : False},
-						"LIGHTS_X1" 		:	{"Pin" : 14, "State" : True},
-						"LIGHTS_X2" 		:	{"Pin" : 15, "State" : True},}
+						"LIGHTS_X1" 		:	{"Pin" : 18, "State" : True},
+						"LIGHTS_X2" 		:	{"Pin" : 23, "State" : True},}
 
 
 	def __init__(self, hub):
@@ -89,35 +89,38 @@ class Relay():
 			self.RELAY["AC_HEAT_COOL"]["State"] = False
 			GPIO.output(pin, False)
 
+	
 
+	def set_lights_x1_state(self, state):
+		if self.DEBUG:
+			print "Relay: set_lights_x1_state:", state
 
-	#def set_lights_x1_state(self, state):
-	#	if self.DEBUG:
-	#		print "Relay: set_lights_x1_state:", state
+		pin = self.RELAY["LIGHTS_X1"]["Pin"]
+		self.RELAY["LIGHTS_X1"]["State"] = state
+		GPIO.output(pin, state)
 
-	#	pin = self.RELAY["LIGHTS_X1"]["Pin"]
-	#	self.RELAY["LIGHTS_X1"]["State"] = state
-	#	GPIO.output(pin, state)
+	def set_lights_x2_state(self, state):
+		if self.DEBUG:
+			print "Relay: set_lights_x2_state:", state
 
-	#def set_lights_x2_state(self, state):
-	#	if self.DEBUG:
-	#		print "Relay: set_lights_x2_state:", state
+		pin = self.RELAY["LIGHTS_X2"]["Pin"]
+		self.RELAY["LIGHTS_X2"]["State"] = state
+		GPIO.output(pin, state)
 
-	#	pin = self.RELAY["LIGHTS_X2"]["Pin"]
-	#	self.RELAY["LIGHTS_X2"]["State"] = state
-	#	GPIO.output(pin, state)
+	def get_lights_x1_state(self):
+		if self.DEBUG:
+			print "Relay: get_lights_x1_state"
 
-	#def get_lights_x1_state(self):
-	#	if self.DEBUG:
-	#		print "Relay: get_lights_x1_state"
+		return self.RELAY["LIGHTS_X1"]["State"]
 
-	#	return self.RELAY["LIGHTS_X1"]["State"]
+	def get_lights_x2_state(self):
+		if self.DEBUG:
+			print "Relay: get_lights_x2_state"
 
-	#def get_lights_x2_state(self):
-	#	if self.DEBUG:
-	#		print "Relay: get_lights_x2_state"
+		return self.RELAY["LIGHTS_X2"]["State"]
 
-	#	return self.RELAY["LIGHTS_X2"]["State"]
+	def get_lights_state(self):
+		return [self.get_lights_x1_state(), self.get_lights_x2_state()]
 
 	def stop(self):
 		if self.DEBUG:

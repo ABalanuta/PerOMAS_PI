@@ -87,6 +87,7 @@ def index():
     ac_heat_or_cool = None
     present_devices = None
     logs = getLogData(10)
+    light_bulb = [False, False]
 
 
     if app.config["HUB"]:
@@ -106,6 +107,7 @@ def index():
         if "RELAY" in hub.keys():
             ac_speed = hub["RELAY"].get_ac_speed()
             ac_heat_or_cool = hub["RELAY"].get_ac_mode()
+            light_bulb = hub["RELAY"].get_lights_state()
 
         if "BLUETOOTH" in hub.keys():
             present_devices = hub["BLUETOOTH"].get_traked_devices()
@@ -125,7 +127,8 @@ def index():
                            speed=ac_speed,
                            present_devices=present_devices,
                            ac_heat_or_cool=ac_heat_or_cool,
-                           logs=logs
+                           logs=logs,
+                           light_bulb=light_bulb
                            )
 
 
@@ -354,6 +357,21 @@ def process_index_post():
                     relay.set_ac_speed(3)
                     storage.log("Turned AC Fan to speed 3", user)
 
+            elif "Light_1" in request.form.keys():
+                current_state = relay.get_lights_x1_state()
+                relay.set_lights_x1_state( not current_state)
+                if current_state:
+                    storage.log("Turned off Lights 1", user)
+                else:
+                    storage.log("Turned on Lights 1", user)
+
+            elif "Light_2" in request.form.keys():
+                current_state = relay.get_lights_x2_state()
+                relay.set_lights_x2_state( not current_state)
+                if current_state:
+                    storage.log("Turned off Lights 2", user)
+                else:
+                    storage.log("Turned on Lights 2", user)      
 
 class WebHandler(Thread):
 
