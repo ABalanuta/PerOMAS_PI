@@ -16,6 +16,8 @@
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css">
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+<link rel="stylesheet" href="/static/octicons/octicons.css">
+
 
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
@@ -85,7 +87,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40454d', end
             <span class="sr-only">Toggle navigation</span>
           </button>
           <a class="navbar-brand" href="/index">
-            <span class="glyphicon glyphicon-dashboard"></span>
+            <span class="octicon octicon-dashboard"></span>
             Dashboard
           </a>
 
@@ -97,19 +99,19 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40454d', end
           <ul class="nav navbar-nav">
             <li>
               <a href="/graph">
-                <span class="glyphicon glyphicon-stats"></span>
+                <span class="octicon octicon-graph"></span>
                 Graph
               </a>
             </li>
             <li>
               <a href="/settings">
-                <span class="glyphicon glyphicon-wrench"></span>
+                <span class="octicon octicon-settings"></span>
                 Settings
               </a>
             </li>
             <li>
               <a href="/gateway">
-                <span class="glyphicon glyphicon-transfer"></span>
+                <span class="octicon octicon-radio-tower"></span>
                 Gateway
               </a>
             </li>
@@ -119,7 +121,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40454d', end
           <ul class="nav navbar-nav pull-right">
             <li>
               <a href="register">
-                <span class="glyphicon glyphicon-edit"></span>
+                <span class="octicon octicon-pencil"></span>
                 Register
               </a>
             </li>
@@ -127,7 +129,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40454d', end
             <li class="dropdown">
               {% if g.user.username %}
               <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                <span class="glyphicon glyphicon-user"></span>
+                <span class="octicon octicon-sign-in"></span>
                 {{g.user.username}} <strong class="caret"></strong>
               </a>
 
@@ -139,8 +141,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40454d', end
               </div>
               {% else %}
               <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                <span class="glyphicon glyphicon-user"></span>
-                Log In <strong class="caret"></strong>
+                <span class="octicon octicon-sign-in"></span>
+                Log In
               </a>
 
               <div class="dropdown-menu" style="padding: 15px; padding-bottom: 15px;">
@@ -163,7 +165,8 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40454d', end
     {% with msgs = get_flashed_messages() %}
     {% if msgs %}
     {%- for msg in msgs %}
-    <div class="alert alert-danger col-md-6 col-md-offset-3 alert-dismissable">
+    <div class="alert alert-info col-md-6 col-md-offset-3 alert-dismissable">
+      <span class="octicon octicon-info"></span> 
       {{ msg }}
       <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
     </div>

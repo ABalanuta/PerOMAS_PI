@@ -15,7 +15,7 @@
 				<div class="panel-heading">
 					<h3 class="panel-title"><b>Your Configuration</b></h3>
 				</div>
-				<h3> Your Phone Address is <b>{{ g.user.phone }}</b></h3>
+				<h3> Your Phone Address is <b>{{ g.user.phone }} <span class="mega-octicon octicon-steps"></span> </b></h3>
 			</div>
 			{% else %}
 			<div class="panel panel-danger">
@@ -49,7 +49,9 @@
 							</thead>
 							{% for device in last_seen_devices %}
 							<tr class="">
-								<td class="text-center"><button class="btn btn-primary" name="Phone_Set" value="{{ device.Address }}"type="submit">Set Phone</td>
+								<td class="text-center"><button class="btn btn-primary" name="Phone_Set" value="{{ device.Address }}"type="submit">
+									<span class="octicon octicon-device-mobile"></span> Set Phone
+								</td>
 								<td class="text-left">{{ device.Name }}</td>
 								<td class="text-left">{{ device.Address }}</td>
 								<td class="text-left">{{ device.RSSI }}</td>
