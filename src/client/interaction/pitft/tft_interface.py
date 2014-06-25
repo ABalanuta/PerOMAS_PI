@@ -17,6 +17,8 @@ from pygame.locals import *
 
 class TFT(Thread):
 
+    DEBUG           = False
+
     FPS             = 15
     WINDOWWIDTH     = 320
     WINDOWHEIGHT    = 240
@@ -53,16 +55,13 @@ class TFT(Thread):
     button_light_1  = pygbutton.PygButton((WINDOWWIDTH/2-90,  WINDOWHEIGHT/2-45, 60, 60), normal=BTN_BULB_ON)
     button_light_2  = pygbutton.PygButton((WINDOWWIDTH/2+30,  WINDOWHEIGHT/2-45, 60, 60), normal=BTN_BULB_ON)
 
-
-    button_light_1_s    = True
-    button_light_2_s    = False
-
     init_menu   = 0
     n_menus     = 3
 
     def __init__(self, hub):
         Thread.__init__(self)
         self.hub = hub
+        self.relay = None
 
         # for Adafruit PiTFT:
         if 'armv6l' in platform.uname():
@@ -78,6 +77,26 @@ class TFT(Thread):
 
     def run(self):
         self.stopped = False
+
+        #wait for the ralay to load
+        if self.hub:
+            while not "RELAY" in self.hub.keys():
+                if self.DEBUG:
+                    print "PITFT waiting for the Relay to be Loaded"
+                    sleep(0.5)
+            self.relay = self.hub["RELAY"]
+            l1_state = self.relay.get_lights_x1_state()
+            l2_state = self.relay.get_lights_x2_state()
+
+            if l1_state:
+                self.button_light_1.setSurfaces(self.BTN_BULB_ON)
+            else:
+                self.button_light_1.setSurfaces(self.BTN_BULB_OFF)
+            
+            if l2_state:
+                self.button_light_2.setSurfaces(self.BTN_BULB_ON)
+            else:
+                self.button_light_2.setSurfaces(self.BTN_BULB_OFF)
 
         # Init pygame and screen
         pygame.display.init()
@@ -96,9 +115,9 @@ class TFT(Thread):
         self.FPSCLOCK.tick(self.FPS)
         self.handleEvents()
 
-
     def draw(self):
-        print "Draw Screen"
+        if self.DEBUG:
+            print "Draw Screen"
         self.screen.fill(self.BLACK)
         self.menu()
         pygame.display.update()
@@ -129,22 +148,22 @@ class TFT(Thread):
 
             events = self.button_light_1.handleEvent(event)
             if 'click' in events:
-                if self.button_light_1_s:
+                if self.relay.get_lights_x1_state():
                     self.button_light_1.setSurfaces(self.BTN_BULB_OFF)
-                    self.button_light_1_s = False
+                    self.relay.set_lights_x1_state(False)
                 else:
                     self.button_light_1.setSurfaces(self.BTN_BULB_ON)
-                    self.button_light_1_s = True
+                    self.relay.set_lights_x1_state(True)
                 to_draw = True
 
             events = self.button_light_2.handleEvent(event)
             if 'click' in events:
-                if self.button_light_2_s:
+                if self.relay.get_lights_x2_state():
                     self.button_light_2.setSurfaces(self.BTN_BULB_OFF)
-                    self.button_light_2_s = False
+                    self.relay.set_lights_x2_state(False)
                 else:
                     self.button_light_2.setSurfaces(self.BTN_BULB_ON)
-                    self.button_light_2_s = True
+                    self.relay.set_lights_x2_state(True)
                 to_draw = True
 
         if to_draw:
