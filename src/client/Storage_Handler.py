@@ -142,7 +142,6 @@ class StorageHandler():
 		conn.close()
 
 	def loadUsers(self):
-
 		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
 		c = conn.cursor()
 
@@ -152,6 +151,24 @@ class StorageHandler():
 		conn.commit()
 		conn.close()
 		return resp
+
+	def loadTrakingBTDevices(self):
+		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
+		c = conn.cursor()
+
+		c.execute('SELECT Phone FROM Users')
+		resp = c.fetchall()
+
+		devices = list()
+		for dev in resp:
+			if dev[0]: # only returns valid MAC adresses
+				devices.append(dev[0])
+
+		conn.commit()
+		conn.close()
+		return devices
+
+
 
 	def getGraphData(self):
 

@@ -225,9 +225,13 @@ class BTDetector(Thread):
 
 	def get_traked_devices_from_db(self):
 		while "STORAGE HANDLER" not in self.hub.keys():
+			if DEBUG:
+				print "BTDetect waiting for the DB to be Loaded"
 			sleep(0.5)
 
-		devices = self.hub["STORAGE HANDLER"].readSettings("Bluetooth_Tracking_Devices")
+
+		devices = self.hub["STORAGE HANDLER"].loadTrakingBTDevices()
+
 		if devices:
 			self.traking_devices = devices
 

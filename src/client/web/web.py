@@ -280,9 +280,9 @@ def process_settings_post():
 
                 if new_Phone != old_Phone:
                     g.user.set_phone(new_Phone)
-                    storage.log("Changed Traking Phone from "+str(old_Phone)+" to "+new_Phone, user)
-                    print "Remove me"
                     bluetooth.track_device(new_Phone)
+                    storage.log("Changed Traking Phone from "+str(old_Phone)+" to "+new_Phone, user)
+                    
 
 
 
