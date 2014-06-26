@@ -85,7 +85,7 @@ def index():
     ac_mode = "--"
     ac_setpoint = None
     ac_heat_or_cool = None
-    present_devices = None
+    present_devices = dict()
     logs = getLogData(10)
     light_bulb = [False, False]
 
@@ -99,7 +99,7 @@ def index():
             last_update = hub["TEMPERATURE"].getLastUpdate()
 
         if "CURRENT" in hub.keys():
-            actual_current = hub["CURRENT"].getValue()
+            actual_current = round(hub["CURRENT"].getValue(), 1)
 
         if "LUMINOSITY" in hub.keys():
             actual_luminosity = hub["LUMINOSITY"].getValue()
@@ -110,7 +110,13 @@ def index():
             light_bulb = hub["RELAY"].get_lights_state()
 
         if "BLUETOOTH" in hub.keys():
-            present_devices = hub["BLUETOOTH"].get_traked_devices()
+            present_dev = hub["BLUETOOTH"].get_traked_devices()
+            
+            if "USER MANAGER" in app.config.keys():
+                um = app.config["USER MANAGER"]
+                for username, user in um.users.items():
+                    if user.phone in present_dev:
+                        present_devices[username] = user.phone
 
         if "LOGIC ENGINE" in hub.keys():
             ac_mode = hub["LOGIC ENGINE"].getACMode()

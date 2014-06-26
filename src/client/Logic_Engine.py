@@ -14,7 +14,7 @@ class Logic_Engine(Thread):
 
 	DEBUG 					= False
 	SLEEP_BETWEEN_CHECKS 	= 1		#sleeps X seconds befor cheking the need of executing any task
-	MARGIN 					= 0.3
+	MARGIN 					= 0.35
 
 	def __init__(self, hub):
 		Thread.__init__(self)
