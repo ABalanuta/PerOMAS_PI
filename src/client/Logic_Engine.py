@@ -42,9 +42,7 @@ class Logic_Engine(Thread):
 
 
 	def checkTermostatLogic(self):
-
 		
-
 		if self.hub["TEMPERATURE"] and self.hub["RELAY"]:
 
 			curr_temp = self.hub["TEMPERATURE"].getTemperature()
