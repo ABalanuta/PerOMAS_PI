@@ -3,164 +3,68 @@
 {% block content %}
 
 <div class="well well-lg" style="max-width:900px;">		
-	<div class="row">
+    <h3><b>Configuration Menu</b></h3>
+    <br>
+    <div class="row">
 
+        <div class="col-md-12">
 
-		<h2>Configuration Menu</h2>
+            {% if g.user.phone %}
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><b>Your Configuration</b></h3>
+                </div>
+                <h3> Your Phone Address is <b>{{ g.user.phone }} <span class="mega-octicon octicon-steps"></span> </b></h3>
+            </div>
+            {% else %}
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><b>Your Configuration</b></h3>
+                </div>
+                <h3><b> You have no phone Configured<br>Plese select one</b></h3>
+            </div>
 
-		<div class="col-md-12">
+            {% endif %}
+        </div>
 
-			{% if g.user.phone %}
-			<div class="panel panel-primary">
-				<div class="panel-heading">
-					<h3 class="panel-title"><b>Your Configuration</b></h3>
-				</div>
-				<h3> Your Phone Address is <b>{{ g.user.phone }} <span class="mega-octicon octicon-steps"></span> </b></h3>
-			</div>
-			{% else %}
-			<div class="panel panel-danger">
-				<div class="panel-heading">
-					<h3 class="panel-title"><b>Your Configuration</b></h3>
-				</div>
-				<h3><b> You have no phone Configured<br>Plese select one</b></h3>
-			</div>
-			
-			{% endif %}
-		</div>
+        <div class="col-md-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><b>Select you Phone</b></h3>
+                </div>
+                <div class="panel-body">
 
-		<div class="col-md-12">
-			<div class="panel panel-primary">
-				<div class="panel-heading">
-					<h3 class="panel-title"><b>Select you Phone</b></h3>
-				</div>
-				<div class="panel-body">
+                    <form method="POST">
+                        <table class="table table-condensed table-bordered">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Name</th>
+                                    <th>MAC</th>
+                                    <th>RSSI</th>
+                                    <th>Signal</th>
+                                    <th>Last Seen</th>
+                                </tr>
+                            </thead>
+                            {% for device in last_seen_devices %}
+                            <tr class="">
+                                <td class="text-center"><button class="btn btn-primary" name="Phone_Set" value="{{ device.Address }}"type="submit">
+                                        <span class="octicon octicon-device-mobile"></span> Set Phone
+                                </td>
+                                <td class="text-left">{{ device.Name }}</td>
+                                <td class="text-left">{{ device.Address }}</td>
+                                <td class="text-left">{{ device.RSSI }}</td>
+                                <td class="text-left">{{ device.Quality }}</td>
+                                <td class="text-left">{{ device.LastSeen }}</td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </form>
 
-					<form method="POST">
-						<table class="table table-condensed table-bordered">
-							<thead>
-								<tr>
-									<th></th>
-									<th>Name</th>
-									<th>MAC</th>
-									<th>RSSI</th>
-									<th>Signal</th>
-									<th>Last Seen</th>
-								</tr>
-							</thead>
-							{% for device in last_seen_devices %}
-							<tr class="">
-								<td class="text-center"><button class="btn btn-primary" name="Phone_Set" value="{{ device.Address }}"type="submit">
-									<span class="octicon octicon-device-mobile"></span> Set Phone
-								</td>
-								<td class="text-left">{{ device.Name }}</td>
-								<td class="text-left">{{ device.Address }}</td>
-								<td class="text-left">{{ device.RSSI }}</td>
-								<td class="text-left">{{ device.Quality }}</td>
-								<td class="text-left">{{ device.LastSeen }}</td>
-							</tr>
-							{% endfor %}
-						</table>
-					</form>
-
-					<h4><b></b></h4>
-				</div>
-			</div>
-		</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		<!--
-		<h2>Your Temperature Goal</h2>
-		<br>
-		<div id="rangedval">
-			<h3>Range Value: <span id="rangeval">23.0 - 24.0</span><h3>
-			</div>
-
-			<div id="rangeslider"></div>
-			<br>
-			<br>
-			<button type="submit" name="Save" class="btn btn-primary btn-lg">
-				<h5><b>Save</b></h5>
-			</button>
-
-			<script>
-			$(function(){
-				$('#rangeslider').slider({
-					range: true,
-					min: 18.0,
-					step: 0.50,
-					max: 28.0,
-					values: [ 23.0, 24.0 ],
-					slide: function( event, ui ) {
-						$('#rangeval').html(ui.values[0]+" - "+ui.values[1]);
-					}
-				});
-			});
-			</script>
-
-
-			
-			<style>
-			
-			/*Slider Styles*/
-			.slider {display:inline-block; width:74%;}
-			.ui-widget-content {
-				background: rgb(78,165,207);
-				background: -moz-linear-gradient(left,  rgba(78,165,207,1) 0%, rgba(99,219,207,1) 33%, rgba(232,199,128,1) 67%, rgba(197,86,77,1) 100%);
-				background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(78,165,207,1)), color-stop(33%,rgba(99,219,207,1)), color-stop(67%,rgba(232,199,128,1)), color-stop(100%,rgba(197,86,77,1)));
-				background: -webkit-linear-gradient(left,  rgba(78,165,207,1) 0%,rgba(99,219,207,1) 33%,rgba(232,199,128,1) 67%,rgba(197,86,77,1) 100%);
-				background: -o-linear-gradient(left,  rgba(78,165,207,1) 0%,rgba(99,219,207,1) 33%,rgba(232,199,128,1) 67%,rgba(197,86,77,1) 100%);
-				background: -ms-linear-gradient(left,  rgba(78,165,207,1) 0%,rgba(99,219,207,1) 33%,rgba(232,199,128,1) 67%,rgba(197,86,77,1) 100%);
-				background: linear-gradient(to right,  rgba(78,165,207,1) 0%,rgba(99,219,207,1) 33%,rgba(232,199,128,1) 67%,rgba(197,86,77,1) 100%);
-				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4ea5cf', endColorstr='#c5564d',GradientType=1 );
-			}
-			.ui-widget-header {background:transparent;}
-			.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {background:#55585f; border-radius:100em;}
-			.ui-slider .ui-slider-handle {height:2em; width:2em; top:-.75em; -webkit-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.3); -moz-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.3); box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.3); border:1px solid rgba(64,69,77,1); cursor: pointer;
-				background: rgb(86,89,97);
-				background: -moz-linear-gradient(top,  rgba(86,89,97,1) 0%, rgba(64,69,77,1) 100%);
-				background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(86,89,97,1)), color-stop(100%,rgba(64,69,77,1)));
-				background: -webkit-linear-gradient(top,  rgba(86,89,97,1) 0%,rgba(64,69,77,1) 100%);
-				background: -o-linear-gradient(top,  rgba(86,89,97,1) 0%,rgba(64,69,77,1) 100%);
-				background: -ms-linear-gradient(top,  rgba(86,89,97,1) 0%,rgba(64,69,77,1) 100%);
-				background: linear-gradient(to bottom,  rgba(86,89,97,1) 0%,rgba(64,69,77,1) 100%);
-				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#565961', endColorstr='#40454d',GradientType=0 );
-				
-			}
-			.ui-slider .ui-slider-handle:after { content: ''; display: block; position: absolute; top: 7px; right: 7px; bottom: 7px; left: 7px; z-index: -1; -webkit-border-radius: 100em; -moz-border-radius: 100em; -ms-border-radius: 100em; -o-border-radius: 100em; border-radius: 100em; border: 1px solid rgba(64,69,77,.5);
-			background: rgb(64,69,77);
-			background: -moz-linear-gradient(top,  rgba(64,69,77,1) 0%, rgba(86,89,97,1) 100%);
-			background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(64,69,77,1)), color-stop(100%,rgba(86,89,97,1)));
-			background: -webkit-linear-gradient(top,  rgba(64,69,77,1) 0%,rgba(86,89,97,1) 100%);
-			background: -o-linear-gradient(top,  rgba(64,69,77,1) 0%,rgba(86,89,97,1) 100%);
-			background: -ms-linear-gradient(top,  rgba(64,69,77,1) 0%,rgba(86,89,97,1) 100%);
-			background: linear-gradient(to bottom,  rgba(64,69,77,1) 0%,rgba(86,89,97,1) 100%);
-			filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40454d', endColorstr='#565961',GradientType=0 );
-		}
-		:focus {outline:none;};
-		/*End Slider Styles*/
-
-		</style>
-	-->
-
+                    <h4><b></b></h4>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-</div>
-
-
 {% endblock %}

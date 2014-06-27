@@ -162,14 +162,16 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40454d', end
     <!-- Display flashed messages -->
     {% with msgs = get_flashed_messages() %}
     {% if msgs %}
-    {%- for msg in msgs %}
-    <div class="alert alert-info col-md-6 col-md-offset-3 alert-dismissable">
-      <span class="octicon octicon-info"></span> 
-      {{ msg }}
-      <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    <div class="container-fluid" style="max-width:900px;" >
+        {%- for msg in msgs %}
+        <div class="alert alert-info col-md-6 col-md-offset-3 alert-dismissable">
+          <span class="octicon octicon-info"></span> 
+          {{ msg }}
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        </div>
+        {% endfor -%}
+        {% endif %}
     </div>
-    {% endfor -%}
-    {% endif %}
     {% endwith %}
 
 

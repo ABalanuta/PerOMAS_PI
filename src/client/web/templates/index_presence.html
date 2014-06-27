@@ -1,0 +1,23 @@
+{% if g.user.username %}
+
+<div class="well well-lg" style="max-width:900px;">
+    <h3><b>Presence</b></h3>
+     <br>
+    <div class="row">
+        <table class="table table-condensed table-bordered">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Device</th>
+                </tr>
+            </thead>
+            {% for name, mac in present_devices.items() %}
+            <tr class="success">
+                <td class="text-left">{{ name }}</td>
+                <td class="text-left">{{ mac }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endif %}
