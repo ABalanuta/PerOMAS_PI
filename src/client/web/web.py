@@ -166,7 +166,7 @@ def gateway():
 
 @app.route('/graph')
 @login_required
-@app.cache.cached(timeout=180)
+#@app.cache.cached(timeout=180)
 def graph():
 
     data = getGraphData()
