@@ -9,8 +9,8 @@ from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 
-from flask import Flask, request, render_template, flash, redirect, send_from_directory, url_for, g
-from flask.ext.cache import Cache, make_template_fragment_key
+from flask import Flask, request, render_template, flash, redirect, url_for, g
+from flask.ext.cache import Cache
 from flask.ext.compress import Compress
 from flask.ext.login import LoginManager, login_user, logout_user, current_user, login_required
 from flask.ext.wtf import Form
