@@ -194,8 +194,11 @@ echo_options:
 	sudo cp conf/start_batman.py /opt/peromas/
 	@echo
 
-	#// CHange Hostname
+	#// Change Hostname
 	sudo python conf/change_host.py
+
+	#// Aust TimeZone
+	sudo dpkg-reconfigure tzdata
 
 	@echo 'Reboot the System Manually'
 
