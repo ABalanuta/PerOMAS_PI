@@ -116,11 +116,6 @@ echo_options:
 	sudo aptitude install batctl bridge-utils iw wireless-tools iperf -y
 	@echo
 
-	@echo 'Test Soft'
-	sudo apt-get install evtest tslib libts-bin -y
-	@echo
-
-
 	@echo 'MySQL'
 	sudo aptitude install mysql-client mysql-server python-mysqldb -y
 	@echo "Optimizing MySQL"
@@ -194,11 +189,11 @@ echo_options:
 	sudo cp conf/start_batman.py /opt/peromas/
 	@echo
 
-	#// Change Hostname
-	sudo python conf/change_host.py
-
 	#// Aust TimeZone
 	sudo dpkg-reconfigure tzdata
+
+	#// Change Hostname
+	sudo python conf/change_host.py
 
 	@echo 'Reboot the System Manually'
 
@@ -207,6 +202,10 @@ echo_options:
 	@echo
 
 6: #// Test touchscreen
+
+	@echo 'Test Soft'
+	sudo apt-get install evtest tslib libts-bin -y
+	@echo
 
 	#// Touchscreen
 	sudo TSLIB_FBDEVICE=/dev/fb1 TSLIB_TSDEVICE=/dev/input/touchscreen ts_calibrate
