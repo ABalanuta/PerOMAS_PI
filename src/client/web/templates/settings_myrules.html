@@ -1,0 +1,110 @@
+<div class="col-md-12">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                <b>Add Rule</b>
+            </h3>
+        </div>
+        <div class="panel-body">
+            <table class="table table-condensed table-bordered">
+                <thead>
+                    <tr>
+                        <th class="text-center">
+                            IF
+                        </th>
+                        <th class="text-center">
+                            DO
+                        </th>
+                        <th class="text-center">
+                            Argument
+                        </th>
+                        <th class="text-center">
+                            Add
+                        </th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td class="text-center">
+                        <select>
+                            <option value="Inside">
+                                Inside
+                            </option>
+                            <option value="Outside">
+                                Outside
+                            </option>
+                            <option value="Outside">
+                                Time
+                            </option>
+                        </select> <select>
+                            <option value="Office">
+                                Office
+                            </option>
+                            <option value="Building">
+                                Building
+                            </option>
+                        </select>
+                    </td>
+
+                    <td class="text-center">
+                        <select id="DoField" rv-value="app.doOperation" rv-on-change="app.changeArgumetType">
+                            <option value="SetLights">
+                                Set Lights
+                            </option>
+                            <option value="SetTermostat">
+                                Set Termostat
+                            </option>
+                        </select>
+                    </td>
+
+
+                    <td class="text-center">
+
+                        <div id="SetpointValue" rv-show="app.doOperation | eq SetTermostat">
+                            <input  type="number" step="0.1" value='22.1' max='30' min='10' maxlength='2' size='2' name="Setpoint">
+                        </div>
+
+                        <div id="Lights" rv-show="app.doOperation | eq SetLights">
+                            <input type="checkbox" name="Light1">Light Bulb x1
+                            <input type="checkbox" name="Light2">Light Bulb x2
+                        </div>
+
+                    </td>
+
+                    <td class="text-center">
+
+                      <button class="btn btn-primary">ADD</button>
+
+                    </td>
+
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+
+    rivets.formatters.eq = function(value, arg) {
+        return value == arg;
+    };
+
+    var app = {
+        changeArgumetType: function(e) {
+            setTimeout(function(){
+                //if (app.doOperation == "Set Lights") app.showCheckbox = true;
+                //if (app.doOperation == "Set Termostat") app.showSetpoint = true;ls
+            },50)
+        },
+        doOperation: "SetTermostat"
+    }
+    rivets.bind($('body')[0],{app:app});
+
+
+
+
+    function changeArgumetType(e) {
+        var Do = e.options[e.selectedIndex].value
+
+    }
+    </script>
+
+</div>
