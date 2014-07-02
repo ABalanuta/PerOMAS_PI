@@ -189,8 +189,11 @@ echo_options:
 	sudo cp conf/start_batman.py /opt/peromas/
 	@echo
 
-	#// Aust TimeZone
+	#// Ajust TimeZone
 	sudo dpkg-reconfigure tzdata
+	
+	#// Enable NTP on StartUP
+	sudo update-rc.d ntp defaults
 
 	#// Change Hostname
 	sudo python conf/change_host.py
