@@ -76,7 +76,7 @@ echo_options:
 3: #// Install Software
 
 	@echo 'Aux'
-	sudo aptitude install git vim tmux screen htop ntp -y
+	sudo aptitude install git vim tmux screen htop ntp ntpdate -y
 	@echo
 
 	@echo 'GPIO'
@@ -96,7 +96,7 @@ echo_options:
 	@echo
 
 	@echo 'SNMP'
-	sudo aptitude install snmp libsnmp-python python-pysnmp4 python-pysnmp-common
+	sudo aptitude install snmp libsnmp-python python-pysnmp4 python-pysnmp-common -y
 	@echo
 
 	@echo 'WEB'
@@ -191,10 +191,11 @@ echo_options:
 
 	#// Ajust TimeZone
 	sudo dpkg-reconfigure tzdata
-	
-	#// Enable NTP on StartUP
-	sudo update-rc.d ntp defaults
 
+	#// NTP
+	sudo cp conf/crontab /etc/crontab
+	sudo /etc/init.d/cron restart
+	
 	#// Change Hostname
 	sudo python conf/change_host.py
 
