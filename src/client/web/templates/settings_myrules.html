@@ -1,40 +1,68 @@
-
 <div class="col-md-12">
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3 class="panel-title">
-                <b>Add Rule</b>
+            <b>Add Rule</b>
             </h3>
         </div>
         <div class="panel-body">
-            <table class="table table-condensed table-bordered">
-                <thead>
+            <form method="POST">
+                <table class="table table-condensed table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center">
+                                Rule Name
+                            </th>
+                            <th class="text-center">
+                                If Event (and)
+                            </th>
+                            <th class="text-center">
+                                then Action
+                            </th>
+                        </tr>
+                    </thead>
                     <tr>
-                        <th class="text-center">
-                            IF
-                        </th>
-                        <th class="text-center">
-                            Event
-                        </th>
-                        <th class="text-center">
-                            Action
-                        </th>
-                        <th class="text-center">
-                            
-                        </th>
+                        <td class="text-center"><span class="font14 label label-primary" linehight="1">LightsUP when Dark</span></td>
+                        <td class="text-center">
+                            <span class="font14 label label-primary">Office is Dark</span>
+                            <span class="font14 label label-primary">I'm in the Office</span>
+                        </td>
+                        <td class="text-center"><span class="font14 label label-primary">Turn All Lights ON</span></td>
+                        <td class="text-center"><button class="btn btn-danger" name="Delete_Rule" type="submit"><span class="octicon octicon-circle-slash"></td>
                     </tr>
-                </thead>
-            </table>
+                    <tr>
+                        <td class="text-center">
+                            <input type="text">
+                        </td>
+                        <td id="addEvent" class="text-center">
+                            <select data-placeholder="Choose Event ..." style="min-width:200px;" multiple class="chosen-select">
+                                <option value="x">I'm in the Office</option>
+                                <option value="x">Office is Cold</option>
+                                <option value="x">It's Raining</option>
+                                <option value="x">Solar Flare</option>
+                            </select>
+                            
+                        </td>
+                        <td class="text-center">
+                            <select class="chosen-select">
+                                <option value="x">Turn All Lights ON</option>
+                                <option value="x">Set Setpoint to 22</option>
+                                <option value="x">Set Setpoint to 10</option>
+                                <option value="x">Explode Door</option>
+                            </select>
+                        </td>
+                        <td class="text-center"><button class="btn btn-success" name="Add_Rule" type="submit"><span class="octicon octicon-plus"></span></td>
+                    </tr>
+                </table>
+            </form>
         </div>
     </div>
 </div>
-
-
-<div class="col-md-6">
+<div class="col-md-12">
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3 class="panel-title">
-                <b>Add Event</b>
+            <b>Add Event</b>
             </h3>
         </div>
         <div class="panel-body">
@@ -42,118 +70,96 @@
                 <thead>
                     <tr>
                         <th class="text-center">
-                            IF
+                            Event Name
                         </th>
                         <th class="text-center">
-                            DO
+                           If
                         </th>
                         <th class="text-center">
-                            Argument
+                           Condition
                         </th>
                         <th class="text-center">
-                            Add
+                            Argument (aux)
                         </th>
                     </tr>
                 </thead>
                 <tr>
                     <td class="text-center">
-                        <select>
-                            <option value="Inside">
-                                Inside 
+                        <span class="font14 label label-primary">I'm in the Office</span>
+                    </td>
+                    <td class="text-center">
+                         <span class="font14 label label-primary">In the Office</span>
+                    </td>
+                    <td class="text-center">
+                         <span class="font14 label label-primary">True</span>
+                    </td>
+                    <td class="text-center">
+                        
+                    </td>
+                    <td class="text-center"><button class="btn btn-danger" name="Delete_Rule" type="submit"><span class="octicon octicon-circle-slash"></td>
+                </tr>
+
+                <tr>
+                    <td class="text-center">
+                        <input type="text">
+                    </td>
+                    <td class="text-center">
+                        <select class="chosen-select">
+                            <option value="Luminosity">
+                               In the Office
                             </option>
-                            <option value="Outside">
-                                Outside
+                            <option value="Luminosity">
+                               Luminosity
                             </option>
-                            <option value="Outside">
-                                Time
+                            
+                        </select>
+                    </td>
+                    <td class="text-center">
+                        <select class="chosen-select">
+                            <option value="True">
+                                True
                             </option>
-                        </select> <select>
-                            <option value="Office">
-                                Office
+                             <option value="False">
+                                False
                             </option>
-                            <option value="Building">
-                                Building
+                            <option value="Bigger">
+                               &gt;
+                            </option>
+                            <option value="Smaller">
+                               &lt;
+                            </option>
+                            <option value="Equal">
+                               ==
                             </option>
                         </select>
                     </td>
-
                     <td class="text-center">
-                        <select id="DoField" rv-value="app.doOperation" rv-on-change="app.changeArgumetType">
-                            <option value="SetLights">
-                                Set Lights
-                            </option>
-                            <option value="SetTermostat">
-                                Set Termostat
-                            </option>
-                        </select>
-                    </td>
-
-
-                    <td class="text-center">
-
-                        <div id="SetpointValue" rv-show="app.doOperation | eq SetTermostat">
-                            <input class="text-center" type="number" step="0.1" value='22.1' max='30' min='10' maxlength='2' size='2' name="Setpoint"> &degC
+                        <div id="Argument" >
+                            <input class="text-center" type="text" maxlength='10' size='5' name="Argument">
                         </div>
-
-                        <div id="Lights" rv-show="app.doOperation | eq SetLights">
-                            <input type="checkbox" name="Light1">Light Bulb x1
-                            <input type="checkbox" name="Light2">Light Bulb x2
-                        </div>
-
                     </td>
-
                     <td class="text-center">
-
-                      <button class="btn btn-primary">ADD</button>
-
+                        <button class="btn btn-success" name="Add_Rule" type="submit"><span class="octicon octicon-plus"></span>
                     </td>
-
                 </tr>
             </table>
         </div>
     </div>
 
-    <script>
-
-    rivets.formatters.eq = function(value, arg) {
-        return value == arg;
-    };
-
-    var app = {
-        changeArgumetType: function(e) {
-            setTimeout(function(){
-                //if (app.doOperation == "Set Lights") app.showCheckbox = true;
-                //if (app.doOperation == "Set Termostat") app.showSetpoint = true;ls
-            },50)
-        },
-        doOperation: "SetTermostat"
-    }
-    rivets.bind($('body')[0],{app:app});
-
-
-
-
-    function changeArgumetType(e) {
-        var Do = e.options[e.selectedIndex].value
-
-    }
-    </script>
-
 </div>
-
-<div class="col-md-6">
+<div class="col-md-12">
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3 class="panel-title">
-                <b>Add Action</b>
+            <b>Add Action</b>
             </h3>
         </div>
         <div class="panel-body">
             <table class="table table-condensed table-bordered">
                 <thead>
                     <tr>
-                         <th class="text-center">
-                            Name
+                        <th class="text-center">
+                            Action Name
                         </th>
                         <th class="text-center">
                             Action
@@ -163,7 +169,49 @@
                         </th>
                     </tr>
                 </thead>
+                <tr>
+                        <td class="text-center">
+                        <input type="text">
+                    </td>
+                        <td class="text-center">
+                            <select class="chosen-select">
+                                <option value="Set Lights">
+                                   Set Lights
+                                </option>
+                        </select>
+                        </td>
+                            <td class="text-center">
+                                <div id="Lights">
+                                <input type="checkbox" name="Light1">Light Bulb x1
+                                <input type="checkbox" name="Light2">Light Bulb x2
+                            </div>
+                        </td>
+                    </tr>
             </table>
+            
         </div>
     </div>
 </div>
+
+    <script>
+        $(".chosen-select").chosen({disable_search_threshold: 10});
+        
+        rivets.formatters.eq = function(value, arg) {
+        return value == arg;
+        };
+        
+        var app = {
+            changeArgumetType: function(e) {
+                setTimeout(function(){
+                    //if (app.doOperation == "Set Lights") app.showCheckbox = true;
+                    //if (app.doOperation == "Set Termostat") app.showSetpoint = true;ls
+                },50)
+            },
+            doOperation: "SetTermostat"
+        }
+        
+        rivets.bind($('body')[0],{app:app});
+        function changeArgumetType(e) {
+            var Do = e.options[e.selectedIndex].value
+        }
+    </script>

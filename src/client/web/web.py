@@ -280,6 +280,7 @@ def process_settings_post():
             bluetooth = hub["BLUETOOTH"]
 
         if storage and bluetooth:
+            
             if "Phone_Set" in request.form.keys():
                 new_Phone = request.form["Phone_Set"]
                 old_Phone = g.user.get_phone()
@@ -288,10 +289,14 @@ def process_settings_post():
                     g.user.set_phone(new_Phone)
                     bluetooth.track_device(new_Phone)
                     storage.log("Changed Traking Phone from "+str(old_Phone)+" to "+new_Phone, user)
-                    
 
+            if "Phone_Delete" in request.form.keys():
+                new_Phone = None
+                old_Phone = g.user.get_phone()
 
-
+                g.user.set_phone(new_Phone)
+                bluetooth.stop_tracking_device(old_Phone)
+                storage.log("Changed Traking Phone from "+str(old_Phone)+" to "+str(new_Phone), user)
 
 def process_index_post():
 

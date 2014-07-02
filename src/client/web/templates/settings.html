@@ -1,81 +1,77 @@
 {% extends "base.html" %}
-
 {% block content %}
-
-<div class="well well-lg" style="max-width:900px;">		
-    <h3><b>Configuration Menu</b></h3>
-    <br>
-    <div class="row">
-
-        <div class="col-md-12">
-
-            {% if g.user.phone %}
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><b>Your Configuration</b></h3>
-                </div>
-                <h3> Your Phone Address is <b>{{ g.user.phone }} <span class="mega-octicon octicon-steps"></span> </b></h3>
+    <div class="well well-lg" style="max-width:900px;">
+        <h3><b>Configuration Menu</b></h3>
+        <br>
+        <div class="row">
+            <div class="col-md-12">
+                {% if g.user.phone %}
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><b>Your Configuration</b></h3>
+                        </div>
+                        <form method="POST">
+                            <h3> Your Phone Address is <b><span class="mega-octicon octicon-steps"></span> {{ g.user.phone }} <span class="mega-octicon octicon-steps"></span></b>
+                            
+                            <button class="btn btn-danger" name="Phone_Delete" type="submit">
+                            <span class="octicon octicon-circle-slash"> Remove
+                            
+                            </h3>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="panel panel-danger">
+                        <div class="panel-heading">
+                            <h3 class="panel-title"><b>Your Configuration</b></h3>
+                        </div>
+                        <h3><b> You have no phone Configured<br>Plese select one</b></h3>
+                    </div>
+                {% endif %}
             </div>
-            {% else %}
-            <div class="panel panel-danger">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><b>Your Configuration</b></h3>
+            <div class="col-md-12">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><b>Select you Phone</b></h3>
+                    </div>
+                    <div class="panel-body">
+                        <form method="POST">
+                            <table class="table table-condensed table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Action</th>
+                                        <th class="text-center">Name</th>
+                                        <th class="text-center">MAC</th>
+                                        <th class="text-center">RSSI</th>
+                                        <th class="text-center">Signal</th>
+                                        <th class="text-center">Last Seen</th>
+                                    </tr>
+                                </thead>
+                                {% for device in last_seen_devices %}
+                                    <tr class="">
+                                        <td class="text-center">
+                                            {% if g.user.phone == device.Address %}
+                                                <button class="btn btn-danger" name="Phone_Delete" value="{{ device.Address }}" type="submit">
+                                                <span class="octicon octicon-circle-slash"> Remove
+                                            {% else %}
+                                                <button class="btn btn-primary" name="Phone_Set" value="{{ device.Address }}" type="submit">
+                                                <span class="octicon octicon-device-mobile"> Set Phone </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center font14">{{ device.Name }}</td>
+                                        <td class="text-center font14">{{ device.Address }}</td>
+                                        <td class="text-center font14">{{ device.RSSI }}</td>
+                                        <td class="text-center font14">{{ device.Quality }}</td>
+                                        <td class="text-center font14">{{ device.LastSeen }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </form>
+                        <h4><b></b></h4>
+                    </div>
                 </div>
-                <h3><b> You have no phone Configured<br>Plese select one</b></h3>
             </div>
-
-            {% endif %}
+            
+            {% include 'settings_myrules.html' %}
         </div>
-
-        <div class="col-md-12">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><b>Select you Phone</b></h3>
-                </div>
-                <div class="panel-body">
-
-                    <form method="POST">
-                        <table class="table table-condensed table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Action</th>
-                                    <th>Name</th>
-                                    <th>MAC</th>
-                                    <th>RSSI</th>
-                                    <th>Signal</th>
-                                    <th>Last Seen</th>
-                                </tr>
-                            </thead>
-                            {% for device in last_seen_devices %}
-                            <tr class="">
-                                <td class="text-center">
-                                    {% if g.user.phone == device.Address %}
-                                    <button class="btn btn-danger" name="Phone_Delete" value="{{ device.Address }}" type="submit">
-                                    <span class="octicon octicon-circle-slash"> Remove</span>
-
-                                    {% else %}
-                                     <button class="btn btn-primary" name="Phone_Set" value="{{ device.Address }}" type="submit">
-                                        <span class="octicon octicon-device-mobile"> Set Phone </span>
-                                    {% endif %}
-
-                                </td>
-                                <td class="text-left">{{ device.Name }}</td>
-                                <td class="text-left">{{ device.Address }}</td>
-                                <td class="text-left">{{ device.RSSI }}</td>
-                                <td class="text-left">{{ device.Quality }}</td>
-                                <td class="text-left">{{ device.LastSeen }}</td>
-                            </tr>
-                            {% endfor %}
-                        </table>
-                    </form>
-
-                    <h4><b></b></h4>
-                </div>
-            </div>
-        </div>
-    
-        {% include 'settings_myrules.html' %}
-
     </div>
-</div>
 {% endblock %}

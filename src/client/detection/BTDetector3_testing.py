@@ -11,67 +11,110 @@ __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 import os
 import signal
 import subprocess
+import gobject
+import dbus
+import dbus.mainloop.glib
+from optparse import OptionParser, make_option
 from time import sleep
 from threading import Thread
 from datetime import datetime
 
 #Debugging Mode
-DEBUG = False
+DEBUG = True
 
 class BTExecutor(Thread):
 	
-	#Return value
-	value = None
+	DEBUG = True
+	VALUE = None #Return value
+	TEMP  = list()
 	
 	def __init__(self):
 		Thread.__init__(self)
-		self.proc  = None
-		dir_path = os.path.dirname(os.path.realpath(__file__))
-		self.path = dir_path +'/' + 'bluez-test-discovery'
-		#print "BTExecutor thread init"
+
+
+		dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
+
+		bus = dbus.SystemBus()
+		manager = dbus.Interface(bus.get_object("org.bluez", "/"),
+								"org.bluez.Manager")
+
+		option_list = [
+				make_option("-i", "--device", action="store",
+						type="string", dest="dev_id"),
+				]
+		parser = OptionParser(option_list=option_list)
+
+		(options, args) = parser.parse_args()
+
+		if options.dev_id:
+			adapter_path = manager.FindAdapter(options.dev_id)
+		else:
+			adapter_path = manager.DefaultAdapter()
+
+		self.adapter = dbus.Interface(bus.get_object("org.bluez", adapter_path),
+								"org.bluez.Adapter")
+
+		bus.add_signal_receiver(self.device_found,
+				dbus_interface = "org.bluez.Adapter",
+						signal_name = "DeviceFound")
+
+		bus.add_signal_receiver(self.property_changed,
+				dbus_interface = "org.bluez.Adapter",
+						signal_name = "PropertyChanged")
+
+
+
+	def device_found(self, address, properties):
+
+		self.last_update = datetime.now()
+		device = dict()
+		device["Timestamp"] = datetime.now()
+		device["Name"] = ""
+		device["Address"] = address.encode('ascii','ignore')
+
+		if properties["Name"]:
+			device["Name"] = properties["Name"].encode('ascii','ignore')
+
+		if self.DEBUG:
+			print  str(datetime.now()).split(".")[0], "Found", device["Address"], device["Name"]
+
+		#ignores Duplicates
+		for dev in self.TEMP:
+			if dev["Address"] == device["Address"]:
+				return
+
+		self.TEMP.append(device)
+
+		if self.DEBUG:
+			print  str(datetime.now()).split(".")[0], "Found", device["Address"], device["Name"]
+
+
+
+	def property_changed(self, name, value):
+		if self.DEBUG:
+			print name, value, str(datetime.now()).split(".")[0]
+		if (name == "Discovering" and not value):
+			self.mainloop.quit()
 
 	def run(self):
-		p = subprocess.Popen('sudo nice sudo '+self.path , shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, preexec_fn=os.setsid)
-		self.proc = p
-		lines = p.stdout.readlines()
-		found_name = []
-		found_mac = []
-		found_rssi = []	
-		#Find devices and their parameters
-		for line in lines:
-			if "Name" in line:
-				if len(line.split()) > 2: #Name could be null
-					found_name += [' '.join(line.split()[2:])]
-				else:
-					found_name += [""]
-			if "Address" in line:
-				found_mac += [line.split()[2]]
-			if "RSSI" in line:
-				found_rssi += [line.split()[2]]
 
-		#Put device parameters in a dictionary
-		found = list()
-		for x in range(0, len(found_name)):
-			device = dict()
-			device['Address'] = found_mac[x]
-			device['Name'] = found_name[x]
-			device['RSSI'] = found_rssi[x]
-			device['Quality'] = int((int(found_rssi[x])+97)*1.325)
+		self.adapter.StartDiscovery()
+		self.mainloop = gobject.MainLoop()
 
-			#Filter duplicates
-			for dev in found:
-				if device['Address'] == dev['Address']:
-					continue
 
-			found.append(device)
+		if self.DEBUG:
+			print "1", str(datetime.now()).split(".")[0]
+
+		self.mainloop.run()
+
+		if self.DEBUG:
+			print "2", str(datetime.now()).split(".")[0]
 
 		# make it the returning values
-		self.value = found
+		self.VALUE = self.TEMP
 
 	def stop(self):
-
-		if self.proc:
-			os.killpg(self.proc.pid, signal.SIGTERM)
+		self.mainloop.quit()
 
 
 class BTDetector(Thread):
@@ -91,7 +134,7 @@ class BTDetector(Thread):
 		self.seen_devices = list()
 		self.seen_timeout = 30	# if device is not seen for x seconds it gets eliminated from the seen_devices
 		self.bluetooth_memory_values = set()
-		self.traking_devices = list()
+		self.traking_devices = set()
 		self.interface_fail = 0
 		self.running_exe = None
 
@@ -116,22 +159,18 @@ class BTDetector(Thread):
 			self.get_traked_devices_from_db()
 
 		while not self.stopped:
-
+			
 			if DEBUG:
 				print "\n-----------------------------------"
-
 			sleep(0.5)
 			exe = BTExecutor()
 			exe.start()
 			self.running_exe = exe
-
 			exe.join(16) #Wait 16 seconds for the scan to be preformed
+
 			if self.stopped:
 				break
-
-			if DEBUG:
-				print "exe.value", exe.value
-
+			print "exe.value", exe.value
 			if isinstance(exe.value, list):
 
 				self.last_update = datetime.now()
@@ -175,7 +214,7 @@ class BTDetector(Thread):
 					break
 			
 			if not duplicate:
-				device["LastSeen"] = time_now	
+				device["Last seen"] = time_now	
 				new_list.append(device)
 		
 		
@@ -188,7 +227,7 @@ class BTDetector(Thread):
 					new_version = True
 			
 			if not new_version:
-				if not (time_now - seen["LastSeen"]).total_seconds() > self.seen_timeout:
+				if not (time_now - seen["Last seen"]).total_seconds() > self.seen_timeout:
 					new_list.append(seen)
 		
 		self.seen_devices = new_list
@@ -217,12 +256,6 @@ class BTDetector(Thread):
 		subprocess.Popen('sudo hciconfig hci0 lm MASTER', shell=True)
 		sleep(1)
 
-	def kill_mod(self):
-		subprocess.Popen('sudo rmmod btusb', shell=True)
-		sleep(1)
-		subprocess.Popen('sudo modprobe btusb', shell=True)
-		sleep(1)
-
 	#Dumps the cache of seen devices
 	def dumpMemoryValues(self):
 		b = self.bluetooth_memory_values
@@ -231,23 +264,28 @@ class BTDetector(Thread):
 
 	def get_traked_devices_from_db(self):
 		while "STORAGE HANDLER" not in self.hub.keys():
-			if DEBUG:
-				print "BTDetect waiting for the DB to be Loaded"
 			sleep(0.5)
 
-		devices = self.hub["STORAGE HANDLER"].loadTrakingBTDevices()
-
+		devices = self.hub["STORAGE HANDLER"].readSettings("Bluetooth_Tracking_Devices")
 		if devices:
 			self.traking_devices = devices
 
-
 	def track_device(self, MAC):
 		if MAC not in self.traking_devices:
-			self.traking_devices.append(MAC)
+			self.traking_devices.add(MAC)
 
-	def stop_tracking_device(self, MAC):
-		if MAC in self.traking_devices:
-			self.traking_devices.remove(MAC)
+			if self.db:
+				while "STORAGE HANDLER" not in self.hub.keys():
+					sleep(0.2)
+
+				self.hub["STORAGE HANDLER"].writeSettings("Bluetooth_Tracking_Devices", 
+														self.traking_devices)
+
+	def kill_mod(self):
+		subprocess.Popen('sudo rmmod btusb', shell=True)
+		sleep(1)
+		subprocess.Popen('sudo modprobe btusb', shell=True)
+		sleep(1)
 
 	#returns a list of devices seen in the last self.seen_timeout seconds
 	def get_discovered_devices(self):		
@@ -267,21 +305,50 @@ class BTDetector(Thread):
 #Runs only if called
 if __name__ == "__main__":
 
-	started = datetime.now()
-	d = BTDetector(None,db=False)
-	try:
-		print "#TEST#"
-		print "#Starting#"
-		d.start()
-		sleep(60*60*24*356)
+
+	b1 = BTExecutor()
+	b1.start()
+	while not b1.VALUE:
+		sleep(0.1)
+	print "DONE", '\n'
+	b1 = None
+
+	b2 = BTExecutor()
+	b2.start()
+	while not b2.VALUE:
+		sleep(0.1)
+	print "DONE", '\n'
+	b2 = None
+
+	b3 = BTExecutor()
+	b3.start()
+	while not b3.VALUE:
+		sleep(0.1)
+	print "DONE", '\n'
+	b3 = None
+
+
+
+
+
+
+
+
+	#started = datetime.now()
+	# d = BTDetector(None,db=False)
+	# try:
+	# 	print "#TEST#"
+	# 	print "#Starting#"
+	# 	d.start()
+	# 	sleep(60*60*24*356)
 		
-	except:
-		print "Exception"
+	# except:
+	# 	print "Exception"
 	
-	finally:
-		d.stop()
-		print "#Sttoped#\n\n"
-		print "-----------------"
-		for x in d.seen_devices:
-			print x
-		print "-----------------"
+	# finally:
+	# 	d.stop()
+	# 	print "#Sttoped#\n\n"
+	# 	print "-----------------"
+	# 	for x in d.seen_devices:
+	# 		print x
+	# 	print "-----------------"

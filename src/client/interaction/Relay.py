@@ -15,7 +15,7 @@ class Relay():
 						"AC_SPEED_2"		:	{"Pin" : 17, "State" : False},
 						"AC_SPEED_3" 		:	{"Pin" : 27, "State" : False},
 						"AC_HEAT_COOL" 		:	{"Pin" : 22, "State" : False},
-						"LIGHTS_X1" 		:	{"Pin" : 18, "State" : True},
+						"LIGHTS_X1" 		:	{"Pin" : 18, "State" : False},
 						"LIGHTS_X2" 		:	{"Pin" : 23, "State" : True},}
 
 
