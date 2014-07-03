@@ -181,18 +181,32 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40454d', end
     </nav>
 
     <!-- Display flashed messages -->
-    {% with msgs = get_flashed_messages() %}
-    {% if msgs %}
-    <div class="container-fluid" style="max-width:900px;" >
-        {%- for msg in msgs %}
-        <div class="alert alert-info col-md-6 col-md-offset-3 alert-dismissable">
-          <span class="octicon octicon-info"></span> 
-          {{ msg }}
-          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+    {% with msgs = get_flashed_messages(with_categories=true) %}
+      {% if msgs %}
+        <div class="container-fluid" style="max-width:900px;" >
+            {% for type, msg in msgs %}
+              {% if type == 'error' %}
+              <div class="alert alert-danger col-md-8 col-md-offset-2 alert-dismissable">
+                <span class="octicon octicon-issue-opened"></span>
+                {{ msg }}
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+              </div>
+              {% elif type == 'success' %}
+              <div class="alert alert-success col-md-8 col-md-offset-2 alert-dismissable">
+                <span class="octicon octicon-issue-closed"></span>
+                {{ msg }}
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+              </div>
+              {% else %}
+              <div class="alert alert-info col-md-8 col-md-offset-2 alert-dismissable">
+                <span class="octicon octicon-info"></span> 
+                {{ msg }}
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+              </div>
+              {% endif %}
+            {% endfor %}
         </div>
-        {% endfor -%}
-        {% endif %}
-    </div>
+      {% endif %}
     {% endwith %}
 
 

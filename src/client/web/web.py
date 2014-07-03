@@ -192,7 +192,7 @@ def login():
                 user = um.getUser(form.username.data)
 
                 login_user(user, form.remember_me.data)
-                flash("Logged in successfully.")
+                flash("Logged in successfully.", "success")
                 return redirect(request.args.get("next") or url_for("index"))
 
     return render_template('login.html', form=form)
@@ -202,7 +202,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash("Logged Out successfully.")
+    flash("Logged Out successfully.", "success")
     return redirect(url_for('index'))
 
 
@@ -228,7 +228,7 @@ def register():
             else:
                 um.addUser(form.username.data, form.password.data)
 
-        flash('Thanks for registering')
+        flash('Thanks for registering', "info")
         return redirect(url_for('login'))
 
     return render_template('register.html', form=form)
@@ -279,6 +279,8 @@ def process_settings_post():
         if "BLUETOOTH" in hub.keys():
             bluetooth = hub["BLUETOOTH"]
 
+        print request.form.items()
+
         if storage and bluetooth:
             
             if "Phone_Set" in request.form.keys():
@@ -297,6 +299,56 @@ def process_settings_post():
                 g.user.set_phone(new_Phone)
                 bluetooth.stop_tracking_device(old_Phone)
                 storage.log("Changed Traking Phone from "+str(old_Phone)+" to "+str(new_Phone), user)
+
+        if storage:
+
+            if "Add_Action" in request.form.keys():
+
+                if not "Action_Alias" in request.form.keys() or len(request.form["Action_Alias"]) < 1:
+                    flash("Invalid Action Alias", 'error')
+                    return
+
+                if g.user.has_action_alias(request.form["Action_Alias"]):
+                    flash("Alias Already Exists", 'error')
+                    return
+
+                if not "Action_Name" in request.form.keys():
+                    flash("Invalid Action", 'error')
+                    return
+
+                action      = request.form["Action_Name"]  
+                alias       = request.form["Action_Alias"]
+                arg_type    = None
+                arguments   = None
+
+                if action == "Set_Lights":
+                    arg_type = "checkbox"
+                    arguments = [False, False]
+                    if "Light_Bulb_1" in request.form.keys():
+                        arguments[0] = True
+                    if "Light_Bulb_2" in request.form.keys():
+                        arguments[1] = True
+
+                elif action == "Set_Setpoint":
+                    arg_type = "text"
+                    try:
+                        arguments = float(request.form["Setpoint"])
+                    except ValueError:
+                        flash("Invalid Argument Value", 'error')
+                        return
+                else:
+                    flash("Invalid Action", 'error')
+                    return
+
+                g.user.add_action(alias, action, arg_type, arguments)
+                storage.log("Created new Action: alias="+alias+" action="+action+" arguments="+str(arguments), user)
+
+            if "Delete_User_Action" in request.form.keys():
+                action_alias = str(request.form["Delete_User_Action"])
+                
+                if g.user.has_action_alias(action_alias):
+                    g.user.del_action(action_alias)
+                    storage.log("Deleted Action: alias="+action_alias, user)
 
 def process_index_post():
 

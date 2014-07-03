@@ -1,0 +1,84 @@
+<div class="col-md-12">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+            <b>Add Action</b>
+            </h3>
+        </div>
+        <div class="panel-body">
+            <form method="POST">
+                <table class="table table-condensed table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="text-center">
+                                Action Alias
+                            </th>
+                            <th class="text-center">
+                                Action
+                            </th>
+                            <th class="text-center">
+                                Argument
+                            </th>
+                            <th class="text-center"></th>
+                        </tr>
+                    </thead>
+                    <tr>
+                        <td class="text-center">
+                            <input type="text" name="Action_Alias">
+                        </td>
+                        <td class="text-center">
+                            <select class="chosen-select" name="Action_Name"rv-value="app.doOperation" rv-on-change="app.changeArgumetType">
+                                {% for action in g.user.actionsTypes.ACTIONS_LIST %}
+                                    <option value="{{action.name}}">
+                                        {{action.name}}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td class="text-center">
+                            {% for action in g.user.actionsTypes.ACTIONS_LIST %}
+                                <div name="{{action.name}}" rv-show="app.doOperation | eq {{action.name}}">
+                                    {% for name,type in action.inputs.items() %}
+                                        {{name}}: <input type="{{type}}" name="{{name}}">
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                            <td class="text-center">
+                                <button class="btn btn-success" name="Add_Action" type="submit"><span class="octicon octicon-plus"></span>
+                            </td>
+                        </tr>
+
+                        {% for action in g.user.actions %}
+                            <tr>
+                                 <td class="text-center"><span class="font14 label label-primary">{{ action.alias }}</span></td>
+                                 <td class="text-center"><span class="font14 label label-primary">{{ action.action }}</span></td>
+                                 <td class="text-center"><span class="font14 label label-primary">{{ action.arguments }}</span></td>
+                                 <td class="text-center"><button class="btn btn-danger" name="Delete_User_Action" value="{{action.alias}}" type="submit"><span class="octicon octicon-circle-slash"></td>
+                            </tr>
+                        {% endfor %}
+                        
+                    </table>
+                    
+                </form>
+                <script>
+                rivets.formatters.eq = function(value, arg) {
+                return value == arg;
+                };
+                var app = {
+                changeArgumetType: function(e) {
+                setTimeout(function(){
+                //if (app.doOperation == "Set Lights") app.showCheckbox = true;
+                //if (app.doOperation == "Set Termostat") app.showSetpoint = true;ls
+                },50)
+                },
+                doOperation: "SetTermostat"
+                }
+                
+                rivets.bind($('body')[0],{app:app});
+                function changeArgumetType(e) {
+                var Do = e.options[e.selectedIndex].value
+                }
+                </script>
+            </div>
+        </div>
+    </div>

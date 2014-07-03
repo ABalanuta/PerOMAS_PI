@@ -32,14 +32,26 @@ class PasswordManager():
         return self.getDigest(user, password, salt)[1] == digest
 
 
+
+class UserAction():
+
+    def __init__(self, alias, action, arg_type=None, arguments=None):
+        self.alias = alias
+        self.action = action
+        self.arg_type = arg_type
+        self.arguments = arguments
+
+
 class User(object):
 
-    def __init__(self, username, salt, digest, phone=None, hub=None):
+    def __init__(self, username, salt, digest, actionsTypes, phone=None, hub=None):
         self.hub = hub
         self.username = username
         self.salt = salt
         self.digest = digest
         self.phone = phone
+        self.actionsTypes = actionsTypes
+        self.actions = list()
 
     def is_authenticated(self):
         return True
@@ -63,8 +75,38 @@ class User(object):
             db = self.hub["STORAGE HANDLER"]
             db.alterUser(self)
 
+    def add_action(self, alias, action, arg_type=None, arguments=None):
+        self.actions.append(UserAction(alias, action, arg_type, arguments))
+
+    def del_action(self, alias):
+        for action in self.actions:
+            if action.alias == alias:
+                self.actions.remove(action)
+
+
+    def get_actions(self):
+        return self.actions
+
+    def has_action_alias(self, alias):
+        for action in self.actions:
+            if action.alias == alias:
+                return True
+        return False
+
+
+
     def __repr__(self):
         return '<User %r>' % (self.username)
+
+
+
+class Actions():
+    
+    #ACTIONS and their types
+    ACTION_SET_LIGHTS       = { "name":"Set_Lights", "inputs": { "Light_Bulb_1":"checkbox", "Light_Bulb_2":"checkbox" } }
+    ACTION_SET_SETPOINT     = { "name":"Set_Setpoint", "inputs": { "Setpoint":"text" } }
+
+    ACTIONS_LIST = [ACTION_SET_LIGHTS, ACTION_SET_SETPOINT]
 
 
 class UserManager():
@@ -73,12 +115,13 @@ class UserManager():
     	self.hub = hub
         self.users = dict()
         self.password_manager = PasswordManager()
+        self.actionsTypes = Actions()
         self.loadUsers()
 
     def addUser(self, username, password):
 
         salt, digest = self.password_manager.getDigest(username, password)
-        newUser = User(username, salt, digest, hub=self.hub)
+        newUser = User(username, salt, digest, self.actionsTypes, hub=self.hub)
         self.users[username] = newUser
 
         # Add user do DB
@@ -91,7 +134,7 @@ class UserManager():
             db = self.hub["STORAGE HANDLER"]
             matrix = db.loadUsers()
             for x in matrix:
-                self.users[x[0]] = User(x[0], x[1], x[2], phone=x[3], hub=self.hub)
+                self.users[x[0]] = User(x[0], x[1], x[2], self.actionsTypes, phone=x[3], hub=self.hub)
         else:
             print "Error Loading Users"
 
