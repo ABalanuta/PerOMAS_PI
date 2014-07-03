@@ -11,6 +11,8 @@ echo_options:
 	@echo '5: #// Configuration Variables'
 	@echo '6: #// Test touchscreen'
 	@echo '7: #// Test x'
+	@echo '8: #// Backup MySQL Database'
+	@echo '9: #// Restore MySQL Database'
 	@echo
 
 
@@ -222,3 +224,11 @@ echo_options:
 7: #// Test X
 	
 	FRAMEBUFFER=/dev/fb1 startx
+
+8: #// Backup MySQL
+	sudo mysqldump -uroot -p3O7DCWP2HLR01471G9PZQ6U7X PeromasDB > /tmp/PeromasDB.sql
+	scp /tmp/PeromasDB.sql ist168206@sigma.ist.utl.pt:~
+
+9: #// Restore MySQL
+	scp ist168206@sigma.ist.utl.pt:~/PeromasDB.sql /tmp/PeromasDB.sql
+	sudo mysql-uroot -p3O7DCWP2HLR01471G9PZQ6U7X PeromasDB < /tmp/PeromasDB.sql
