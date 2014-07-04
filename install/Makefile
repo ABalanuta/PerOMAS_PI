@@ -198,6 +198,9 @@ echo_options:
 	sudo cp conf/crontab /etc/crontab
 	sudo /etc/init.d/cron restart
 	
+	#// MOTD
+	sudo cp conf/motd /etc/motd
+
 	#// Change Hostname
 	sudo python conf/change_host.py
 
