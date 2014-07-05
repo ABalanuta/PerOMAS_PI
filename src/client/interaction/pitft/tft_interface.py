@@ -6,20 +6,20 @@ __version__ = "1.0.2"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 import os
-import sys
 import platform
 import pygame
 import pygbutton
 from time import sleep
+from thread import start_new_thread
 from threading import Thread
 from pygame.locals import *
 
 
 class TFT(Thread):
 
-    DEBUG           = False
+    DEBUG           = True
 
-    FPS             = 15
+    FPS             = 2
     WINDOWWIDTH     = 320
     WINDOWHEIGHT    = 240
     size            = (WINDOWWIDTH, WINDOWHEIGHT)
@@ -69,6 +69,11 @@ class TFT(Thread):
             os.putenv('SDL_FBDEV'      , '/dev/fb1')
             os.putenv('SDL_MOUSEDRV'   , 'TSLIB')
             os.putenv('SDL_MOUSEDEV'   , '/dev/input/touchscreen')
+            
+            # Init pygame and screen
+            pygame.display.init()
+            pygame.font.init()
+            pygame.mouse.set_visible(False)
 
     def stop(self):
         self.stopped = True
@@ -84,6 +89,7 @@ class TFT(Thread):
                 if self.DEBUG:
                     print "PITFT waiting for the Relay to be Loaded"
                     sleep(0.5)
+
             self.relay = self.hub["RELAY"]
             l1_state = self.relay.get_lights_x1_state()
             l2_state = self.relay.get_lights_x2_state()
@@ -98,20 +104,19 @@ class TFT(Thread):
             else:
                 self.button_light_2.setSurfaces(self.BTN_BULB_OFF)
 
-        # Init pygame and screen
-        pygame.display.init()
-        pygame.font.init()
-        if 'armv6l' in platform.uname():
+        
+
+        if 'armv6l' in platform.uname():    #Hides the cursor in running on the RPi
             pygame.mouse.set_visible(False)
+
         self.FPSCLOCK = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.size, 0, 32)
-        #print "Framebuffer size: %d x %d" % (self.size[0], self.size[1])
         self.draw()
+
         while not self.stopped:
             self.update()
 
     def update(self):
-        #print "Update"
         self.FPSCLOCK.tick(self.FPS)
         self.handleEvents()
 
@@ -126,57 +131,74 @@ class TFT(Thread):
 
         pevents = pygame.event.get()
         to_draw = False
+        
+        if pevents != None:
+            for event in pevents: # event handling loop
+    	    #print event
 
-        for event in pevents: # event handling loop
-	    #print event
-
-            if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
-                self.stop()
-
-
-            events = self.button_forward.handleEvent(event)
-            if 'click' in events:
-                self.init_menu = (self.init_menu+1)%self.n_menus
-                to_draw = True
-
-            events = self.button_back.handleEvent(event)
-            if 'click' in events:
-                self.init_menu = (self.init_menu-1)%self.n_menus
-                to_draw = True
+                if self.DEBUG:
+                    print event
 
 
+                if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
+                    self.stop()
 
-            events = self.button_light_1.handleEvent(event)
-            if 'click' in events:
-                if self.relay.get_lights_x1_state():
-                    self.button_light_1.setSurfaces(self.BTN_BULB_OFF)
-                    self.relay.set_lights_x1_state(False)
-                else:
-                    self.button_light_1.setSurfaces(self.BTN_BULB_ON)
-                    self.relay.set_lights_x1_state(True)
-                to_draw = True
 
-            events = self.button_light_2.handleEvent(event)
-            if 'click' in events:
-                if self.relay.get_lights_x2_state():
-                    self.button_light_2.setSurfaces(self.BTN_BULB_OFF)
-                    self.relay.set_lights_x2_state(False)
-                else:
-                    self.button_light_2.setSurfaces(self.BTN_BULB_ON)
-                    self.relay.set_lights_x2_state(True)
-                to_draw = True
+                # events = self.button_forward.handleEvent(event)
+                # if 'click' in events:
+                #     self.init_menu = (self.init_menu+1)%self.n_menus
+                #     to_draw = True
 
-        if to_draw:
-            #print "XPTO Draw"
-            self.draw()
+                # events = self.button_back.handleEvent(event)
+                # if 'click' in events:
+                #     self.init_menu = (self.init_menu-1)%self.n_menus
+                #     to_draw = True
+
+                events_x1 = self.button_light_1.handleEvent(event)
+                if events_x1:
+                    print events_x1
+                if 'click' in events_x1:
+                    #start_new_thread(self.relay.flip_lights_x1())
+                    self.relay.flip_lights_x1()
+                    to_draw = True
+
+                events_x2 = self.button_light_2.handleEvent(event)
+                if events_x2:
+                    print events_x2
+                if 'click' in events_x2:
+                    #start_new_thread(self.relay.flip_lights_x2())
+                    self.relay.flip_lights_x2()
+                    to_draw = True
+
+            if to_draw:
+                print "XPTO Draw sleep 1"
+                sleep(0.7)
+                self.draw()
 
     def menu(self):
 
         self.button_forward.draw(self.screen)
         self.button_back.draw(self.screen)
+        self.button_light_1._propSetVisible(False)
+        self.button_light_2._propSetVisible(False)
 
         if self.init_menu == 0:
             self.screen.blit(self.LUZES_LABEL , (self.WINDOWWIDTH/2-self.LUZES_LABEL.get_width()/2, 2))
+
+           
+
+            if self.relay.get_lights_x1_state():
+                self.button_light_1.setSurfaces(self.BTN_BULB_ON)
+            else:
+                self.button_light_1.setSurfaces(self.BTN_BULB_OFF)
+
+            if self.relay.get_lights_x2_state():
+                self.button_light_2.setSurfaces(self.BTN_BULB_ON)
+            else:
+                self.button_light_2.setSurfaces(self.BTN_BULB_OFF)
+
+            self.button_light_1._propSetVisible(True)
+            self.button_light_2._propSetVisible(True)
 
             self.button_light_1.draw(self.screen)
             self.button_light_2.draw(self.screen)

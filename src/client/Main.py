@@ -7,9 +7,7 @@ __author__ = "Artur Balanuta"
 __version__ = "1.0.2"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
-import time, signal, sys
-from time import sleep
-from datetime import datetime
+import signal, sys
 from sensors.HTU21D.HTU21D import TempHumid #Temp/Humid
 from sensors.OPENWEATHERMAPAPI.OpenWeatherMapAPI import OpenWeatherMapAPI #Exterior Temp/Humid
 from sensors.TSL2561.TSL2561 import TSL2561	#Lux
@@ -17,7 +15,7 @@ from sensors.ADS1115.ADS1115 import ADS1115	#Current
 from detection.WifiLocation import WifiDetector
 from detection.BTDetector import BTDetector
 #from interaction.lcd.LCDmenu import LCD
-#from interaction.pitft.tft_interface import TFT
+from interaction.pitft.tft_interface import TFT
 from interaction.Relay import Relay
 from communication.Pub_Sub import MQTTC
 from web.web import *
@@ -32,7 +30,7 @@ from Logic_Engine import Logic_Engine
 if __name__ == '__main__':	
 	
 
-	DEBUG		= True		# Debug Mode
+	DEBUG			= True		# Debug Mode
 	CLI_INTERFACE	= False		# 
 	WEB_INTERFACE	= True		# 
 	
@@ -121,11 +119,11 @@ if __name__ == '__main__':
 			print "Relays are ON"
 		
 		#Starts TFT
-		#tft = TFT(hub)
-		#tft.start()
-		#hub["TFT"] = tft
-		#if DEBUG:
-		#	print "TFT screen is ON"
+		tft = TFT(hub)
+		tft.start()
+		hub["TFT"] = tft
+		if DEBUG:
+			print "TFT screen is ON"
 
 		#Starts LCD
 		#lcd = LCD(hub)

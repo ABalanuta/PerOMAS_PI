@@ -6,11 +6,13 @@ __version__ = "1.0.0"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 import RPi.GPIO as GPIO
+from threading import Lock
 from time import sleep
+
 
 class Relay():
 	
-	DEBUG 			= False
+	DEBUG 			= True
 	RELAY 			= {	"AC_SPEED_1"		:	{"Pin" : 4, "State" : False},
 						"AC_SPEED_2"		:	{"Pin" : 17, "State" : False},
 						"AC_SPEED_3" 		:	{"Pin" : 27, "State" : False},
@@ -21,8 +23,9 @@ class Relay():
 
 	def __init__(self, hub):
 		self.hub = hub
+		self.lock = Lock()
 		GPIO.setmode(GPIO.BCM)
-		GPIO.setwarnings(False)
+		#GPIO.setwarnings(False)
 		
 		#Iniciates and Sets the Predefine state to each device
 		for device_name in self.RELAY.keys():
@@ -50,9 +53,6 @@ class Relay():
 
 				if self.DEBUG:
 					print "AC speed set to: "+ relay_name
-			else:		
-				if self.DEBUG:
-					print "AC speed turned off"
 
 	def get_ac_speed(self):
 
@@ -92,32 +92,47 @@ class Relay():
 	
 
 	def set_lights_x1_state(self, state):
-		if self.DEBUG:
-			print "Relay: set_lights_x1_state:", state
+		with self.lock:
+			if self.DEBUG:
+				print "Relay: set_lights_x1_state:", state
 
-		pin = self.RELAY["LIGHTS_X1"]["Pin"]
-		self.RELAY["LIGHTS_X1"]["State"] = state
-		GPIO.output(pin, state)
+			pin = self.RELAY["LIGHTS_X1"]["Pin"]
+			self.RELAY["LIGHTS_X1"]["State"] = state
+			GPIO.output(pin, state)
 
 	def set_lights_x2_state(self, state):
-		if self.DEBUG:
-			print "Relay: set_lights_x2_state:", state
+		with self.lock:
+			if self.DEBUG:
+				print "Relay: set_lights_x2_state:", state
 
-		pin = self.RELAY["LIGHTS_X2"]["Pin"]
-		self.RELAY["LIGHTS_X2"]["State"] = state
-		GPIO.output(pin, state)
+			pin = self.RELAY["LIGHTS_X2"]["Pin"]
+			self.RELAY["LIGHTS_X2"]["State"] = state
+			GPIO.output(pin, state)
 
 	def get_lights_x1_state(self):
-		if self.DEBUG:
-			print "Relay: get_lights_x1_state"
-
-		return self.RELAY["LIGHTS_X1"]["State"]
+		with self.lock:
+			if self.DEBUG:
+				print "Relay: get_lights_x1_state"
+			return self.RELAY["LIGHTS_X1"]["State"]
 
 	def get_lights_x2_state(self):
-		if self.DEBUG:
-			print "Relay: get_lights_x2_state"
+		with self.lock:
+			if self.DEBUG:
+				print "Relay: get_lights_x2_state"
 
-		return self.RELAY["LIGHTS_X2"]["State"]
+			return self.RELAY["LIGHTS_X2"]["State"]
+
+	def flip_lights_x1(self):
+		state = self.get_lights_x1_state()
+		self.set_lights_x1_state(not state)
+		if self.DEBUG:
+				print "Relay: flip_lights_x1"
+
+	def flip_lights_x2(self):
+		state = self.get_lights_x2_state()
+		self.set_lights_x2_state(not state)
+		if self.DEBUG:
+				print "Relay: flip_lights_x2"
 
 	def get_lights_state(self):
 		return [self.get_lights_x1_state(), self.get_lights_x2_state()]
