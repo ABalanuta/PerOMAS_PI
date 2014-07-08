@@ -18,7 +18,7 @@ class Relay():
 						"AC_SPEED_3" 		:	{"Pin" : 27, "State" : False},
 						"AC_HEAT_COOL" 		:	{"Pin" : 22, "State" : False},
 						"LIGHTS_X1" 		:	{"Pin" : 18, "State" : False},
-						"LIGHTS_X2" 		:	{"Pin" : 23, "State" : True},}
+						"LIGHTS_X2" 		:	{"Pin" : 23, "State" : False},}
 
 
 	def __init__(self, hub):
@@ -51,9 +51,6 @@ class Relay():
 				self.RELAY[relay_name]["State"] = True
 				GPIO.output(pin, True)
 
-				if self.DEBUG:
-					print "AC speed set to: "+ relay_name
-
 	def get_ac_speed(self):
 
 		on_speed = 0
@@ -78,6 +75,8 @@ class Relay():
 
 	
 	def set_ac_mode(self, mode):
+		if self.DEBUG:
+			print "set_ac_mode: "+ mode
 
 		pin = self.RELAY["AC_HEAT_COOL"]["Pin"]
 		

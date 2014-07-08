@@ -44,7 +44,7 @@
                             
                         </td>
                         <td class="text-center">
-                            <select class="chosen-select">
+                            <select>
                                 <option value="x">Turn All Lights ON</option>
                                 <option value="x">Set Setpoint to 22</option>
                                 <option value="x">Set Setpoint to 10</option>
@@ -70,7 +70,7 @@
                 <thead>
                     <tr>
                         <th class="text-center">
-                            Event Name
+                            Event Alias
                         </th>
                         <th class="text-center">
                            If
@@ -83,63 +83,53 @@
                         </th>
                     </tr>
                 </thead>
-                <tr>
-                    <td class="text-center">
-                        <span class="font14 label label-primary">I'm in the Office</span>
-                    </td>
-                    <td class="text-center">
-                         <span class="font14 label label-primary">In the Office</span>
-                    </td>
-                    <td class="text-center">
-                         <span class="font14 label label-primary">True</span>
-                    </td>
-                    <td class="text-center">
-                        
-                    </td>
-                    <td class="text-center"><button class="btn btn-danger" name="Delete_Rule" type="submit"><span class="octicon octicon-circle-slash"></td>
-                </tr>
 
                 <tr>
                     <td class="text-center">
                         <input type="text">
                     </td>
+
                     <td class="text-center">
-                        <select class="chosen-select">
-                            <option value="Luminosity">
-                               In the Office
-                            </option>
-                            <option value="Luminosity">
-                               Luminosity
-                            </option>
-                            
+                        <select name="Event_Name"  rv-value="app.selectedEvent">
+                            {% for event in g.user.manager.eventTyeps.EVENT_LIST %}
+                                <option value="{{event.name}}">
+                                    {{event.name}}
+                                </option>
+                            {% endfor %}
                         </select>
                     </td>
+
                     <td class="text-center">
-                        <select class="chosen-select">
-                            <option value="True">
-                                True
-                            </option>
-                             <option value="False">
-                                False
-                            </option>
-                            <option value="Bigger">
-                               &gt;
-                            </option>
-                            <option value="Smaller">
-                               &lt;
-                            </option>
-                            <option value="Equal">
-                               ==
-                            </option>
-                        </select>
+                        {% for event in g.user.manager.eventTyeps.EVENT_LIST %}
+                            <div name="{{event.name}}" rv-show="app.selectedEvent | eq {{event.name}}">
+                                <select name="Event_Condition">
+                                {% for cond_name, symbol in event.conditions.items() %}
+                                    <option value="{{cond_name}}">
+                                        {{symbol}}
+                                    </option>
+                                {% endfor %}    
+                                </select>
+                            </div>
+                        {% endfor %}
                     </td>
+
                     <td class="text-center">
-                        <div id="Argument" >
-                            <input class="text-center" type="text" maxlength='10' size='5' name="Argument">
-                        </div>
+                        {% for event in g.user.manager.eventTyeps.EVENT_LIST %}
+                            <div rv-show="app.selectedEvent | eq {{event.name}}">
+
+                                {% if event.argument%}
+                                    {% for name,type in event.argument.items() %}
+                                        <input type="{{type}}" name="{{name}}">{{event.unit}}
+                                    {% endfor %}
+                                {% endif%}
+                                
+                            </div>
+                        {% endfor %}
                     </td>
+
+
                     <td class="text-center">
-                        <button class="btn btn-success" name="Add_Rule" type="submit"><span class="octicon octicon-plus"></span>
+                        <button class="btn btn-success" name="Add_Event" type="submit"><span class="octicon octicon-plus"></span>
                     </td>
                 </tr>
             </table>
@@ -158,17 +148,17 @@
         };
         
         var app = {
-            changeArgumetType: function(e) {
+            changeEvent: function(e) {
                 setTimeout(function(){
-                    //if (app.doOperation == "Set Lights") app.showCheckbox = true;
-                    //if (app.doOperation == "Set Termostat") app.showSetpoint = true;ls
+                    alert(e.options[e.selectedIndex].value)
                 },50)
             },
-            doOperation: "SetTermostat"
+            selectedEvent: ""
         }
         
         rivets.bind($('body')[0],{app:app});
-        function changeArgumetType(e) {
-            var Do = e.options[e.selectedIndex].value
-        }
+
+        //function changeEvent(e) {
+        //    var Do = e.options[e.selectedIndex].value
+        //}
     </script>

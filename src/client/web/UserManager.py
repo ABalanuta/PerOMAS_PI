@@ -10,6 +10,8 @@ import base64
 import hashlib
 import os
 
+from UserRules import *
+
 
 class PasswordManager():
 
@@ -33,24 +35,16 @@ class PasswordManager():
 
 
 
-class UserAction():
-
-    def __init__(self, alias, action, arg_type=None, arguments=None):
-        self.alias = alias
-        self.action = action
-        self.arg_type = arg_type
-        self.arguments = arguments
-
 
 class User(object):
 
-    def __init__(self, username, salt, digest, actionsTypes, phone=None, hub=None):
+    def __init__(self, username, salt, digest, manager, phone=None, hub=None):
         self.hub = hub
         self.username = username
         self.salt = salt
         self.digest = digest
         self.phone = phone
-        self.actionsTypes = actionsTypes
+        self.manager = manager
         self.actions = list()
 
     def is_authenticated(self):
@@ -99,29 +93,20 @@ class User(object):
         return '<User %r>' % (self.username)
 
 
-
-class Actions():
-    
-    #ACTIONS and their types
-    ACTION_SET_LIGHTS       = { "name":"Set_Lights", "inputs": { "Light_Bulb_1":"checkbox", "Light_Bulb_2":"checkbox" } }
-    ACTION_SET_SETPOINT     = { "name":"Set_Setpoint", "inputs": { "Setpoint":"text" } }
-
-    ACTIONS_LIST = [ACTION_SET_LIGHTS, ACTION_SET_SETPOINT]
-
-
 class UserManager():
 
     def __init__(self, hub=None):
     	self.hub = hub
         self.users = dict()
         self.password_manager = PasswordManager()
-        self.actionsTypes = Actions()
+        self.actionsTypes = ActionsTypes()
+        self.eventTyeps = EventsTypes()
         self.loadUsers()
 
     def addUser(self, username, password):
 
         salt, digest = self.password_manager.getDigest(username, password)
-        newUser = User(username, salt, digest, self.actionsTypes, hub=self.hub)
+        newUser = User(username, salt, digest, self, hub=self.hub)
         self.users[username] = newUser
 
         # Add user do DB
@@ -134,7 +119,7 @@ class UserManager():
             db = self.hub["STORAGE HANDLER"]
             matrix = db.loadUsers()
             for x in matrix:
-                self.users[x[0]] = User(x[0], x[1], x[2], self.actionsTypes, phone=x[3], hub=self.hub)
+                self.users[x[0]] = User(x[0], x[1], x[2], self, phone=x[3], hub=self.hub)
         else:
             print "Error Loading Users"
 

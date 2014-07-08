@@ -19,7 +19,7 @@ class Logic_Engine(Thread):
 	def __init__(self, hub):
 		Thread.__init__(self)
 		self.hub = hub
-		self.ac_mode_auto = True
+		self.ac_mode_auto = False
 		self.ac_target = 24
 
 	def stop(self):

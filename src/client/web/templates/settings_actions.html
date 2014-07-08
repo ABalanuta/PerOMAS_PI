@@ -27,8 +27,8 @@
                             <input type="text" name="Action_Alias">
                         </td>
                         <td class="text-center">
-                            <select class="chosen-select" name="Action_Name"rv-value="app.doOperation" rv-on-change="app.changeArgumetType">
-                                {% for action in g.user.actionsTypes.ACTIONS_LIST %}
+                            <select class="chosen-select" name="Action_Name" rv-value="app.doOperation" rv-on-change="app.changeArgumetType">
+                                {% for action in g.user.manager.actionsTypes.ACTIONS_LIST %}
                                     <option value="{{action.name}}">
                                         {{action.name}}
                                     </option>
@@ -36,7 +36,7 @@
                             </select>
                         </td>
                         <td class="text-center">
-                            {% for action in g.user.actionsTypes.ACTIONS_LIST %}
+                            {% for action in g.user.manager.actionsTypes.ACTIONS_LIST %}
                                 <div name="{{action.name}}" rv-show="app.doOperation | eq {{action.name}}">
                                     {% for name,type in action.inputs.items() %}
                                         {{name}}: <input type="{{type}}" name="{{name}}">
@@ -62,21 +62,22 @@
                 </form>
                 <script>
                 rivets.formatters.eq = function(value, arg) {
-                return value == arg;
+                    return value == arg;
                 };
+
                 var app = {
-                changeArgumetType: function(e) {
-                setTimeout(function(){
-                //if (app.doOperation == "Set Lights") app.showCheckbox = true;
-                //if (app.doOperation == "Set Termostat") app.showSetpoint = true;ls
-                },50)
-                },
-                doOperation: "SetTermostat"
+                    changeArgumetType: function(e) {
+                        setTimeout(function(){
+                        //if (app.doOperation == "Set Lights") app.showCheckbox = true;
+                        //if (app.doOperation == "Set Termostat") app.showSetpoint = true;ls
+                        },50)
+                    },
+                    doOperation: ""
                 }
                 
                 rivets.bind($('body')[0],{app:app});
                 function changeArgumetType(e) {
-                var Do = e.options[e.selectedIndex].value
+                    var Do = e.options[e.selectedIndex].value
                 }
                 </script>
             </div>
