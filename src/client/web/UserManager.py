@@ -46,6 +46,7 @@ class User(object):
         self.phone = phone
         self.manager = manager
         self.actions = list()
+        self.events = list()
 
     def is_authenticated(self):
         return True
@@ -71,6 +72,9 @@ class User(object):
 
     def add_action(self, alias, action, arg_type=None, arguments=None):
         self.actions.append(UserAction(alias, action, arg_type, arguments))
+
+    def add_event(self, alias, event, condition, argument=None):
+        self.events.append(UserEvent(alias, event, condition, argument))
 
     def del_action(self, alias):
         for action in self.actions:

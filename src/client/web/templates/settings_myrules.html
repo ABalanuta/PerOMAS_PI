@@ -66,6 +66,7 @@
             </h3>
         </div>
         <div class="panel-body">
+            <form method="POST">
             <table class="table table-condensed table-bordered">
                 <thead>
                     <tr>
@@ -73,10 +74,10 @@
                             Event Alias
                         </th>
                         <th class="text-center">
-                           If
+                            If
                         </th>
                         <th class="text-center">
-                           Condition
+                            Condition
                         </th>
                         <th class="text-center">
                             Argument (aux)
@@ -86,7 +87,7 @@
 
                 <tr>
                     <td class="text-center">
-                        <input type="text">
+                        <input type="text" name="Event_Alias">
                     </td>
 
                     <td class="text-center">
@@ -102,9 +103,9 @@
                     <td class="text-center">
                         {% for event in g.user.manager.eventTyeps.EVENT_LIST %}
                             <div name="{{event.name}}" rv-show="app.selectedEvent | eq {{event.name}}">
-                                <select name="Event_Condition">
+                                <select name="{{event.name}}_Condition">
                                 {% for cond_name, symbol in event.conditions.items() %}
-                                    <option value="{{cond_name}}">
+                                    <option name="{{cond_name}}" value="{{cond_name}}">
                                         {{symbol}}
                                     </option>
                                 {% endfor %}    
@@ -116,13 +117,11 @@
                     <td class="text-center">
                         {% for event in g.user.manager.eventTyeps.EVENT_LIST %}
                             <div rv-show="app.selectedEvent | eq {{event.name}}">
-
                                 {% if event.argument%}
                                     {% for name,type in event.argument.items() %}
-                                        <input type="{{type}}" name="{{name}}">{{event.unit}}
+                                        <input type="{{type}}" name="argument">{{event.unit}}
                                     {% endfor %}
                                 {% endif%}
-                                
                             </div>
                         {% endfor %}
                     </td>
@@ -132,7 +131,18 @@
                         <button class="btn btn-success" name="Add_Event" type="submit"><span class="octicon octicon-plus"></span>
                     </td>
                 </tr>
+
+                {% for event in g.user.events %}
+                <tr>
+                    <td class="text-center"><span class="font14 label label-primary">{{ event.alias }}</span></td>
+                    <td class="text-center"><span class="font14 label label-primary">{{ event.event }}</span></td>
+                    <td class="text-center"><span class="font14 label label-primary">{{ event.condition }}</span></td>
+                    <td class="text-center"><span class="font14 label label-primary">{{ event.argument }}</span></td>
+                    <td class="text-center"><button class="btn btn-danger" name="Delete_User_Event" value="{{event.alias}}" type="submit"><span class="octicon octicon-circle-slash"></td>
+                </tr>
+                {% endfor %}
             </table>
+            </form>
         </div>
     </div>
 

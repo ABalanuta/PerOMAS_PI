@@ -350,6 +350,39 @@ def process_settings_post():
                     g.user.del_action(action_alias)
                     storage.log("Deleted Action: alias="+action_alias, user)
 
+            if "Add_Event" in request.form.keys():
+
+                if not "Event_Alias" in request.form.keys() or len(request.form["Event_Alias"]) < 1:
+                    flash("Invalid Event Alias", 'error')
+                    return
+
+                if not "Event_Name" in request.form.keys():
+                    flash("Invalid Event", 'error')
+                    return
+
+                #if g.user.has_action_alias(request.form["Action_Alias"]):
+                #    flash("Alias Event Exists", 'error')
+                #    return
+
+                event       = request.form["Event_Name"]  
+                alias       = request.form["Event_Alias"]
+                condition   = request.form[event+"_Condition"]
+                argument    = request.form["argument"]
+
+                if event == "Humidity":
+                    try:
+                        argument = float(argument)
+                        g.user.add_event(alias, event, condition, argument)
+                        storage.log("Created new Event: alias="+alias+" event="+event+" condition="+str(condition)+" argument="+str(argument), user)
+                    except ValueError:
+                        flash("Invalid Argument Value", 'error')
+                        return
+                else:
+                    g.user.add_event(alias, event, condition)
+                    storage.log("Created new Event: alias="+alias+" event="+event+" condition="+str(condition), user)
+                
+
+
 def process_index_post():
 
     if app.config["HUB"]:

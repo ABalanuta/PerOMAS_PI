@@ -11,15 +11,14 @@ class ActionsTypes():
     #ACTIONS and their types
     ACTION_SET_LIGHTS       = { "name":"Set_Lights", "inputs": { "Light_Bulb_1":"checkbox", "Light_Bulb_2":"checkbox" } }
     ACTION_SET_SETPOINT     = { "name":"Set_Setpoint", "inputs": { "Setpoint":"text" } }
-
-    ACTIONS_LIST = [ACTION_SET_LIGHTS, ACTION_SET_SETPOINT]
+    ACTIONS_LIST 			= [ACTION_SET_LIGHTS, ACTION_SET_SETPOINT]
 
 class EventsTypes():
     
     #Events and their types
     EVENT_IN_THE_OFFICE	= {"name":"In_the_Office", "conditions":{"True":"True", "False":"False"}, "argument":None}
     EVENT_HUMIDITY		= {"name":"Humidity", "conditions":{"Bigger":">", "Smaller":"<"}, "argument":{ "Humidity":"text" }, "unit":"%"}
-    EVENT_LIST = [EVENT_IN_THE_OFFICE, EVENT_HUMIDITY]
+    EVENT_LIST 			= [EVENT_IN_THE_OFFICE, EVENT_HUMIDITY]
 
 
 class UserAction():
@@ -30,3 +29,10 @@ class UserAction():
         self.arg_type = arg_type
         self.arguments = arguments
 
+class UserEvent():
+
+    def __init__(self, alias, event, condition, argument=None):
+        self.alias = alias
+        self.event = event
+        self.condition = condition
+        self.argument = argument
