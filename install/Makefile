@@ -78,7 +78,7 @@ echo_options:
 3: #// Install Software
 
 	@echo 'Aux'
-	sudo aptitude install git vim tmux screen htop ntp ntpdate -y
+	sudo aptitude install git vim zsh tmux screen htop ntp ntpdate -y
 	@echo
 
 	@echo 'GPIO'
@@ -200,7 +200,14 @@ echo_options:
 	
 	#// MOTD
 	sudo cp conf/motd /etc/motd
-
+	
+	#//oh-my-zsh
+	curl -L https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh | sh
+	@echo USER PASSWORD
+	chsh -s /bin/zsh
+	cp conf/zshrc ~/.zshrc
+	
+	#
 	#// Change Hostname
 	sudo python conf/change_host.py
 
