@@ -78,7 +78,7 @@ echo_options:
 3: #// Install Software
 
 	@echo 'Aux'
-	sudo aptitude install git vim zsh tmux screen htop ntp ntpdate -y
+	sudo aptitude install git vim zsh autojump tmux screen htop ntp ntpdate -y
 	@echo
 
 	@echo 'GPIO'
