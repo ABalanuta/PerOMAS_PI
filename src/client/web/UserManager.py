@@ -47,6 +47,7 @@ class User(object):
         self.manager = manager
         self.actions = list()
         self.events = list()
+        self.rules = list()
 
     def is_authenticated(self):
         return True
@@ -76,14 +77,23 @@ class User(object):
     def add_event(self, alias, event, condition, argument=None):
         self.events.append(UserEvent(alias, event, condition, argument))
 
+    def add_rule(self, alias, events, action):
+        self.rules.append(UserRule(alias, events, action))
+
     def del_action(self, alias):
         for action in self.actions:
             if action.alias == alias:
                 self.actions.remove(action)
 
+    def del_event(self, alias):
+        for event in self.events:
+            if event.alias == alias:
+                self.events.remove(event)
 
-    def get_actions(self):
-        return self.actions
+    def del_rule(self, alias):
+        for rule in self.rules:
+            if rule.alias == alias:
+                self.rules.remove(rule)
 
     def has_action_alias(self, alias):
         for action in self.actions:
@@ -91,6 +101,17 @@ class User(object):
                 return True
         return False
 
+    def has_event_alias(self, alias):
+        for event in self.events:
+            if event.alias == alias:
+                return True
+        return False
+
+    def has_rule_alias(self, alias):
+        for rule in self.rules:
+            if rule.alias == alias:
+                return True
+        return False
 
 
     def __repr__(self):

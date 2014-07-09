@@ -36,3 +36,10 @@ class UserEvent():
         self.event = event
         self.condition = condition
         self.argument = argument
+
+class UserRule():
+
+    def __init__(self, alias, events, action):
+        self.alias = alias
+        self.events = events
+        self.action = action

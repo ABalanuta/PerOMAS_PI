@@ -22,37 +22,38 @@
                         </tr>
                     </thead>
                     <tr>
-                        <td class="text-center"><span class="font14 label label-primary" linehight="1">LightsUP when Dark</span></td>
                         <td class="text-center">
-                            <span class="font14 label label-primary">Office is Dark</span>
-                            <span class="font14 label label-primary">I'm in the Office</span>
+                            <input type="text" name="Rule_Alias">
                         </td>
-                        <td class="text-center"><span class="font14 label label-primary">Turn All Lights ON</span></td>
-                        <td class="text-center"><button class="btn btn-danger" name="Delete_Rule" type="submit"><span class="octicon octicon-circle-slash"></td>
-                    </tr>
-                    <tr>
                         <td class="text-center">
-                            <input type="text">
-                        </td>
-                        <td id="addEvent" class="text-center">
-                            <select data-placeholder="Choose Event ..." style="min-width:200px;" multiple class="chosen-select">
-                                <option value="x">I'm in the Office</option>
-                                <option value="x">Office is Cold</option>
-                                <option value="x">It's Raining</option>
-                                <option value="x">Solar Flare</option>
+                            <select name="Rule_Events" data-placeholder="Choose Event ..." style="min-width:190px;" multiple class="chosen-select">
+                                {% for event in g.user.events %}
+                                    <option value="{{event.alias}}">{{event.alias}}</option>
+                                {% endfor %}
                             </select>
-                            
                         </td>
                         <td class="text-center">
-                            <select>
-                                <option value="x">Turn All Lights ON</option>
-                                <option value="x">Set Setpoint to 22</option>
-                                <option value="x">Set Setpoint to 10</option>
-                                <option value="x">Explode Door</option>
+                            <select name="Rule_Action">
+                                {% for action in g.user.actions %}
+                                    <option value="{{action.alias}}">{{action.alias}}</option>
+                                {% endfor %}
                             </select>
                         </td>
                         <td class="text-center"><button class="btn btn-success" name="Add_Rule" type="submit"><span class="octicon octicon-plus"></span></td>
                     </tr>
+
+                    {% for rule in g.user.rules %}
+                        <tr>
+                            <td class="text-center"><span class="font14 label label-primary" linehight="1">{{ rule.alias }}</span></td>
+                            <td class="text-center">
+                                {% for event in rule.events %}
+                                     <span class="font14 label label-primary">{{event}}</span>
+                                {% endfor %}
+                            </td>
+                            <td class="text-center"><span class="font14 label label-primary">{{ rule.action }}</span></td>
+                            <td class="text-center"><button class="btn btn-danger" name="Delete_Rule" value="{{rule.alias}}" type="submit"><span class="octicon octicon-circle-slash"></td>
+                        </tr>
+                    {% endfor %}
                 </table>
             </form>
         </div>

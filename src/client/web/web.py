@@ -198,13 +198,21 @@ def login():
     return render_template('login.html', form=form)
 
 
+@app.route('/admin')
+@login_required
+def admin():
+    if g.user.username == "Artur":
+        return render_template('admin.html')
+    else:
+        flash("Permission Denied.", "error")
+        return redirect(url_for('index'))
+
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
     logout_user()
     flash("Logged Out successfully.", "success")
     return redirect(url_for('index'))
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -342,6 +350,7 @@ def process_settings_post():
 
                 g.user.add_action(alias, action, arg_type, arguments)
                 storage.log("Created new Action: alias="+alias+" action="+action+" arguments="+str(arguments), user)
+                flash("Operation finished successfully.", "success")
 
             if "Delete_User_Action" in request.form.keys():
                 action_alias = str(request.form["Delete_User_Action"])
@@ -349,6 +358,7 @@ def process_settings_post():
                 if g.user.has_action_alias(action_alias):
                     g.user.del_action(action_alias)
                     storage.log("Deleted Action: alias="+action_alias, user)
+                    flash("Operation finished successfully.", "success")
 
             if "Add_Event" in request.form.keys():
 
@@ -360,9 +370,9 @@ def process_settings_post():
                     flash("Invalid Event", 'error')
                     return
 
-                #if g.user.has_action_alias(request.form["Action_Alias"]):
-                #    flash("Alias Event Exists", 'error')
-                #    return
+                if g.user.has_event_alias(request.form["Event_Alias"]):
+                    flash("Alias Event Exists", 'error')
+                    return
 
                 event       = request.form["Event_Name"]  
                 alias       = request.form["Event_Alias"]
@@ -374,14 +384,76 @@ def process_settings_post():
                         argument = float(argument)
                         g.user.add_event(alias, event, condition, argument)
                         storage.log("Created new Event: alias="+alias+" event="+event+" condition="+str(condition)+" argument="+str(argument), user)
+                        flash("Operation finished successfully.", "success")
                     except ValueError:
                         flash("Invalid Argument Value", 'error')
                         return
-                else:
+
+                elif event == "In_the_Office":
                     g.user.add_event(alias, event, condition)
                     storage.log("Created new Event: alias="+alias+" event="+event+" condition="+str(condition), user)
-                
+                    flash("Operation finished successfully.", "success")
 
+                else:
+                    flash("Invalid Event", 'error')
+                    return
+
+            if "Delete_User_Event" in request.form.keys():
+                event_alias = str(request.form["Delete_User_Event"])
+                
+                if g.user.has_event_alias(event_alias):
+                    g.user.del_event(event_alias)
+                    storage.log("Deleted Event: alias="+event_alias, user)
+                    flash("Operation finished successfully.", "success")
+                return
+
+            if "Delete_Rule" in request.form.keys():
+                rule_alias = str(request.form["Delete_Rule"])
+
+                if g.user.has_rule_alias(rule_alias):
+                    g.user.del_rule(rule_alias)
+                    storage.log("Deleted Rule: alias="+rule_alias, user)
+                    flash("Operation finished successfully.", "success")
+                return
+
+
+            
+            if "Add_Rule" in request.form.keys():
+
+                if not "Rule_Alias" in request.form.keys() or len(request.form["Rule_Alias"]) < 1:
+                    flash("Invalid Event Alias", 'error')
+                    return
+
+                if not "Rule_Events" in request.form.keys():
+                    flash("Invalid Event", 'error')
+                    return
+
+                if not "Rule_Action" in request.form.keys():
+                    flash("Invalid Action", 'error')
+                    return
+
+                if g.user.has_rule_alias(request.form["Rule_Alias"]):
+                    flash("Rule alias already Exists", 'error')
+                    return
+
+                rule_alias      = request.form["Rule_Alias"]
+                events_alias    = request.form.getlist('Rule_Events')  
+                action_alias    = request.form["Rule_Action"]
+
+                if not g.user.has_action_alias(action_alias):
+                    flash("Action does Not Exists", 'error')
+                    return
+
+                print events_alias
+
+                for event in events_alias:
+                    if not g.user.has_event_alias(event):
+                        flash("Event with Alias: "+event+" does Not Exists", 'error')
+                        return
+
+                g.user.add_rule(rule_alias, events_alias, action_alias)
+                storage.log("Created new Rule: alias="+rule_alias+" events="+str(events_alias)+" action="+str(action_alias), user)
+                flash("Operation finished successfully.", "success")
 
 def process_index_post():
 
