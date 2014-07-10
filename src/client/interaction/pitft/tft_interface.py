@@ -129,6 +129,9 @@ class TFT(Thread):
 
     def handleEvents(self):
 
+        if self.stopped:
+            return
+
         pevents = pygame.event.get()
         to_draw = False
         
@@ -138,7 +141,6 @@ class TFT(Thread):
 
                 if self.DEBUG:
                     print event
-
 
                 if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                     self.stop()
@@ -155,25 +157,21 @@ class TFT(Thread):
                 #     to_draw = True
 
                 events_x1 = self.button_light_1.handleEvent(event)
-                if events_x1:
-                    print events_x1
                 if 'click' in events_x1:
-                    #start_new_thread(self.relay.flip_lights_x1())
+                    sleep(0.1)
                     self.relay.flip_lights_x1()
                     to_draw = True
 
                 events_x2 = self.button_light_2.handleEvent(event)
-                if events_x2:
-                    print events_x2
                 if 'click' in events_x2:
-                    #start_new_thread(self.relay.flip_lights_x2())
+                    sleep(0.1)
                     self.relay.flip_lights_x2()
                     to_draw = True
 
             if to_draw:
+                self.draw()
                 print "XPTO Draw sleep 1"
                 sleep(0.7)
-                self.draw()
 
     def menu(self):
 

@@ -353,7 +353,7 @@ def process_settings_post():
                 flash("Operation finished successfully.", "success")
 
             if "Delete_User_Action" in request.form.keys():
-                action_alias = str(request.form["Delete_User_Action"])
+                action_alias = request.form["Delete_User_Action"]
                 
                 if g.user.has_action_alias(action_alias):
                     g.user.del_action(action_alias)
@@ -399,7 +399,7 @@ def process_settings_post():
                     return
 
             if "Delete_User_Event" in request.form.keys():
-                event_alias = str(request.form["Delete_User_Event"])
+                event_alias = request.form["Delete_User_Event"]
                 
                 if g.user.has_event_alias(event_alias):
                     g.user.del_event(event_alias)
@@ -408,7 +408,7 @@ def process_settings_post():
                 return
 
             if "Delete_Rule" in request.form.keys():
-                rule_alias = str(request.form["Delete_Rule"])
+                rule_alias = request.form["Delete_Rule"]
 
                 if g.user.has_rule_alias(rule_alias):
                     g.user.del_rule(rule_alias)
@@ -452,7 +452,7 @@ def process_settings_post():
                         return
 
                 g.user.add_rule(rule_alias, events_alias, action_alias)
-                storage.log("Created new Rule: alias="+rule_alias+" events="+str(events_alias)+" action="+str(action_alias), user)
+                storage.log("Created new Rule: alias="+rule_alias+" events="+events_alias+" action="+action_alias, user)
                 flash("Operation finished successfully.", "success")
 
 def process_index_post():

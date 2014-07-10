@@ -12,7 +12,6 @@ from pickle import dumps, loads
 from DTOs.MesurmentDTO import MesurmentDTO
 from DTOs.MeasurmentEnum import DataType
 
-
 import MySQLdb
 
 
@@ -76,6 +75,7 @@ class StorageHandler():
 			#Users
 			c.execute('CREATE TABLE Logs (TimeStamp TIMESTAMP, Username TEXT, Message TEXT)')
 			c.execute('CREATE TABLE Users (Username TEXT, Salt TEXT, Digest TEXT, Phone TEXT)')
+			c.execute('CREATE TABLE UserDetails (Username TEXT, ObjectType TEXT, Alias TEXT, JSON TEXT)')
 			c.execute('CREATE TABLE BTDevices (BTDevice TEXT, Username TEXT)')
 
 			#Settings
@@ -151,6 +151,36 @@ class StorageHandler():
 		conn.commit()
 		conn.close()
 		return resp
+
+	def loadUsersDetails(self):
+		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
+		c = conn.cursor()
+		ret = list()
+
+		c.execute('SELECT * FROM UserDetails')
+		x = c.fetchall()
+		for y in x:
+			ret.append([y[0], y[1], y[2],  loads(y[3])])
+			
+		conn.commit()
+		conn.close()
+		return ret
+
+	def alterUserDetails(self, action, ObjType, username, userDetails):
+
+		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
+		c = conn.cursor()
+
+		if action == "Add":
+			values = (username, ObjType, userDetails.alias, dumps(userDetails))
+			c.execute('INSERT INTO UserDetails VALUES (%s, %s, %s, %s)', values)
+		
+		elif action == "Del":
+			values = (username, ObjType, userDetails.alias)
+			c.execute('DELETE FROM UserDetails WHERE Username=%s AND ObjectType=%s AND Alias=%s', values)
+
+		conn.commit()
+		conn.close()
 
 	def loadTrakingBTDevices(self):
 		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)

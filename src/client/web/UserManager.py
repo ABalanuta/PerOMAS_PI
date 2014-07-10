@@ -72,28 +72,49 @@ class User(object):
             db.alterUser(self)
 
     def add_action(self, alias, action, arg_type=None, arguments=None):
-        self.actions.append(UserAction(alias, action, arg_type, arguments))
+        action = UserAction(alias, action, arg_type, arguments)
+        self.actions.append(action)
+        if self.hub:
+            db = self.hub["STORAGE HANDLER"]
+            db.alterUserDetails("Add", "Action", self.username, action)
 
     def add_event(self, alias, event, condition, argument=None):
-        self.events.append(UserEvent(alias, event, condition, argument))
+        event = UserEvent(alias, event, condition, argument)
+        self.events.append(event)
+        if self.hub:
+            db = self.hub["STORAGE HANDLER"]
+            db.alterUserDetails("Add", "Event", self.username, event)
 
     def add_rule(self, alias, events, action):
-        self.rules.append(UserRule(alias, events, action))
+        rule = UserRule(alias, events, action)
+        self.rules.append(rule)
+        if self.hub:
+            db = self.hub["STORAGE HANDLER"]
+            db.alterUserDetails("Add", "Rule", self.username, rule)
 
     def del_action(self, alias):
         for action in self.actions:
             if action.alias == alias:
                 self.actions.remove(action)
+                if self.hub:
+                    db = self.hub["STORAGE HANDLER"]
+                    db.alterUserDetails("Del", "Action", self.username, action)
 
     def del_event(self, alias):
         for event in self.events:
             if event.alias == alias:
                 self.events.remove(event)
+                if self.hub:
+                    db = self.hub["STORAGE HANDLER"]
+                    db.alterUserDetails("Del", "Event", self.username, event)
 
     def del_rule(self, alias):
         for rule in self.rules:
             if rule.alias == alias:
                 self.rules.remove(rule)
+                if self.hub:
+                    db = self.hub["STORAGE HANDLER"]
+                    db.alterUserDetails("Del", "Rule", self.username, rule)
 
     def has_action_alias(self, alias):
         for action in self.actions:
@@ -127,6 +148,7 @@ class UserManager():
         self.actionsTypes = ActionsTypes()
         self.eventTyeps = EventsTypes()
         self.loadUsers()
+        self.loadUsersDetails()
 
     def addUser(self, username, password):
 
@@ -147,6 +169,21 @@ class UserManager():
                 self.users[x[0]] = User(x[0], x[1], x[2], self, phone=x[3], hub=self.hub)
         else:
             print "Error Loading Users"
+
+    def loadUsersDetails(self):
+        if self.hub:
+            db = self.hub["STORAGE HANDLER"]
+            d = db.loadUsersDetails()
+            for x in d:
+                u = self.getUser(x[0])
+                if x[1] == "Action":
+                    u.actions.append(x[3])
+                elif x[1] == "Event":
+                    u.events.append(x[3])
+                elif x[1] == "Rule":
+                    u.rules.append(x[3])
+        else:
+            print "Error Loading Users Details"
 
     def getUser(self, username):
         if self.existsUser(username):
