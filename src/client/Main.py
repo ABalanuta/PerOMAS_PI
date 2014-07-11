@@ -39,18 +39,20 @@ if __name__ == '__main__':
 		print 'You pressed Ctrl+C!'
 		for key, value in hub.items():
 			
-			if "STORAGE HANDLER" is not key:
+			if key not in ["API KEY", "STORAGE HANDLER", "UserManager"]:
 				if DEBUG:
 					print "Stopping", key
-
-				if value.stop:
-					value.stop()
-				print "\t\t\t\tDone"
+				try:
+					if value.stop:
+						value.stop()
+					print "\t\t\t\tDone"
+				except:
+					pass
 
 		sys.exit(0)
 	
 	if DEBUG:
-		print "-> Starting Client <-"
+		print "\n-> Starting Client <-\n"
 	
 	try:
 		

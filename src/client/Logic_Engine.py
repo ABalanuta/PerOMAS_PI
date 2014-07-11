@@ -37,9 +37,16 @@ class Logic_Engine(Thread):
 		if self.DEBUG:
 			print "Update"
 
+		self.checkUserRules()
+
 		if self.ac_mode_auto:
 			self.checkTermostatLogic()
 
+	def checkUserRules(self):
+
+		user_manager = None
+
+		#if self.hub["TEMPERATURE"] and self.hub["RELAY"]:
 
 	def checkTermostatLogic(self):
 		

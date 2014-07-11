@@ -7,6 +7,8 @@ __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 from numpy import mean
 from time import sleep
+from random import choice
+from string import ascii_uppercase, digits
 from datetime import datetime
 from threading import Thread
 
@@ -16,7 +18,7 @@ from DTOs.MeasurmentEnum import DataType
 
 class ScheduleManager(Thread):
 	
-	DEBUG 					= False
+	DEBUG 					= True
 	SLEEP_BETWEEN_CHECKS 	= 1	#sleeps X seconds befor cheking the need of executing any task
 
 	def __init__(self, hub):
@@ -35,6 +37,7 @@ class ScheduleManager(Thread):
 		
 		
 		self.tasks.append(Task(self.log_Startup, 1, one_time_task = True))			# Runs Once
+		self.tasks.append(Task(self.change_Api_Key, 0, one_time_task = True))		# Runs Once
 
 		#Append Rutines to the list
 		self.tasks.append(Task(self.save_TempHumid_to_DB, 5 * 60))							# loop every  5 Min
@@ -43,6 +46,7 @@ class ScheduleManager(Thread):
 		self.tasks.append(Task(self.save_Blutooth_Presence_to_DB, 3 * 60))					# loop every  3 Min
 		self.tasks.append(Task(self.save_Wifi_Presence_to_DB, 5 * 60))						# loop every  5 Min
 		self.tasks.append(Task(self.update_and_Save_Exterior_Sensor_Values, 10 * 60))		# loop every 10 Min
+		self.tasks.append(Task(self.change_Api_Key, 45))									# loop every 45 Sec
 		#self.tasks.append(Task(self.send_BT_Presence_to_Gateway, 10))						# loop every 10 Sec
 		
 
@@ -173,6 +177,13 @@ class ScheduleManager(Thread):
 			
 		else:
 			print "Scheduler: Save_TempHumid_to_DB Error locating EXTERNAL TEMPERATURE or EXTERNAL HUMIDITY or STORAGE object"
+	
+	def change_Api_Key(self):
+
+		self.hub["API KEY"] = ''.join(choice(ascii_uppercase+digits) for _ in range(6))
+
+		if self.DEBUG:
+			print "Scheduler: change_Api_Key to "+self.hub["API KEY"]
 
 #Runs only if called
 if __name__ == "__main__":

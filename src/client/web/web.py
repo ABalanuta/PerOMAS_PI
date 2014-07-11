@@ -221,9 +221,9 @@ def register():
 
     if form.validate_on_submit():
 
-        if app.config["USER MANAGER"] and app.config["API KEY"]:
+        if app.config["USER MANAGER"] and app.config["HUB"]["API KEY"]:
             um = app.config["USER MANAGER"]
-            key = app.config["API KEY"]
+            key = app.config["HUB"]["API KEY"]
 
             if not form.key.data == key:
                 form.errors["key"] = ["Invalid Key"]
@@ -546,8 +546,11 @@ class WebHandler(Thread):
     def __init__(self, hub):
         Thread.__init__(self)
         app.config["HUB"] = hub
-        app.config["USER MANAGER"] = UserManager(hub)
-        app.config["API KEY"] = "0000"
+
+        um = UserManager(hub)
+        app.config["USER MANAGER"] = um
+        hub["USER MANAGER"] = um
+
         app.config.update(
             CSRF_ENABLED=True,
             SECRET_KEY='2c1de198f4d30fa5d342ab60c31eeb308sb6de0f063e20efb9322940e3888d51c'

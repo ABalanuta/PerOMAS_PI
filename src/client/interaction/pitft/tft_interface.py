@@ -10,16 +10,15 @@ import platform
 import pygame
 import pygbutton
 from time import sleep
-from thread import start_new_thread
 from threading import Thread
 from pygame.locals import *
 
 
 class TFT(Thread):
 
-    DEBUG           = True
+    DEBUG           = False
 
-    FPS             = 2
+    FPS             = 10
     WINDOWWIDTH     = 320
     WINDOWHEIGHT    = 240
     size            = (WINDOWWIDTH, WINDOWHEIGHT)
@@ -42,6 +41,7 @@ class TFT(Thread):
     LUZES_LABEL     = myfont_50.render("Luzes", 1, WHITE)
     AC_LABEL        = myfont_50.render("AC", 1, WHITE)
     AUX_LABEL       = myfont_50.render("Info", 1, WHITE)
+    KEY_LABEL       = myfont_50.render("Api Key", 1, WHITE)
 
     TEMPERATURE_LABEL   = myfont_18.render(u"Temperature = 25 C", 1, WHITE)
     HUMIDITY_LABEL      = myfont_18.render(u"Humidity = 25.1 %", 1, WHITE)
@@ -55,8 +55,8 @@ class TFT(Thread):
     button_light_1  = pygbutton.PygButton((WINDOWWIDTH/2-90,  WINDOWHEIGHT/2-45, 60, 60), normal=BTN_BULB_ON)
     button_light_2  = pygbutton.PygButton((WINDOWWIDTH/2+30,  WINDOWHEIGHT/2-45, 60, 60), normal=BTN_BULB_ON)
 
-    init_menu   = 0
-    n_menus     = 3
+    init_menu   = 2
+    n_menus     = 4
 
     def __init__(self, hub):
         Thread.__init__(self)
@@ -85,7 +85,7 @@ class TFT(Thread):
 
         #wait for the ralay to load
         if self.hub:
-            while not "RELAY" in self.hub.keys():
+            while not set(self.hub.keys()).issuperset(set(["RELAY", "TEMPERATURE", "HUMIDITY", "LUMINOSITY", "CURRENT"])):
                 if self.DEBUG:
                     print "PITFT waiting for the Relay to be Loaded"
                     sleep(0.5)
@@ -104,6 +104,10 @@ class TFT(Thread):
             else:
                 self.button_light_2.setSurfaces(self.BTN_BULB_OFF)
 
+            while not "TEMPERATURE" in self.hub.keys():
+                if self.DEBUG:
+                    print "PITFT waiting for the Relay to be Loaded"
+                    sleep(0.5)
         
 
         if 'armv6l' in platform.uname():    #Hides the cursor in running on the RPi
@@ -112,9 +116,15 @@ class TFT(Thread):
         self.FPSCLOCK = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.size, 0, 32)
         self.draw()
+        intermediate_update = 0
 
         while not self.stopped:
             self.update()
+            if intermediate_update > self.FPS*5:
+                self.draw()
+                intermediate_update = 0
+            else:
+                intermediate_update += 1
 
     def update(self):
         self.FPSCLOCK.tick(self.FPS)
@@ -146,15 +156,15 @@ class TFT(Thread):
                     self.stop()
 
 
-                # events = self.button_forward.handleEvent(event)
-                # if 'click' in events:
-                #     self.init_menu = (self.init_menu+1)%self.n_menus
-                #     to_draw = True
+                events = self.button_forward.handleEvent(event)
+                if 'click' in events:
+                    self.init_menu = (self.init_menu+1)%self.n_menus
+                    to_draw = True
 
-                # events = self.button_back.handleEvent(event)
-                # if 'click' in events:
-                #     self.init_menu = (self.init_menu-1)%self.n_menus
-                #     to_draw = True
+                events = self.button_back.handleEvent(event)
+                if 'click' in events:
+                    self.init_menu = (self.init_menu-1)%self.n_menus
+                    to_draw = True
 
                 events_x1 = self.button_light_1.handleEvent(event)
                 if 'click' in events_x1:
@@ -175,15 +185,19 @@ class TFT(Thread):
 
     def menu(self):
 
-        self.button_forward.draw(self.screen)
-        self.button_back.draw(self.screen)
+        
         self.button_light_1._propSetVisible(False)
         self.button_light_2._propSetVisible(False)
+        self.button_forward._propSetVisible(False)
+        self.button_back._propSetVisible(False)
+
 
         if self.init_menu == 0:
-            self.screen.blit(self.LUZES_LABEL , (self.WINDOWWIDTH/2-self.LUZES_LABEL.get_width()/2, 2))
 
-           
+            self.button_forward._propSetVisible(True)
+            self.button_forward.draw(self.screen)
+
+            self.screen.blit(self.LUZES_LABEL , (self.WINDOWWIDTH/2-self.LUZES_LABEL.get_width()/2, 2))
 
             if self.relay.get_lights_x1_state():
                 self.button_light_1.setSurfaces(self.BTN_BULB_ON)
@@ -202,15 +216,53 @@ class TFT(Thread):
             self.button_light_2.draw(self.screen)
 
         elif self.init_menu == 1:
-            self.screen.blit(self.AC_LABEL , (self.WINDOWWIDTH/2-self.AC_LABEL.get_width()/2, 2))
-            #self.screen.blit(TEMPERATURE_LABEL , (50, 32))
-            #self.screen.blit(HUMIDITY_LABEL ,    (50, 62))
-            #self.screen.blit(LUMINOSITY_LABEL ,  (50, 92))
-            #self.screen.blit(POWER_LABEL ,       (50, 122))
-        
-        elif self.init_menu == 2:
+            self.button_forward._propSetVisible(True)
+            self.button_back._propSetVisible(True)
+            self.button_forward.draw(self.screen)
+            self.button_back.draw(self.screen)
             self.screen.blit(self.AUX_LABEL , (self.WINDOWWIDTH/2-self.AUX_LABEL.get_width()/2, 2))
 
+            temp  = round(self.hub["TEMPERATURE"].getTemperature(), 1)
+            humid = round(self.hub["HUMIDITY"].getHumidity(), 1)
+            lumi  = self.hub["LUMINOSITY"].getValue()
+            curt  = round(self.hub["CURRENT"].getValue(), 1)
+
+            t_label = self.myfont_22.render(u"Temperature  = "+unicode(temp+"C"+chr(176)), 1, self.WHITE)
+            h_label = self.myfont_22.render(u"Humidity = "+unicode(humid+" %"), 1, self.WHITE)
+            l_label = self.myfont_22.render(u"Luminosity = "+unicode(lumi+" Lux"), 1, self.WHITE)
+            #u_label = self.myfont_18.render(u"Luminosity = "+str(self.hub["LUMINOSITY"].getHumidity())+" Lux", 1, WHITE)
+            c_label = self.myfont_18.render(u"Consumption = "+unicode(curt+" Watts"), 1, self.WHITE)
+
+            self.screen.blit(t_label , (30, 60))
+            self.screen.blit(h_label , (30, 90))
+            self.screen.blit(l_label , (30, 120))
+            self.screen.blit(c_label , (30, 150))
+        
+        elif self.init_menu == 2:
+            self.button_forward._propSetVisible(True)
+            self.button_back._propSetVisible(True)
+            self.button_forward.draw(self.screen)
+            self.button_back.draw(self.screen)
+            
+
+            temp  = round(self.hub["TEMPERATURE"].getTemperature(), 1)
+            myfont_85 = pygame.font.SysFont("monospace", 85)
+            t_label = myfont_85.render(str(temp)+"C"+chr(176), 1, self.WHITE)
+            self.screen.blit(t_label , (10, 60))
+
+
+            #self.screen.blit(self.AC_LABEL , (self.WINDOWWIDTH/2-self.AC_LABEL.get_width()/2, 2))
+
+        elif self.init_menu == 3:
+            self.button_back._propSetVisible(True)
+            self.button_back.draw(self.screen)
+
+            self.screen.blit(self.KEY_LABEL , (self.WINDOWWIDTH/2-self.KEY_LABEL.get_width()/2, 2))
+
+            key  = self.hub["API KEY"]
+            myfont_85 = pygame.font.SysFont("monospace", 85)
+            k_label = myfont_85.render(key, 1, self.WHITE)
+            self.screen.blit(k_label , (10, 60))
 
 if __name__ == '__main__':
 
