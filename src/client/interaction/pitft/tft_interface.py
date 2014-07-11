@@ -227,11 +227,11 @@ class TFT(Thread):
             lumi  = self.hub["LUMINOSITY"].getValue()
             curt  = round(self.hub["CURRENT"].getValue(), 1)
 
-            t_label = self.myfont_22.render(u"Temperature  = "+unicode(temp+"C"+chr(176)), 1, self.WHITE)
-            h_label = self.myfont_22.render(u"Humidity = "+unicode(humid+" %"), 1, self.WHITE)
-            l_label = self.myfont_22.render(u"Luminosity = "+unicode(lumi+" Lux"), 1, self.WHITE)
+            t_label = self.myfont_22.render("Temperature  = "+str(temp)+"C"+chr(176), 1, self.WHITE)
+            h_label = self.myfont_22.render("Humidity = "+str(humid)+" %", 1, self.WHITE)
+            l_label = self.myfont_22.render("Luminosity = "+str(lumi)+" Lux", 1, self.WHITE)
             #u_label = self.myfont_18.render(u"Luminosity = "+str(self.hub["LUMINOSITY"].getHumidity())+" Lux", 1, WHITE)
-            c_label = self.myfont_18.render(u"Consumption = "+unicode(curt+" Watts"), 1, self.WHITE)
+            c_label = self.myfont_18.render("Consumption = "+str(curt)+" Watts", 1, self.WHITE)
 
             self.screen.blit(t_label , (30, 60))
             self.screen.blit(h_label , (30, 90))
