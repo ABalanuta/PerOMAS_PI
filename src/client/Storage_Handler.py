@@ -75,7 +75,7 @@ class StorageHandler():
 			#Users
 			c.execute('CREATE TABLE Logs (TimeStamp TIMESTAMP, Username TEXT, Message TEXT)')
 			c.execute('CREATE TABLE Users (Username TEXT, Salt TEXT, Digest TEXT, Phone TEXT)')
-			c.execute('CREATE TABLE UserDetails (Username TEXT, ObjectType TEXT, Alias TEXT, JSON TEXT)')
+			c.execute('CREATE TABLE UserDetails (Username TEXT, ObjectType TEXT, Alias TEXT, Pickle TEXT)')
 			c.execute('CREATE TABLE BTDevices (BTDevice TEXT, Username TEXT)')
 
 			#Settings

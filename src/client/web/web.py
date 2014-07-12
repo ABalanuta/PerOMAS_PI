@@ -444,15 +444,13 @@ def process_settings_post():
                     flash("Action does Not Exists", 'error')
                     return
 
-                print events_alias
-
                 for event in events_alias:
                     if not g.user.has_event_alias(event):
                         flash("Event with Alias: "+event+" does Not Exists", 'error')
                         return
 
                 g.user.add_rule(rule_alias, events_alias, action_alias)
-                storage.log("Created new Rule: alias="+rule_alias+" events="+events_alias+" action="+action_alias, user)
+                storage.log("Created new Rule: alias="+rule_alias+" events="+str(events_alias)+" action="+action_alias, user)
                 flash("Operation finished successfully.", "success")
 
 def process_index_post():

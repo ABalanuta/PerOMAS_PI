@@ -73,24 +73,27 @@ class User(object):
 
     def add_action(self, alias, action, arg_type=None, arguments=None):
         action = UserAction(alias, action, arg_type, arguments)
-        self.actions.append(action)
         if self.hub:
             db = self.hub["STORAGE HANDLER"]
             db.alterUserDetails("Add", "Action", self.username, action)
+        action.user = self
+        self.actions.append(action)
 
     def add_event(self, alias, event, condition, argument=None):
         event = UserEvent(alias, event, condition, argument)
-        self.events.append(event)
         if self.hub:
             db = self.hub["STORAGE HANDLER"]
             db.alterUserDetails("Add", "Event", self.username, event)
+        event.user = self
+        self.events.append(event)
 
     def add_rule(self, alias, events, action):
         rule = UserRule(alias, events, action)
-        self.rules.append(rule)
         if self.hub:
             db = self.hub["STORAGE HANDLER"]
             db.alterUserDetails("Add", "Rule", self.username, rule)
+        rule.user = self
+        self.rules.append(rule)
 
     def del_action(self, alias):
         for action in self.actions:
@@ -115,6 +118,19 @@ class User(object):
                 if self.hub:
                     db = self.hub["STORAGE HANDLER"]
                     db.alterUserDetails("Del", "Rule", self.username, rule)
+
+    def get_action(self, alias):
+        for action in self.actions:
+            if action.alias == alias:
+                return action
+        return None
+
+    def get_event(self, alias):
+        for event in self.events:
+            if event.alias == alias:
+                return event
+        return None
+
 
     def has_action_alias(self, alias):
         for action in self.actions:
@@ -177,11 +193,17 @@ class UserManager():
             for x in d:
                 u = self.getUser(x[0])
                 if x[1] == "Action":
-                    u.actions.append(x[3])
+                    detail = x[3]
+                    detail.user = u
+                    u.actions.append(detail)
                 elif x[1] == "Event":
-                    u.events.append(x[3])
+                    detail = x[3]
+                    detail.user = u
+                    u.events.append(detail)
                 elif x[1] == "Rule":
-                    u.rules.append(x[3])
+                    detail = x[3]
+                    detail.user = u
+                    u.rules.append(detail)
         else:
             print "Error Loading Users Details"
 
