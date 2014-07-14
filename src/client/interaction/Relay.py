@@ -136,6 +136,10 @@ class Relay():
 	def get_lights_state(self):
 		return [self.get_lights_x1_state(), self.get_lights_x2_state()]
 
+	def set_lights_state(self, state):
+		self.set_lights_x1_state(state[0])
+		self.set_lights_x2_state(state[1])
+
 	def stop(self):
 		if self.DEBUG:
 			print "Relay: All devices are OFF"

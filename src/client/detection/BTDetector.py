@@ -89,7 +89,7 @@ class BTDetector(Thread):
 		self.started = datetime.now()
 		self.last_update = datetime.now()
 		self.seen_devices = list()
-		self.seen_timeout = 30	# if device is not seen for x seconds it gets eliminated from the seen_devices
+		self.seen_timeout = 10	# if device is not seen for x seconds it gets eliminated from the seen_devices
 		self.bluetooth_memory_values = set()
 		self.traking_devices = list()
 		self.interface_fail = 0

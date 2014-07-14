@@ -18,7 +18,7 @@ from DTOs.MeasurmentEnum import DataType
 
 class ScheduleManager(Thread):
 	
-	DEBUG 					= True
+	DEBUG 					= False
 	SLEEP_BETWEEN_CHECKS 	= 1	#sleeps X seconds befor cheking the need of executing any task
 
 	def __init__(self, hub):

@@ -13,15 +13,15 @@ from time import sleep, localtime, time
 class Logic_Engine(Thread):
 
 	DEBUG 					= False
-	SLEEP_BETWEEN_CHECKS 	= 1		#sleeps X seconds befor cheking the need of executing any task
+	SLEEP_BETWEEN_CHECKS 	= 1 		#sleeps X seconds befor cheking the need of executing any task
 	MARGIN 					= 0.35
+	AC_TARGET 		 		= 24
+	AC_MODE_AUTO 			= False
 
 	def __init__(self, hub):
 		Thread.__init__(self)
 		self.hub = hub
-		self.ac_mode_auto = False
-		self.ac_target = 24
-
+		
 	def stop(self):
 		self.stopped = True
 	
@@ -39,7 +39,7 @@ class Logic_Engine(Thread):
 
 		self.checkUserRules()
 
-		if self.ac_mode_auto:
+		if self.AC_MODE_AUTO:
 			self.checkTermostatLogic()
 
 	def checkUserRules(self):
@@ -54,7 +54,10 @@ class Logic_Engine(Thread):
 
 		for username, user in users.items():
 			for rule in user.rules:
-				print rule.alias, rule.try_execute()
+				print "#############"
+				t = rule.try_execute()
+				print "checkUserRules: Rule: "+rule.alias, t
+				print "#############"
 
 	def checkTermostatLogic(self):
 		
@@ -69,17 +72,17 @@ class Logic_Engine(Thread):
 				return
 
 			#Turn ON Fan if too Hot
-			if curr_temp > self.ac_target+(self.MARGIN*3):
+			if curr_temp > self.AC_TARGET+(self.MARGIN*3):
 				relay.set_ac_speed(3)
 
-			elif curr_temp > self.ac_target+self.MARGIN:
+			elif curr_temp > self.AC_TARGET+self.MARGIN:
 				relay.set_ac_speed(2)
 
-			elif curr_temp > self.ac_target:
+			elif curr_temp > self.AC_TARGET:
 				relay.set_ac_speed(2)
 
 			#Turn OFF FAN if temp Perfect
-			elif curr_temp < self.ac_target-self.MARGIN:
+			elif curr_temp < self.AC_TARGET-self.MARGIN:
 				relay.set_ac_speed(0)
 
 		else:
@@ -93,24 +96,24 @@ class Logic_Engine(Thread):
 			return True
 
 	def getACMode(self):
-		if self.ac_mode_auto:
+		if self.AC_MODE_AUTO:
 			return "Auto"
 		else:
 			return "Manual"
 
 	def setACMode(self, mode):
 		if mode == "Auto":
-			self.ac_mode_auto = True
+			self.AC_MODE_AUTO = True
 		elif mode == "Manual":
-			self.ac_mode_auto = False
+			self.AC_MODE_AUTO = False
 
 	def set_AC_Setpoint(self, setpoint):
-		self.ac_target = float(setpoint)
+		self.AC_TARGET = float(setpoint)
 		if self.DEBUG:
-			print "New AC setpoint", self.ac_target
+			print "New AC setpoint", self.AC_TARGET
 
 	def get_AC_Setpoint(self):
-		return self.ac_target
+		return self.AC_TARGET
 
 #Runs only if called
 if __name__ == "__main__":

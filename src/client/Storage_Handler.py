@@ -202,11 +202,10 @@ class StorageHandler():
 
 	def getGraphData(self):
 
-		data = {}
-
 		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
 		c = conn.cursor()
-
+		data = {}
+		
 		c.execute("SELECT TimeStamp, Temperature, Humidity FROM TemperatureHumidity WHERE TIMESTAMP > CURRENT_TIMESTAMP() - INTERVAL 1 DAY ")
 		data["TempHumid"] = c.fetchall()
 
@@ -216,7 +215,6 @@ class StorageHandler():
 		c.execute("SELECT * FROM Current WHERE TIMESTAMP > CURRENT_TIMESTAMP() - INTERVAL 1 DAY ")
 		data["Current"] = c.fetchall()
 
-		
 		conn.commit()
 		conn.close()
 		return data
