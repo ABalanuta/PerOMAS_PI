@@ -5,6 +5,8 @@ __author__ = "Artur Balanuta"
 __version__ = "1.0.1"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
+from time import localtime, time as now_time
+from datetime import time
 
 class UserAction():
 
@@ -27,6 +29,7 @@ class UserAction():
             self.applied = True
     
     def clean(self):
+
         print "Cleaning "+self.alias+"...."
 
         action_info = self.get_action_info()
@@ -52,9 +55,6 @@ class UserAction():
         else:
             relay.set_lights_state(self.before_arguments)
             print "UserAction.clean_set_lights " + str(self.before_arguments)
-
-    def execute_set_setpoint(self, clean=False):
-        pass
 
 class UserEvent():
 
@@ -92,15 +92,43 @@ class UserEvent():
         if "BLUETOOTH" in self.user.hub.keys():
             if phone_mac in self.user.hub["BLUETOOTH"].get_traked_devices():
                 return True
+                print "UserEvent.validate_in_the_office " + str(True)
             else:
+                print "UserEvent.validate_in_the_office " + str(False)
                 return False
         else:
             return False
 
 
 
-    def validate_humidity(self):
-        return False
+    def validate_time(self):
+
+        lt = localtime(now_time())
+        current_time = time(lt.tm_hour, lt.tm_min)
+        t1, t2 = self.argument.split("-")
+        h1, m1 = t1.split(':')
+        h2, m2 = t2.split(':')
+        t1, t2 = time(int(h1), int(m1)), time(int(h2), int(m2))
+        
+        if t1 == t2:
+            return False
+
+        inverse = False
+        
+
+        #If the time interval passes the midnight mark, the exclusion rule is aplied
+        if t1 > t2:
+            inverse = True  # inverses the logical response
+            t1, t2 = t2, t1 # inverses the time interval
+
+        ret = False
+        if current_time >= t1 and current_time <= t2:
+            ret = True
+
+        if inverse:
+            return not ret
+        else:
+            return ret
 
 class UserRule():
 
@@ -150,28 +178,23 @@ class ActionsTypes():
                                             "Light_Bulb_2":"checkbox" },
                                 "execute":UserAction.execute_set_lights
                                 }
-
-    ACTION_SET_SETPOINT     = { "name":"Set_Setpoint",
-                                "inputs": { "Setpoint":"text" },
-                                "execute":UserAction.execute_set_setpoint
-                                }
     
-    ACTIONS_LIST            = [ACTION_SET_LIGHTS, ACTION_SET_SETPOINT]
+    ACTIONS_LIST            = [ACTION_SET_LIGHTS]
 
 class EventsTypes():
     
     #Events and their types
     EVENT_IN_THE_OFFICE = { "name":"In_the_Office",
-                            "conditions":{"True":"True", "False":"False"},
+                            "conditions":{"True":"True"},
                             "argument":None,
                             "validate":UserEvent.validate_in_the_office
                             }
     
-    EVENT_HUMIDITY      = { "name":"Humidity",
-                            "conditions":{"Bigger":">", "Smaller":"<"},
-                            "argument":{"Humidity":"text" },
-                            "validate":UserEvent.validate_humidity,
-                            "unit":"%"
+    EVENT_TIME      = { "name":"Time",
+                            "conditions":{ "Interval":"Interval" },
+                            "argument":{"Time":"text" },
+                            "validate":UserEvent.validate_time,
+                            "unit":"H:m-H:m"
                             }
     
-    EVENT_LIST          = [EVENT_IN_THE_OFFICE, EVENT_HUMIDITY]
+    EVENT_LIST          = [EVENT_IN_THE_OFFICE, EVENT_TIME]

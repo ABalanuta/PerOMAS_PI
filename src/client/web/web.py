@@ -20,6 +20,7 @@ from wtforms.validators import Required
 from multiprocessing import Process
 from threading import Thread
 from time import sleep
+from datetime import datetime
 
 from UserManager import UserManager
 
@@ -298,7 +299,8 @@ def process_settings_post():
                 if new_Phone != old_Phone:
                     g.user.set_phone(new_Phone)
                     bluetooth.track_device(new_Phone)
-                    storage.log("Changed Traking Phone from "+str(old_Phone)+" to "+new_Phone, user)
+                    storage.log("Changed Traking Phone from "+str(old_Phone)+
+                                " to "+new_Phone, user)
 
             if "Phone_Delete" in request.form.keys():
                 new_Phone = None
@@ -306,7 +308,8 @@ def process_settings_post():
 
                 g.user.set_phone(new_Phone)
                 bluetooth.stop_tracking_device(old_Phone)
-                storage.log("Changed Traking Phone from "+str(old_Phone)+" to "+str(new_Phone), user)
+                storage.log("Changed Traking Phone from "+str(old_Phone)+
+                            " to "+str(new_Phone), user)
 
         if storage:
 
@@ -349,7 +352,8 @@ def process_settings_post():
                     return
 
                 g.user.add_action(alias, action, arg_type, arguments)
-                storage.log("Created new Action: alias="+alias+" action="+action+" arguments="+str(arguments), user)
+                storage.log("Created new Action: alias="+alias+" action="+action+
+                            " arguments="+str(arguments), user)
                 flash("Operation finished successfully.", "success")
 
             if "Delete_User_Action" in request.form.keys():
@@ -379,14 +383,21 @@ def process_settings_post():
                 condition   = request.form[event+"_Condition"]
                 argument    = request.form["argument"]
 
-                if event == "Humidity":
+                if event == "Time":
                     try:
-                        argument = float(argument)
+                        times = argument.split('-')
+                        time_1 = times[0]
+                        time_2 = times[1]
+
+                        datetime.strptime(time_1, "%H:%M")
+                        datetime.strptime(time_2, "%H:%M")
+
                         g.user.add_event(alias, event, condition, argument)
-                        storage.log("Created new Event: alias="+alias+" event="+event+" condition="+str(condition)+" argument="+str(argument), user)
+                        storage.log("Created new Event: alias="+alias+" event="+event+" condition="+str(condition)+
+                                    " argument="+str(argument), user)
                         flash("Operation finished successfully.", "success")
-                    except ValueError:
-                        flash("Invalid Argument Value", 'error')
+                    except:
+                        flash("Invalid Argument Value: Does not match format <Hour:Minutes-Hour:Minutes>", 'error')
                         return
 
                 elif event == "In_the_Office":
