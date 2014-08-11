@@ -10,6 +10,8 @@ from datetime import time
 
 class UserAction():
 
+    DEBUG = False
+
     def __init__(self, alias, action, arg_type=None, arguments=None, user=None):
         self.alias  = alias
         self.action = action
@@ -20,7 +22,8 @@ class UserAction():
         self.before_arguments = None
 
     def execute(self):
-        print "Executing "+self.alias+"...."
+        if self.DEBUG:
+            print "Executing "+self.alias+"...."
 
         action_info = self.get_action_info()
 
@@ -30,7 +33,8 @@ class UserAction():
     
     def clean(self):
 
-        print "Cleaning "+self.alias+"...."
+        if self.DEBUG:
+            print "Cleaning "+self.alias+"...."
 
         action_info = self.get_action_info()
 
@@ -50,15 +54,17 @@ class UserAction():
         if not clean:
             self.before_arguments = relay.get_lights_state()
             relay.set_lights_state(self.arguments)
-            print "UserAction.execute_set_lights " + str(self.arguments)
+            if self.DEBUG:
+                print "UserAction.execute_set_lights " + str(self.arguments)
         
         else:
             relay.set_lights_state(self.before_arguments)
-            print "UserAction.clean_set_lights " + str(self.before_arguments)
+            if self.DEBUG:
+                print "UserAction.clean_set_lights " + str(self.before_arguments)
 
 class UserEvent():
 
-    DEBUG = True
+    DEBUG = False
 
     def __init__(self, alias, event, condition, argument=None, user=None):
         self.alias = alias
@@ -92,9 +98,11 @@ class UserEvent():
         if "BLUETOOTH" in self.user.hub.keys():
             if phone_mac in self.user.hub["BLUETOOTH"].get_traked_devices():
                 return True
-                print "UserEvent.validate_in_the_office " + str(True)
+                if self.DEBUG:
+                    print "UserEvent.validate_in_the_office " + str(True)
             else:
-                print "UserEvent.validate_in_the_office " + str(False)
+                if self.DEBUG:
+                    print "UserEvent.validate_in_the_office " + str(False)
                 return False
         else:
             return False
@@ -132,6 +140,8 @@ class UserEvent():
 
 class UserRule():
 
+    DEBUG = False
+    
     def __init__(self, alias, events, action, user=None):
         self.alias = alias
         self.events = events
@@ -151,10 +161,12 @@ class UserRule():
             #Validates all the events
             if not event or not event.is_valid():
                 can_execute_action = False
-                print event.alias, False
+                if self.DEBUG:
+                    print event.alias, False
                 break
             else:
-                print event.alias, True
+                if self.DEBUG:
+                    print event.alias, True
 
         action = self.user.get_action(self.action)
         

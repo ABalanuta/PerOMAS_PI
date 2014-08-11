@@ -49,15 +49,15 @@ class Logic_Engine(Thread):
 		if "USER MANAGER" in self.hub.keys():
 			users = self.hub["USER MANAGER"].users
 		else:
-			print "Could not find users"
+			if self.DEBUG:
+				print "Could not find users"
 			return
 
 		for username, user in users.items():
 			for rule in user.rules:
-				print "#############"
 				t = rule.try_execute()
-				print "checkUserRules: Rule: "+rule.alias, t
-				print "#############"
+				if self.DEBUG:
+					print "checkUserRules: Rule: "+rule.alias, t
 
 	def checkTermostatLogic(self):
 		

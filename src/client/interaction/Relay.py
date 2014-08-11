@@ -12,7 +12,7 @@ from time import sleep
 
 class Relay():
 	
-	DEBUG 			= True
+	DEBUG 			= False
 	RELAY 			= {	"AC_SPEED_1"		:	{"Pin" : 4, "State" : False},
 						"AC_SPEED_2"		:	{"Pin" : 17, "State" : False},
 						"AC_SPEED_3" 		:	{"Pin" : 27, "State" : False},

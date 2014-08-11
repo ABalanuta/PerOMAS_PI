@@ -55,8 +55,13 @@ class TFT(Thread):
     button_light_1  = pygbutton.PygButton((WINDOWWIDTH/2-90,  WINDOWHEIGHT/2-45, 60, 60), normal=BTN_BULB_ON)
     button_light_2  = pygbutton.PygButton((WINDOWWIDTH/2+30,  WINDOWHEIGHT/2-45, 60, 60), normal=BTN_BULB_ON)
 
-    init_menu   = 2
-    n_menus     = 4
+    button_minus_two  = pygbutton.PygButton(( 30,  100, 50, 50), "-2", bgcolor=(  0,   0, 255))
+    button_minus_one  = pygbutton.PygButton((100,  100, 50, 50), "-1", bgcolor=( 51, 204, 255))
+    button_plus_one   = pygbutton.PygButton((170,  100, 50, 50), "+1", bgcolor=(255, 204,  51))
+    button_plus_two   = pygbutton.PygButton((240,  100, 50, 50), "+2", bgcolor=(255,   0,   0))
+
+    init_menu   = 1
+    n_menus     = 5
 
     def __init__(self, hub):
         Thread.__init__(self)
@@ -166,6 +171,22 @@ class TFT(Thread):
                     self.init_menu = (self.init_menu-1)%self.n_menus
                     to_draw = True
 
+                events = self.button_minus_two.handleEvent(event)
+                if 'click' in events:
+                    print "-2"
+
+                events = self.button_minus_one.handleEvent(event)
+                if 'click' in events:
+                    print "-1"
+
+                events = self.button_plus_one.handleEvent(event)
+                if 'click' in events:
+                    print "+1"
+
+                events = self.button_plus_two.handleEvent(event)
+                if 'click' in events:
+                    print "+2"
+
                 events_x1 = self.button_light_1.handleEvent(event)
                 if 'click' in events_x1:
                     sleep(0.1)
@@ -190,6 +211,10 @@ class TFT(Thread):
         self.button_light_2._propSetVisible(False)
         self.button_forward._propSetVisible(False)
         self.button_back._propSetVisible(False)
+        self.button_minus_two._propSetVisible(False)
+        self.button_minus_one._propSetVisible(False)
+        self.button_plus_one._propSetVisible(False)
+        self.button_plus_two._propSetVisible(False)
 
 
         if self.init_menu == 0:
@@ -218,6 +243,22 @@ class TFT(Thread):
         elif self.init_menu == 1:
             self.button_forward._propSetVisible(True)
             self.button_back._propSetVisible(True)
+            self.button_minus_two._propSetVisible(True)
+            self.button_minus_one._propSetVisible(True)
+            self.button_plus_one._propSetVisible(True)
+            self.button_plus_two._propSetVisible(True)
+            self.button_forward.draw(self.screen)
+            self.button_back.draw(self.screen)
+            self.screen.blit(self.AC_LABEL , (self.WINDOWWIDTH/2-self.AC_LABEL.get_width()/2, 2))
+
+            self.button_minus_two.draw(self.screen)
+            self.button_minus_one.draw(self.screen)
+            self.button_plus_one.draw(self.screen)
+            self.button_plus_two.draw(self.screen)
+
+        elif self.init_menu == 2:
+            self.button_forward._propSetVisible(True)
+            self.button_back._propSetVisible(True)
             self.button_forward.draw(self.screen)
             self.button_back.draw(self.screen)
             self.screen.blit(self.AUX_LABEL , (self.WINDOWWIDTH/2-self.AUX_LABEL.get_width()/2, 2))
@@ -238,7 +279,7 @@ class TFT(Thread):
             self.screen.blit(l_label , (30, 120))
             self.screen.blit(c_label , (30, 150))
         
-        elif self.init_menu == 2:
+        elif self.init_menu == 3:
             self.button_forward._propSetVisible(True)
             self.button_back._propSetVisible(True)
             self.button_forward.draw(self.screen)
@@ -253,7 +294,7 @@ class TFT(Thread):
 
             #self.screen.blit(self.AC_LABEL , (self.WINDOWWIDTH/2-self.AC_LABEL.get_width()/2, 2))
 
-        elif self.init_menu == 3:
+        elif self.init_menu == 4:
             self.button_back._propSetVisible(True)
             self.button_back.draw(self.screen)
 
