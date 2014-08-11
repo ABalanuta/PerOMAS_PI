@@ -11,6 +11,7 @@ import pygame
 import pygbutton
 from time import sleep
 from threading import Thread
+from datetime import datetime, timedelta
 from pygame.locals import *
 
 
@@ -19,12 +20,16 @@ class TFT(Thread):
     DEBUG           = False
 
     FPS             = 10
-    WINDOWWIDTH     = 320
-    WINDOWHEIGHT    = 240
-    size            = (WINDOWWIDTH, WINDOWHEIGHT)
+    WINDOW_WIDTH    = 320
+    WINDOW_HEIGHT   = 240
+    WINDOW_SIZE     = (WINDOW_WIDTH, WINDOW_HEIGHT)
 
     WHITE           = (255, 255, 255)
     BLACK           = (  0,   0,   0)
+    BLUE            = (  0,   0, 255)
+    RED             = (255,   0,   0)
+    YELLOW          = (255, 204,  51)
+    LIGHT_BLUE      = ( 51, 204, 255)
 
     LOCAL_PATH      = os.path.dirname(os.path.realpath(__file__))
 
@@ -33,40 +38,60 @@ class TFT(Thread):
     BTN_FORWARD     = LOCAL_PATH + '/images/forward_60.png'
     BTN_BACK        = LOCAL_PATH + '/images/back_60.png'
 
-    myfont_18       = pygame.font.SysFont("monospace", 18)
-    myfont_22       = pygame.font.SysFont("monospace", 22)
-    myfont_50       = pygame.font.SysFont("monospace", 50)
+    MYFONT_18       = pygame.font.SysFont("monospace", 18)
+    MYFONT_22       = pygame.font.SysFont("monospace", 22)
+    MYFONT_32       = pygame.font.SysFont("monospace", 32)
+    MYFONT_40       = pygame.font.SysFont("monospace", 40)
+    MYFONT_50       = pygame.font.SysFont("monospace", 50)
+    MYFONT_85       = pygame.font.SysFont("monospace", 85)
         
-    DASH_LABEL      = myfont_22.render("Dash", 1, WHITE)
-    LUZES_LABEL     = myfont_50.render("Luzes", 1, WHITE)
-    AC_LABEL        = myfont_50.render("AC", 1, WHITE)
-    AUX_LABEL       = myfont_50.render("Info", 1, WHITE)
-    KEY_LABEL       = myfont_50.render("Api Key", 1, WHITE)
+    DASH_LABEL      = MYFONT_22.render("Dash", 1, WHITE)
+    LUZES_LABEL     = MYFONT_50.render("Luzes", 1, WHITE)
+    AC_LABEL        = MYFONT_50.render("AC", 1, WHITE)
+    AUX_LABEL       = MYFONT_50.render("Info", 1, WHITE)
+    KEY_LABEL       = MYFONT_50.render("Api Key", 1, WHITE)
 
-    TEMPERATURE_LABEL   = myfont_18.render(u"Temperature = 25 C", 1, WHITE)
-    HUMIDITY_LABEL      = myfont_18.render(u"Humidity = 25.1 %", 1, WHITE)
-    LUMINOSITY_LABEL    = myfont_18.render(u"Luminosity = 200 Lux", 1, WHITE)
-    POWER_LABEL         = myfont_18.render(u"Power = 207 Watts", 1, WHITE)
+    TEMPERATURE_LABEL   = MYFONT_18.render(u"Temperature = 25 C", 1, WHITE)
+    HUMIDITY_LABEL      = MYFONT_18.render(u"Humidity = 25.1 %", 1, WHITE)
+    LUMINOSITY_LABEL    = MYFONT_18.render(u"Luminosity = 200 Lux", 1, WHITE)
+    POWER_LABEL         = MYFONT_18.render(u"Power = 207 Watts", 1, WHITE)
 
+    WHO_LABEL           = MYFONT_40.render(u"Who are you?", 1, WHITE)
 
-    button_forward  = pygbutton.PygButton((WINDOWWIDTH-60,  WINDOWHEIGHT-60, 60, 60), normal=BTN_FORWARD)
-    button_back     = pygbutton.PygButton((             0,  WINDOWHEIGHT-60, 60, 60), normal=BTN_BACK)
+    INIT_MENU           = 1
+    MAX_MENU            = 5
 
-    button_light_1  = pygbutton.PygButton((WINDOWWIDTH/2-90,  WINDOWHEIGHT/2-45, 60, 60), normal=BTN_BULB_ON)
-    button_light_2  = pygbutton.PygButton((WINDOWWIDTH/2+30,  WINDOWHEIGHT/2-45, 60, 60), normal=BTN_BULB_ON)
+    FEEDBACK_TIMEOUT    = 5 #Seconds
 
-    button_minus_two  = pygbutton.PygButton(( 30,  100, 50, 50), "-2", bgcolor=(  0,   0, 255))
-    button_minus_one  = pygbutton.PygButton((100,  100, 50, 50), "-1", bgcolor=( 51, 204, 255))
-    button_plus_one   = pygbutton.PygButton((170,  100, 50, 50), "+1", bgcolor=(255, 204,  51))
-    button_plus_two   = pygbutton.PygButton((240,  100, 50, 50), "+2", bgcolor=(255,   0,   0))
+    #Buttons
+    button_forward  = pygbutton.PygButton((WINDOW_WIDTH-60,  WINDOW_HEIGHT-60, 60, 60), normal=BTN_FORWARD)
+    button_back     = pygbutton.PygButton((             0,  WINDOW_HEIGHT-60, 60, 60), normal=BTN_BACK)
 
-    init_menu   = 1
-    n_menus     = 5
+    button_light_1  = pygbutton.PygButton((WINDOW_WIDTH/2-90,  WINDOW_HEIGHT/2-45, 60, 60), normal=BTN_BULB_ON)
+    button_light_2  = pygbutton.PygButton((WINDOW_WIDTH/2+30,  WINDOW_HEIGHT/2-45, 60, 60), normal=BTN_BULB_ON)
+
+    button_minus_two    = pygbutton.PygButton(( 15, 80, 65, 65), "-3", font=MYFONT_50, bgcolor=BLUE)
+    button_minus_one    = pygbutton.PygButton(( 90, 80, 65, 65), "-1", font=MYFONT_50, bgcolor=LIGHT_BLUE)
+    button_plus_one     = pygbutton.PygButton((165, 80, 65, 65), "+1", font=MYFONT_50, bgcolor=YELLOW)
+    button_plus_two     = pygbutton.PygButton((240, 80, 65, 65), "+3", font=MYFONT_50, bgcolor=RED)
+
+    button_user_1       = pygbutton.PygButton((  0,  60, 160, 60), "User 1", font=MYFONT_32)
+    button_user_2       = pygbutton.PygButton((160,  60, 160, 60), "User 2", font=MYFONT_32)
+    button_user_3       = pygbutton.PygButton((  0, 120, 160, 60), "User 3", font=MYFONT_32)
+    button_user_4       = pygbutton.PygButton((160, 120, 160, 60), "User 4", font=MYFONT_32)
+
+    button_user_l       = pygbutton.PygButton((  0, 180, 160, 60), "<",      font=MYFONT_50, bgcolor=YELLOW)
+    button_user_r       = pygbutton.PygButton((160, 180, 160, 60), ">",      font=MYFONT_50, bgcolor=YELLOW)
+    button_user_cancel  = pygbutton.PygButton((160, 180, 160, 60), "Cancel", font=MYFONT_40, bgcolor=RED)
 
     def __init__(self, hub):
         Thread.__init__(self)
         self.hub = hub
         self.relay = None
+        self.last_feedback_set = datetime.now() - timedelta(1)
+        self.feedback_value = 0
+        self.feedback_user_page = 0
+        self.feedback_user_array = list()
 
         # for Adafruit PiTFT:
         if 'armv6l' in platform.uname():
@@ -90,10 +115,11 @@ class TFT(Thread):
 
         #wait for the ralay to load
         if self.hub:
-            while not set(self.hub.keys()).issuperset(set(["RELAY", "TEMPERATURE", "HUMIDITY", "LUMINOSITY", "CURRENT"])):
+            while not set(self.hub.keys()).issuperset(
+                set(["RELAY", "TEMPERATURE", "HUMIDITY", "LUMINOSITY", "CURRENT", "USER MANAGER"])):
                 if self.DEBUG:
-                    print "PITFT waiting for the Relay to be Loaded"
-                    sleep(0.5)
+                    print "PITFT waiting for the Modules to be Loaded"
+                sleep(0.5)
 
             self.relay = self.hub["RELAY"]
             l1_state = self.relay.get_lights_x1_state()
@@ -119,7 +145,7 @@ class TFT(Thread):
             pygame.mouse.set_visible(False)
 
         self.FPSCLOCK = pygame.time.Clock()
-        self.screen = pygame.display.set_mode(self.size, 0, 32)
+        self.screen = pygame.display.set_mode(self.WINDOW_SIZE, 0, 32)
         self.draw()
         intermediate_update = 0
 
@@ -152,7 +178,7 @@ class TFT(Thread):
         
         if pevents != None:
             for event in pevents: # event handling loop
-    	    #print event
+    	       #print event
 
                 if self.DEBUG:
                     print event
@@ -163,66 +189,140 @@ class TFT(Thread):
 
                 events = self.button_forward.handleEvent(event)
                 if 'click' in events:
-                    self.init_menu = (self.init_menu+1)%self.n_menus
+                    self.INIT_MENU = (self.INIT_MENU+1)%self.MAX_MENU
                     to_draw = True
 
                 events = self.button_back.handleEvent(event)
                 if 'click' in events:
-                    self.init_menu = (self.init_menu-1)%self.n_menus
+                    self.INIT_MENU = (self.INIT_MENU-1)%self.MAX_MENU
                     to_draw = True
 
-                events = self.button_minus_two.handleEvent(event)
-                if 'click' in events:
-                    print "-2"
+                
 
-                events = self.button_minus_one.handleEvent(event)
-                if 'click' in events:
-                    print "-1"
+                if self.INIT_MENU == 0:
 
-                events = self.button_plus_one.handleEvent(event)
-                if 'click' in events:
-                    print "+1"
+                    events_x1 = self.button_light_1.handleEvent(event)
+                    if 'click' in events_x1:
+                        sleep(0.1)
+                        self.relay.flip_lights_x1()
+                        to_draw = True
 
-                events = self.button_plus_two.handleEvent(event)
-                if 'click' in events:
-                    print "+2"
+                    events_x2 = self.button_light_2.handleEvent(event)
+                    if 'click' in events_x2:
+                        sleep(0.1)
+                        self.relay.flip_lights_x2()
+                        to_draw = True
 
-                events_x1 = self.button_light_1.handleEvent(event)
-                if 'click' in events_x1:
-                    sleep(0.1)
-                    self.relay.flip_lights_x1()
-                    to_draw = True
 
-                events_x2 = self.button_light_2.handleEvent(event)
-                if 'click' in events_x2:
-                    sleep(0.1)
-                    self.relay.flip_lights_x2()
-                    to_draw = True
+                if self.INIT_MENU == 1:
+
+                    events = self.button_minus_two.handleEvent(event)
+                    if 'click' in events:
+                        print "-3"
+                        self.feedback_value = -3
+                        self.INIT_MENU = 1.1
+                        to_draw = True
+
+                    events = self.button_minus_one.handleEvent(event)
+                    if 'click' in events:
+                        print "-1"
+                        self.feedback_value = -1
+                        self.INIT_MENU = 1.1
+                        to_draw = True
+
+                    events = self.button_plus_one.handleEvent(event)
+                    if 'click' in events:
+                        print "+1"
+                        self.feedback_value = 1
+                        self.INIT_MENU = 1.1
+                        to_draw = True
+
+                    events = self.button_plus_two.handleEvent(event)
+                    if 'click' in events:
+                        print "+3"
+                        self.feedback_value = 3
+                        self.INIT_MENU = 1.1
+                        to_draw = True
+
+
+                if self.INIT_MENU == 1.1:
+
+                    events = self.button_user_l.handleEvent(event)
+                    if 'click' in events:
+                        self.feedback_user_page -= 1
+                        to_draw = True
+
+                    events = self.button_user_r.handleEvent(event)
+                    if 'click' in events:
+                        self.feedback_user_page += 1
+                        to_draw = True
+
+                    events = self.button_user_cancel.handleEvent(event)
+                    if 'click' in events:
+                        self.INIT_MENU = 1
+                        self.feedback_user_page = 0
+                        to_draw = True
+
+                    events = self.button_user_1.handleEvent(event)
+                    if 'click' in events:
+                        print self.feedback_user_array[0], self.feedback_value
+                        self.last_feedback_set = datetime.now()
+                        self.INIT_MENU = 1
+                        to_draw = True
+
+                    events = self.button_user_2.handleEvent(event)
+                    if 'click' in events:
+                        print self.feedback_user_array[1], self.feedback_value
+                        self.last_feedback_set = datetime.now()
+                        self.INIT_MENU = 1
+                        to_draw = True
+                    
+                    events = self.button_user_3.handleEvent(event)
+                    if 'click' in events:
+                        print self.feedback_user_array[2], self.feedback_value
+                        self.last_feedback_set = datetime.now()
+                        self.INIT_MENU = 1
+                        to_draw = True
+                    
+                    events = self.button_user_4.handleEvent(event)
+                    if 'click' in events:
+                        print self.feedback_user_array[3], self.feedback_value
+                        self.last_feedback_set = datetime.now()
+                        self.INIT_MENU = 1
+                        to_draw = True
 
             if to_draw:
                 self.draw()
-                print "XPTO Draw sleep 1"
                 sleep(0.7)
 
     def menu(self):
 
-        
         self.button_light_1._propSetVisible(False)
         self.button_light_2._propSetVisible(False)
+
         self.button_forward._propSetVisible(False)
         self.button_back._propSetVisible(False)
+
         self.button_minus_two._propSetVisible(False)
         self.button_minus_one._propSetVisible(False)
         self.button_plus_one._propSetVisible(False)
         self.button_plus_two._propSetVisible(False)
 
+        self.button_user_1._propSetVisible(False)
+        self.button_user_2._propSetVisible(False)
+        self.button_user_3._propSetVisible(False)
+        self.button_user_4._propSetVisible(False)
 
-        if self.init_menu == 0:
+        self.button_user_l._propSetVisible(False)
+        self.button_user_r._propSetVisible(False)
+        self.button_user_cancel._propSetVisible(False)
 
+
+        if self.INIT_MENU == 0:
             self.button_forward._propSetVisible(True)
             self.button_forward.draw(self.screen)
 
-            self.screen.blit(self.LUZES_LABEL , (self.WINDOWWIDTH/2-self.LUZES_LABEL.get_width()/2, 2))
+            self.screen.blit(self.LUZES_LABEL , (self.WINDOW_WIDTH/2-self.LUZES_LABEL.get_width()/2, 2))
 
             if self.relay.get_lights_x1_state():
                 self.button_light_1.setSurfaces(self.BTN_BULB_ON)
@@ -240,69 +340,116 @@ class TFT(Thread):
             self.button_light_1.draw(self.screen)
             self.button_light_2.draw(self.screen)
 
-        elif self.init_menu == 1:
+        elif self.INIT_MENU == 1:
+
             self.button_forward._propSetVisible(True)
             self.button_back._propSetVisible(True)
-            self.button_minus_two._propSetVisible(True)
-            self.button_minus_one._propSetVisible(True)
-            self.button_plus_one._propSetVisible(True)
-            self.button_plus_two._propSetVisible(True)
+
             self.button_forward.draw(self.screen)
             self.button_back.draw(self.screen)
-            self.screen.blit(self.AC_LABEL , (self.WINDOWWIDTH/2-self.AC_LABEL.get_width()/2, 2))
+            self.screen.blit(self.AC_LABEL , (self.WINDOW_WIDTH/2-self.AC_LABEL.get_width()/2, 2))
+            
+            # Limits the number of feedbacks
+            if  (datetime.now()-self.last_feedback_set).total_seconds() > self.FEEDBACK_TIMEOUT:
+            
+                self.button_minus_two._propSetVisible(True)
+                self.button_minus_one._propSetVisible(True)
+                self.button_plus_one._propSetVisible(True)
+                self.button_plus_two._propSetVisible(True)
 
-            self.button_minus_two.draw(self.screen)
-            self.button_minus_one.draw(self.screen)
-            self.button_plus_one.draw(self.screen)
-            self.button_plus_two.draw(self.screen)
+                self.button_minus_two.draw(self.screen)
+                self.button_minus_one.draw(self.screen)
+                self.button_plus_one.draw(self.screen)
+                self.button_plus_two.draw(self.screen)
+            else:
+                t = self.FEEDBACK_TIMEOUT-((datetime.now()-self.last_feedback_set).total_seconds())
+                l1 = self.MYFONT_50.render("Wait", 1, self.WHITE)
+                l2 = self.MYFONT_50.render(str(int(t)), 1, self.WHITE)
+                l3 = self.MYFONT_50.render("seconds", 1, self.WHITE)
+                self.screen.blit(l1, (self.WINDOW_WIDTH/2-l1.get_width()/2, 50))
+                self.screen.blit(l2, (self.WINDOW_WIDTH/2-l2.get_width()/2, 100))
+                self.screen.blit(l3, (self.WINDOW_WIDTH/2-l3.get_width()/2, 150))
+       
+        elif self.INIT_MENU == 1.1:
 
-        elif self.init_menu == 2:
+            self.screen.blit(self.WHO_LABEL , (self.WINDOW_WIDTH/2-self.WHO_LABEL.get_width()/2, 2))
+
+            users = self.hub["USER MANAGER"].users.keys()
+            users.sort()
+
+            #Selects only the users in actual page
+            if len(users) > (self.feedback_user_page+1)*4:
+                users = users[self.feedback_user_page*4:self.feedback_user_page*4+4]
+            else:
+                users = users[self.feedback_user_page*4:]
+
+            self.feedback_user_array = users
+
+            spaces = [self.button_user_1, self.button_user_2, self.button_user_3, self.button_user_4]
+
+            for i in range(0, len(users)):
+                button = spaces[i]
+                username = users[i]
+                button._caption = username
+                button._update()
+                button._propSetVisible(True)
+                button.draw(self.screen)
+
+            if self.feedback_user_page > 0:
+               self.button_user_l._propSetVisible(True)
+               self.button_user_l.draw(self.screen)
+
+            if len(self.hub["USER MANAGER"].users.keys()) > (self.feedback_user_page+1)*4:
+                self.button_user_r._propSetVisible(True) 
+                self.button_user_r.draw(self.screen)
+
+            if (self.feedback_user_page+1)*4 >= len(self.hub["USER MANAGER"].users.keys()):
+                self.button_user_cancel._propSetVisible(True)
+                self.button_user_cancel.draw(self.screen)
+
+        elif self.INIT_MENU == 2:
             self.button_forward._propSetVisible(True)
             self.button_back._propSetVisible(True)
             self.button_forward.draw(self.screen)
             self.button_back.draw(self.screen)
-            self.screen.blit(self.AUX_LABEL , (self.WINDOWWIDTH/2-self.AUX_LABEL.get_width()/2, 2))
+            self.screen.blit(self.AUX_LABEL , (self.WINDOW_WIDTH/2-self.AUX_LABEL.get_width()/2, 2))
 
             temp  = round(self.hub["TEMPERATURE"].getTemperature(), 1)
             humid = round(self.hub["HUMIDITY"].getHumidity(), 1)
             lumi  = self.hub["LUMINOSITY"].getValue()
             curt  = round(self.hub["CURRENT"].getValue(), 1)
 
-            t_label = self.myfont_22.render("Temperature  = "+str(temp)+"C"+chr(176), 1, self.WHITE)
-            h_label = self.myfont_22.render("Humidity = "+str(humid)+" %", 1, self.WHITE)
-            l_label = self.myfont_22.render("Luminosity = "+str(lumi)+" Lux", 1, self.WHITE)
-            #u_label = self.myfont_18.render(u"Luminosity = "+str(self.hub["LUMINOSITY"].getHumidity())+" Lux", 1, WHITE)
-            c_label = self.myfont_18.render("Consumption = "+str(curt)+" Watts", 1, self.WHITE)
+            t_label = self.MYFONT_22.render("Temperature  = "+str(temp)+"C"+chr(176), 1, self.WHITE)
+            h_label = self.MYFONT_22.render("Humidity = "+str(humid)+" %", 1, self.WHITE)
+            l_label = self.MYFONT_22.render("Luminosity = "+str(lumi)+" Lux", 1, self.WHITE)
+            c_label = self.MYFONT_18.render("Consumption = "+str(curt)+" Watts", 1, self.WHITE)
 
             self.screen.blit(t_label , (30, 60))
             self.screen.blit(h_label , (30, 90))
             self.screen.blit(l_label , (30, 120))
             self.screen.blit(c_label , (30, 150))
         
-        elif self.init_menu == 3:
+        elif self.INIT_MENU == 3:
             self.button_forward._propSetVisible(True)
             self.button_back._propSetVisible(True)
             self.button_forward.draw(self.screen)
             self.button_back.draw(self.screen)
-            
 
             temp  = round(self.hub["TEMPERATURE"].getTemperature(), 1)
-            myfont_85 = pygame.font.SysFont("monospace", 85)
-            t_label = myfont_85.render(str(temp)+"C"+chr(176), 1, self.WHITE)
+            t_label = self.MYFONT_85.render(str(temp)+"C"+chr(176), 1, self.WHITE)
             self.screen.blit(t_label , (10, 60))
 
 
-            #self.screen.blit(self.AC_LABEL , (self.WINDOWWIDTH/2-self.AC_LABEL.get_width()/2, 2))
+            #self.screen.blit(self.AC_LABEL , (self.WINDOW_WIDTH/2-self.AC_LABEL.get_width()/2, 2))
 
-        elif self.init_menu == 4:
+        elif self.INIT_MENU == 4:
             self.button_back._propSetVisible(True)
             self.button_back.draw(self.screen)
 
-            self.screen.blit(self.KEY_LABEL , (self.WINDOWWIDTH/2-self.KEY_LABEL.get_width()/2, 2))
+            self.screen.blit(self.KEY_LABEL , (self.WINDOW_WIDTH/2-self.KEY_LABEL.get_width()/2, 2))
 
             key  = self.hub["API KEY"]
-            myfont_85 = pygame.font.SysFont("monospace", 85)
-            k_label = myfont_85.render(key, 1, self.WHITE)
+            k_label = self.MYFONT_85.render(key, 1, self.WHITE)
             self.screen.blit(k_label , (10, 60))
 
 if __name__ == '__main__':

@@ -189,7 +189,6 @@ def login():
                 form.username.data,
                 form.password.data):
 
-            	print "Remember-me?: "+str(form.remember_me.data)
                 user = um.getUser(form.username.data)
 
                 login_user(user, form.remember_me.data)
@@ -288,7 +287,7 @@ def process_settings_post():
         if "BLUETOOTH" in hub.keys():
             bluetooth = hub["BLUETOOTH"]
 
-        print request.form.items()
+        #print request.form.items()
 
         if storage and bluetooth:
             
