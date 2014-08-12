@@ -5,11 +5,8 @@ __author__ = "Artur Balanuta"
 __version__ = "1.0.1"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
-import os
-from time import sleep
 from datetime import datetime
 from pickle import dumps, loads
-from DTOs.MesurmentDTO import MesurmentDTO
 from DTOs.MeasurmentEnum import DataType
 
 import MySQLdb
@@ -65,7 +62,6 @@ class StorageHandler():
 				print "	Database does not Exist"
 		db.close()
 		
-	
 	def popolate_database(self):
 		
 		db = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
@@ -198,8 +194,6 @@ class StorageHandler():
 		conn.close()
 		return devices
 
-
-
 	def getGraphData(self):
 
 		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
@@ -270,9 +264,9 @@ class StorageHandler():
 #Runs only if called
 if __name__ == "__main__":
 	
-	d = StorageHandler(None)
+	print "Test"
+	#d = StorageHandler(None)
 	
-	#print "Insert"
 	#d.insertValue(MesurmentDTO(str(datetime.now()), DataType.TEMPERATURE, [28.4]))
 	#d.insertValue(MesurmentDTO(str(datetime.now()), DataType.HUMIDITY, [50.1]))
 
@@ -305,5 +299,3 @@ if __name__ == "__main__":
 	#delete_database(DB)
 	#delete_database(DB)
 	#db = connect(host=HOST, user=USER, passwd=PASS,db=DB)
-	
-	

@@ -48,7 +48,7 @@ class LoginForm(Form):
 class RegisterForm(Form):
     username = TextField('username', [
         validators.Required(),
-        validators.Length(min=4, max=25)
+        validators.Length(min=4, max=10)
     ])
 
     password = PasswordField('New Password', [

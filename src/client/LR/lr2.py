@@ -49,10 +49,9 @@ if __name__ == '__main__':
     lr = LinRegNumpy()
     #lr.train([[1, 2, 3]], [1])
     lr.train([30, 80, 24, 96], -3)
+    lr.train([30, 20, 24, 96], -3)
 
     lr.calculate()
     lr.dump()
 
     print lr.predict([26, 70, 5, 99])
-    
-    #print '\n', lr.predict([[1, 2, 3]])

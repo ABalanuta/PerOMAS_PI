@@ -61,7 +61,7 @@ class TFT(Thread):
     INIT_MENU           = 1
     MAX_MENU            = 5
 
-    FEEDBACK_TIMEOUT    = 5 #Seconds
+    FEEDBACK_TIMEOUT    = 300 #Seconds
 
     #Buttons
     button_forward  = pygbutton.PygButton((WINDOW_WIDTH-60,  WINDOW_HEIGHT-60, 60, 60), normal=BTN_FORWARD)
@@ -116,7 +116,7 @@ class TFT(Thread):
         #wait for the ralay to load
         if self.hub:
             while not set(self.hub.keys()).issuperset(
-                set(["RELAY", "TEMPERATURE", "HUMIDITY", "LUMINOSITY", "CURRENT", "USER MANAGER"])):
+                set(["RELAY", "TEMPERATURE", "HUMIDITY", "LUMINOSITY", "CURRENT", "USER MANAGER", "BLUETOOTH"])):
                 if self.DEBUG:
                     print "PITFT waiting for the Modules to be Loaded"
                 sleep(0.5)
@@ -374,22 +374,29 @@ class TFT(Thread):
 
             self.screen.blit(self.WHO_LABEL , (self.WINDOW_WIDTH/2-self.WHO_LABEL.get_width()/2, 2))
 
-            users = self.hub["USER MANAGER"].users.keys()
-            users.sort()
+            present_users = list()
+            present_dev = self.hub["BLUETOOTH"].get_traked_devices()
+            
+            for username, user in self.hub["USER MANAGER"].users.items():
+                if user.phone in present_dev:
+                    present_users.append(username)
+
+            present_users.sort()
+            page_users = present_users
 
             #Selects only the users in actual page
-            if len(users) > (self.feedback_user_page+1)*4:
-                users = users[self.feedback_user_page*4:self.feedback_user_page*4+4]
+            if len(page_users) > (self.feedback_user_page+1)*4:
+                page_users = page_users[self.feedback_user_page*4:self.feedback_user_page*4+4]
             else:
-                users = users[self.feedback_user_page*4:]
+                page_users = page_users[self.feedback_user_page*4:]
 
-            self.feedback_user_array = users
+            self.feedback_user_array = page_users
 
             spaces = [self.button_user_1, self.button_user_2, self.button_user_3, self.button_user_4]
 
-            for i in range(0, len(users)):
+            for i in range(0, len(page_users)):
                 button = spaces[i]
-                username = users[i]
+                username = page_users[i]
                 button._caption = username
                 button._update()
                 button._propSetVisible(True)
@@ -399,13 +406,15 @@ class TFT(Thread):
                self.button_user_l._propSetVisible(True)
                self.button_user_l.draw(self.screen)
 
-            if len(self.hub["USER MANAGER"].users.keys()) > (self.feedback_user_page+1)*4:
+            if len(present_users) > (self.feedback_user_page+1)*4:
                 self.button_user_r._propSetVisible(True) 
                 self.button_user_r.draw(self.screen)
 
-            if (self.feedback_user_page+1)*4 >= len(self.hub["USER MANAGER"].users.keys()):
+            if (self.feedback_user_page+1)*4 >= len(present_users):
                 self.button_user_cancel._propSetVisible(True)
                 self.button_user_cancel.draw(self.screen)
+
+            print present_users, page_users
 
         elif self.INIT_MENU == 2:
             self.button_forward._propSetVisible(True)
