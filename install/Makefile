@@ -238,7 +238,9 @@ echo_options:
 8: #// Backup MySQL
 	sudo mysqldump -uroot -p3O7DCWP2HLR01471G9PZQ6U7X PeromasDB > /tmp/PeromasDB.sql
 	scp /tmp/PeromasDB.sql ist168206@sigma.ist.utl.pt:~
+	scp /tmp/PeromasDB.sql ist168206@sigma.ist.utl.pt:~/PeromasDB.sql_$(shell date +%d-%m-%y_%Hh%Mm)
 
 9: #// Restore MySQL
 	scp ist168206@sigma.ist.utl.pt:~/PeromasDB.sql /tmp/PeromasDB.sql
 	sudo mysql-uroot -p3O7DCWP2HLR01471G9PZQ6U7X PeromasDB < /tmp/PeromasDB.sql
+
