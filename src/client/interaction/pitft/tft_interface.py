@@ -61,7 +61,7 @@ class TFT(Thread):
     INIT_MENU           = 1
     MAX_MENU            = 5
 
-    FEEDBACK_TIMEOUT    = 20 #Seconds
+    FEEDBACK_TIMEOUT    = 300 #Seconds
 
     #Buttons
     button_forward  = pygbutton.PygButton((WINDOW_WIDTH-60,  WINDOW_HEIGHT-60, 60, 60), normal=BTN_FORWARD)
@@ -218,28 +218,24 @@ class TFT(Thread):
 
                     events = self.button_minus_two.handleEvent(event)
                     if 'click' in events:
-                        print "-3"
                         self.feedback_value = -3
                         self.INIT_MENU = 1.1
                         to_draw = True
 
                     events = self.button_minus_one.handleEvent(event)
                     if 'click' in events:
-                        print "-1"
                         self.feedback_value = -1
                         self.INIT_MENU = 1.1
                         to_draw = True
 
                     events = self.button_plus_one.handleEvent(event)
                     if 'click' in events:
-                        print "+1"
                         self.feedback_value = 1
                         self.INIT_MENU = 1.1
                         to_draw = True
 
                     events = self.button_plus_two.handleEvent(event)
                     if 'click' in events:
-                        print "+3"
                         self.feedback_value = 3
                         self.INIT_MENU = 1.1
                         to_draw = True
@@ -425,8 +421,6 @@ class TFT(Thread):
             if (self.feedback_user_page+1)*4 >= len(present_users):
                 self.button_user_cancel._propSetVisible(True)
                 self.button_user_cancel.draw(self.screen)
-
-            print present_users, page_users
 
         elif self.INIT_MENU == 2:
             self.button_forward._propSetVisible(True)

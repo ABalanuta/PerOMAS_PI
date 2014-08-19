@@ -73,7 +73,8 @@ class StorageHandler():
 			c.execute('CREATE TABLE Users (Username TEXT, Salt TEXT, Digest TEXT, Phone TEXT)')
 			c.execute('CREATE TABLE UserDetails (Username TEXT, ObjectType TEXT, Alias TEXT, Pickle TEXT)')
 			c.execute('CREATE TABLE BTDevices (BTDevice TEXT, Username TEXT)')
-
+			c.execute('CREATE TABLE UserFeedback (Username TEXT, TimeStamp TIMESTAMP, OldSetpoint REAL, NewSetpoint REAL, Temperature REAL, '+
+												 'Humidity REAL, ExtTemperature REAL, ExtHumidity REAL, Luminosity REAL, Current REAL)')
 			#Settings
 			c.execute('CREATE TABLE Settings (ID TEXT, PickeRepresentation TEXT)')
 
@@ -174,6 +175,17 @@ class StorageHandler():
 		elif action == "Del":
 			values = (username, ObjType, userDetails.alias)
 			c.execute('DELETE FROM UserDetails WHERE Username=%s AND ObjectType=%s AND Alias=%s', values)
+
+		conn.commit()
+		conn.close()
+
+	def addUserFeedback(self, username, timestamp, old_setpoint, new_setpoint, temp, humid, ext_temp, ext_humid, lux, current):
+
+		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
+		c = conn.cursor()
+		
+		values = (username, timestamp, old_setpoint, new_setpoint, temp, humid, ext_temp, ext_humid, lux, current)
+		c.execute('INSERT INTO UserFeedback VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', values)
 
 		conn.commit()
 		conn.close()

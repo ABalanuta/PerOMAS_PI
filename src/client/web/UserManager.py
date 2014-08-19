@@ -5,10 +5,10 @@ __author__ = "Artur Balanuta"
 __version__ = "1.0.0"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
-
+import os
 import base64
 import hashlib
-import os
+from datetime import datetime
 
 from UserRules import *
 
@@ -73,11 +73,23 @@ class User(object):
             db.alterUser(self)
 
     def set_setpoint(self, new_setpoint):
-        self.setpoint = new_setpoint
+        
         # Alter user in DB
         if self.hub:
-            db = self.hub["STORAGE HANDLER"]
+            db          = self.hub["STORAGE HANDLER"]
+            temp        = self.hub["TEMPERATURE"].temp
+            humid       = self.hub["HUMIDITY"].humid
+            ext_temp    = self.hub["EXTERNAL TEMPERATURE"].temp
+            ext_humid   = self.hub["EXTERNAL HUMIDITY"].humid
+            lux         = self.hub["LUMINOSITY"].lux
+            current     = self.hub["CURRENT"].watts
+
             db.alterUser(self)
+            db.addUserFeedback(self.username, datetime.now(), self.setpoint, new_setpoint,
+                                temp, humid, ext_temp, ext_humid, lux, current)
+
+        self.setpoint = new_setpoint
+
 
     def add_action(self, alias, action, arg_type=None, arguments=None):
         action = UserAction(alias, action, arg_type, arguments)
