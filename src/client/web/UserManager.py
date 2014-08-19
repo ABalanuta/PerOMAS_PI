@@ -239,7 +239,19 @@ class UserManager():
             return True
         else:
             return False
-    
+
+    def getPresentUsers(self):
+        if self.hub and self.hub["BLUETOOTH"]:
+            present_users = list()
+            present_dev = self.hub["BLUETOOTH"].get_traked_devices()
+                
+            for username, user in self.users.items():
+                if user.phone in present_dev:
+                    present_users.append(username)
+
+            return present_users
+        else:
+            print "Error Getting Present Users"
 
     def validatePassword(self, username, password):
         u = self.getUser(username)

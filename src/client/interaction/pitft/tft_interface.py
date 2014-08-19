@@ -382,13 +382,7 @@ class TFT(Thread):
 
             self.screen.blit(self.WHO_LABEL , (self.WINDOW_WIDTH/2-self.WHO_LABEL.get_width()/2, 2))
 
-            present_users = list()
-            present_dev = self.hub["BLUETOOTH"].get_traked_devices()
-            
-            for username, user in self.hub["USER MANAGER"].users.items():
-                if user.phone in present_dev:
-                    present_users.append(username)
-
+            present_users = self.hub["USER MANAGER"].getPresentUsers()
             present_users.sort()
             page_users = present_users
 

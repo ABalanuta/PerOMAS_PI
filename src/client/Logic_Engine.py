@@ -14,9 +14,9 @@ class Logic_Engine(Thread):
 
 	DEBUG 					= False
 	SLEEP_BETWEEN_CHECKS 	= 1 		#sleeps X seconds befor cheking the need of executing any task
-	MARGIN 					= 0.35
+	MARGIN 					= 0.33
 	AC_TARGET 		 		= 24
-	AC_MODE_AUTO 			= False
+	AC_MODE_AUTO 			= True
 
 	def __init__(self, hub):
 		Thread.__init__(self)
@@ -61,32 +61,42 @@ class Logic_Engine(Thread):
 
 	def checkTermostatLogic(self):
 		
-		if self.hub["TEMPERATURE"] and self.hub["RELAY"]:
+		if self.hub["TEMPERATURE"] and "RELAY" in self.hub.keys() and "USER MANAGER" in self.hub.keys():
 
 			curr_temp = self.hub["TEMPERATURE"].getTemperature()
 			relay = self.hub["RELAY"]
+			present_users = self.hub["USER MANAGER"].getPresentUsers()
+			
+			if len(present_users) > 0:
 
-			#Shuts Down the AC if out of Working Hours
-			if not self.isWorkingHours():
+				#Calculates the average temperature of the users in the office
+				target_setpoint = 0
+				for user in present_users:
+					target_setpoint += self.hub["USER MANAGER"].getUser(user).setpoint
+				target_setpoint /= len(present_users)
+
+				#Shuts Down the AC if out of Working Hours or no Users in the Office
+				#if not self.isWorkingHours():
+				#	relay.set_ac_speed(0)
+				#	return
+
+				#Turn ON Fan if too Hot
+				if curr_temp > target_setpoint+(self.MARGIN*3):
+					relay.set_ac_speed(3)
+
+				elif curr_temp > target_setpoint+self.MARGIN:
+					relay.set_ac_speed(2)
+
+				#Turn OFF FAN if temp Perfect
+				elif curr_temp < target_setpoint-self.MARGIN:
+					relay.set_ac_speed(0)
+			
+			else:
+				#Shuts Down the AC if nobody is in the office
 				relay.set_ac_speed(0)
-				return
-
-			#Turn ON Fan if too Hot
-			if curr_temp > self.AC_TARGET+(self.MARGIN*3):
-				relay.set_ac_speed(3)
-
-			elif curr_temp > self.AC_TARGET+self.MARGIN:
-				relay.set_ac_speed(2)
-
-			elif curr_temp > self.AC_TARGET:
-				relay.set_ac_speed(2)
-
-			#Turn OFF FAN if temp Perfect
-			elif curr_temp < self.AC_TARGET-self.MARGIN:
-				relay.set_ac_speed(0)
-
 		else:
-			print "Error, no TEMPERATURE Sensor or Relay Object"
+			sleep(0.2)
+
 
 	def isWorkingHours(self):
 		current_hour = localtime(time()).tm_hour

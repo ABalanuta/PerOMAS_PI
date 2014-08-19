@@ -93,7 +93,59 @@
         </div>
         {% endif %}
 
-        {% if g.user.username and mode != "Auto" %}
+        {% if g.user.username %}
+        <div class="col-md-6">
+            <div class="panel panel-primary">
+
+                <div class="panel-heading">
+                    <h3 class="panel-title"><b>Lights</b></h3>
+                </div>
+
+                <div class="panel-body">
+
+                    <form method="POST">
+                        <div class="col-md-6">
+                            {% if light_bulb[0] %}
+                            <button type="submit" name="Light_1" class="btn btn-warning">
+                                <b>Light Bulb x1</b>
+                                <span class="octicon octicon-light-bulb"></span>
+                            </button>
+                            {% else %}
+                            <button type="submit" name="Light_1" class="btn btn-default">
+                                <b>Light Bulb x1</b>
+                                <span class="octicon octicon-light-bulb"></span>
+                            </button>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            {% if light_bulb[1] %}
+                            <button type="submit" name="Light_2" class="btn btn-warning">
+                                <b>Light Bulb x2</b>
+                                <span class="octicon octicon-light-bulb"></span>
+                                <span class="octicon octicon-light-bulb"></span>
+                            </button>
+                            {% else %}
+                            <button type="submit" name="Light_2" class="btn btn-default">
+                                <b>Light Bulb x2</b>
+                                <span class="octicon octicon-light-bulb"></span>
+                                <span class="octicon octicon-light-bulb"></span>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- Row 3 -->
+    <div class="row">
+
+
+
+                {% if g.user.username and mode != "Auto" %}
         <div class="col-md-6">
             <div class="panel panel-primary">
                 <div class="panel-heading">
@@ -171,7 +223,7 @@
         </div>
         {% endif %}
 
-        {% if g.user.username and setpoint and mode == "Auto" %}
+        {% if g.user.username and setpoint and mode == "Auto" and FALSE%}
         <div class="col-md-6">
             <div class="panel panel-primary">
                 <div class="panel-heading">
@@ -209,54 +261,10 @@
             </div>
         </div>
         {% endif %}
-    </div>
 
-    <!-- Row 3 -->
-    <div class="row">
-        {% if g.user.username %}
-        <div class="col-md-6">
-            <div class="panel panel-primary">
 
-                <div class="panel-heading">
-                    <h3 class="panel-title"><b>Lights</b></h3>
-                </div>
 
-                <div class="panel-body">
 
-                    <form method="POST">
-                        <div class="col-md-6">
-                            {% if light_bulb[0] %}
-                            <button type="submit" name="Light_1" class="btn btn-warning">
-                                <b>Light Bulb x1</b>
-                                <span class="octicon octicon-light-bulb"></span>
-                            </button>
-                            {% else %}
-                            <button type="submit" name="Light_1" class="btn btn-default">
-                                <b>Light Bulb x1</b>
-                                <span class="octicon octicon-light-bulb"></span>
-                            </button>
-                            {% endif %}
-                        </div>
-                        <div class="col-md-6">
-                            {% if light_bulb[1] %}
-                            <button type="submit" name="Light_2" class="btn btn-warning">
-                                <b>Light Bulb x2</b>
-                                <span class="octicon octicon-light-bulb"></span>
-                                <span class="octicon octicon-light-bulb"></span>
-                            </button>
-                            {% else %}
-                            <button type="submit" name="Light_2" class="btn btn-default">
-                                <b>Light Bulb x2</b>
-                                <span class="octicon octicon-light-bulb"></span>
-                                <span class="octicon octicon-light-bulb"></span>
-                            </button>
-                            {% endif %}
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        {% endif %}
     </div>
 
 
