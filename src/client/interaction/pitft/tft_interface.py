@@ -61,7 +61,7 @@ class TFT(Thread):
     INIT_MENU           = 1
     MAX_MENU            = 5
 
-    FEEDBACK_TIMEOUT    = 300 #Seconds
+    FEEDBACK_TIMEOUT    = 20 #Seconds
 
     #Buttons
     button_forward  = pygbutton.PygButton((WINDOW_WIDTH-60,  WINDOW_HEIGHT-60, 60, 60), normal=BTN_FORWARD)
@@ -265,28 +265,41 @@ class TFT(Thread):
 
                     events = self.button_user_1.handleEvent(event)
                     if 'click' in events:
-                        print self.feedback_user_array[0], self.feedback_value
+                        usr = self.feedback_user_array[0]
+                        usr_obj = self.hub["USER MANAGER"].getUser(usr)
+                        new_setpoint = usr_obj.setpoint + self.feedback_value
+                        print "NEW SETPOINT", new_setpoint
+                        usr_obj.set_setpoint(new_setpoint)
                         self.last_feedback_set = datetime.now()
                         self.INIT_MENU = 1
                         to_draw = True
 
                     events = self.button_user_2.handleEvent(event)
                     if 'click' in events:
-                        print self.feedback_user_array[1], self.feedback_value
+                        usr = self.feedback_user_array[1]
+                        usr_obj = self.hub["USER MANAGER"].getUser(usr)
+                        new_setpoint = usr_obj.setpoint + self.feedback_value
+                        usr_obj.set_setpoint(new_setpoint)
                         self.last_feedback_set = datetime.now()
                         self.INIT_MENU = 1
                         to_draw = True
                     
                     events = self.button_user_3.handleEvent(event)
                     if 'click' in events:
-                        print self.feedback_user_array[2], self.feedback_value
+                        usr = self.feedback_user_array[2]
+                        usr_obj = self.hub["USER MANAGER"].getUser(usr)
+                        new_setpoint = usr_obj.setpoint + self.feedback_value
+                        usr_obj.set_setpoint(new_setpoint)
                         self.last_feedback_set = datetime.now()
                         self.INIT_MENU = 1
                         to_draw = True
                     
                     events = self.button_user_4.handleEvent(event)
                     if 'click' in events:
-                        print self.feedback_user_array[3], self.feedback_value
+                        usr = self.feedback_user_array[3]
+                        usr_obj = self.hub["USER MANAGER"].getUser(usr)
+                        new_setpoint = usr_obj.setpoint + self.feedback_value
+                        usr_obj.set_setpoint(new_setpoint)
                         self.last_feedback_set = datetime.now()
                         self.INIT_MENU = 1
                         to_draw = True

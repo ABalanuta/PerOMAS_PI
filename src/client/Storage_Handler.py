@@ -121,8 +121,8 @@ class StorageHandler():
 		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
 		c = conn.cursor()
 
-		values = (user.username, user.salt, user.digest, user.phone)
-		c.execute('INSERT INTO Users VALUES (%s, %s, %s, %s)', values)
+		values = (user.username, user.salt, user.digest, user.phone, user.setpoint)
+		c.execute('INSERT INTO Users VALUES (%s, %s, %s, %s, %s)', values)
 
 		conn.commit()
 		conn.close()
@@ -131,8 +131,8 @@ class StorageHandler():
 		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
 		c = conn.cursor()
 
-		values = (user.salt, user.digest, user.phone, user.username)
-		c.execute('UPDATE Users SET Salt=%s,Digest=%s,Phone=%s WHERE Username=%s', values)
+		values = (user.salt, user.digest, user.phone, user.setpoint, user.username)
+		c.execute('UPDATE Users SET Salt=%s,Digest=%s,Phone=%s,Setpoint=%s WHERE Username=%s', values)
 
 		conn.commit()
 		conn.close()

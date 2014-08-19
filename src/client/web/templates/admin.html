@@ -9,6 +9,7 @@
 			{% for user, obj in g.user.manager.users.items() %}
 				<b>{{user}}</b><br>
 				Phone MAC: {{obj.phone}}<br>
+				Setpoint: {{obj.setpoint}}<br>
 
 				{% if obj.events %}
 				Events:<br>

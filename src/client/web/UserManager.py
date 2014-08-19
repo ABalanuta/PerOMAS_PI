@@ -38,12 +38,13 @@ class PasswordManager():
 
 class User(object):
 
-    def __init__(self, username, salt, digest, manager, phone=None, hub=None):
+    def __init__(self, username, salt, digest, manager, phone=None, hub=None, setpoint=24):
         self.hub = hub
         self.username = username
         self.salt = salt
         self.digest = digest
         self.phone = phone
+        self.setpoint = setpoint
         self.manager = manager
         self.actions = list()
         self.events = list()
@@ -66,6 +67,14 @@ class User(object):
 
     def set_phone(self, mac):
         self.phone = mac
+        # Alter user in DB
+        if self.hub:
+            db = self.hub["STORAGE HANDLER"]
+            db.alterUser(self)
+
+    def set_setpoint(self, new_setpoint):
+        self.setpoint = new_setpoint
+        print "sss", self.setpoint
         # Alter user in DB
         if self.hub:
             db = self.hub["STORAGE HANDLER"]
@@ -182,7 +191,7 @@ class UserManager():
             db = self.hub["STORAGE HANDLER"]
             matrix = db.loadUsers()
             for x in matrix:
-                self.users[x[0]] = User(x[0], x[1], x[2], self, phone=x[3], hub=self.hub)
+                self.users[x[0]] = User(x[0], x[1], x[2], self, phone=x[3], hub=self.hub, setpoint=x[4])
         else:
             print "Error Loading Users"
 
