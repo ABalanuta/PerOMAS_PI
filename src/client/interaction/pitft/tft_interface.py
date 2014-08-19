@@ -268,7 +268,6 @@ class TFT(Thread):
                         usr = self.feedback_user_array[0]
                         usr_obj = self.hub["USER MANAGER"].getUser(usr)
                         new_setpoint = usr_obj.setpoint + self.feedback_value
-                        print "NEW SETPOINT", new_setpoint
                         usr_obj.set_setpoint(new_setpoint)
                         self.last_feedback_set = datetime.now()
                         self.INIT_MENU = 1

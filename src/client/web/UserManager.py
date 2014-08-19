@@ -74,7 +74,6 @@ class User(object):
 
     def set_setpoint(self, new_setpoint):
         self.setpoint = new_setpoint
-        print "sss", self.setpoint
         # Alter user in DB
         if self.hub:
             db = self.hub["STORAGE HANDLER"]
