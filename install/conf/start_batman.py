@@ -67,4 +67,6 @@ else:
 	#Set wired ip
 	os.popen("sudo ifconfig bat0 "+priv_ip+"/24 up")
 
+os.popen("sudo route add default gw 172.20.41.254")
+
 
