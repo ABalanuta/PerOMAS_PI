@@ -70,7 +70,7 @@ class StorageHandler():
 		try:
 			#Users
 			c.execute('CREATE TABLE Logs (TimeStamp TIMESTAMP, Username TEXT, Message TEXT)')
-			c.execute('CREATE TABLE Users (Username TEXT, Salt TEXT, Digest TEXT, Phone TEXT)')
+			c.execute('CREATE TABLE Users (Username TEXT, Salt TEXT, Digest TEXT, Phone TEXT, Setpoint REAL)')
 			c.execute('CREATE TABLE UserDetails (Username TEXT, ObjectType TEXT, Alias TEXT, Pickle TEXT)')
 			c.execute('CREATE TABLE BTDevices (BTDevice TEXT, Username TEXT)')
 			c.execute('CREATE TABLE UserFeedback (Username TEXT, TimeStamp TIMESTAMP, OldSetpoint REAL, NewSetpoint REAL, Temperature REAL, '+

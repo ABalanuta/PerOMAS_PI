@@ -12,7 +12,7 @@ from sensors.HTU21D.HTU21D import TempHumid #Temp/Humid
 from sensors.OPENWEATHERMAPAPI.OpenWeatherMapAPI import OpenWeatherMapAPI #Exterior Temp/Humid
 from sensors.TSL2561.TSL2561 import TSL2561	#Lux
 from sensors.ADS1115.ADS1115 import ADS1115	#Current
-from detection.WifiLocation import WifiDetector
+#from detection.WifiLocation import WifiDetector
 from detection.BTDetector import BTDetector
 #from interaction.lcd.LCDmenu import LCD
 from interaction.pitft.tft_interface import TFT
@@ -98,13 +98,13 @@ if __name__ == '__main__':
 			print "CURRENT sensor is ON"
 
 		#Starts Wifi Detector
-		wifi = WifiDetector(hub)
-		wifi.start()
-		hub["WIFI"] = wifi
-		wifi.track_device('40:B0:FA:C7:A1:EB')
-		wifi.track_device('CC:C3:EA:0E:23:8F')
-		if DEBUG:
-			print "WIFI sensor is ON"
+		#wifi = WifiDetector(hub)
+		#wifi.start()
+		#hub["WIFI"] = wifi
+		#wifi.track_device('40:B0:FA:C7:A1:EB')
+		#wifi.track_device('CC:C3:EA:0E:23:8F')
+		#if DEBUG:
+		#	print "WIFI sensor is ON"
 		
 		#Starts BT Detector
 		bt = BTDetector(hub)
