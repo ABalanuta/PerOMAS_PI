@@ -13,6 +13,7 @@ echo_options:
 	@echo '7: #// Test x'
 	@echo '8: #// Backup MySQL Database'
 	@echo '9: #// Restore MySQL Database'
+	@echo '10: #// Update Nodes from git and RESTART them'
 	@echo
 
 
@@ -238,9 +239,15 @@ echo_options:
 8: #// Backup MySQL
 	sudo mysqldump -uroot -p3O7DCWP2HLR01471G9PZQ6U7X PeromasDB > /tmp/PeromasDB.sql
 	scp /tmp/PeromasDB.sql ist168206@sigma.ist.utl.pt:~
-	scp /tmp/PeromasDB.sql ist168206@sigma.ist.utl.pt:~/PeromasDB.sql_$(shell date +%d-%m-%y_%Hh%Mm)
+	scp /tmp/PeromasDB.sql ist168206@sigma.ist.utl.pt:~/PeromasDB.sql_$(shell date +%d-%m-%y_%Hh%Mm)_$(shell hostname)
 
 9: #// Restore MySQL
 	scp ist168206@sigma.ist.utl.pt:~/PeromasDB.sql /tmp/PeromasDB.sql
 	sudo mysql-uroot -p3O7DCWP2HLR01471G9PZQ6U7X PeromasDB < /tmp/PeromasDB.sql
 
+10: #// Update Nodes from git and restar APP
+	ssh -A 172.20.41.192 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true
+	ssh -A 172.20.41.193 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true
+	ssh -A 172.20.41.194 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true	
+	ssh -A 172.20.41.195 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true
+	
