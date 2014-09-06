@@ -9,6 +9,7 @@ import os
 import platform
 import pygame
 import pygbutton
+import subprocess
 from time import sleep
 from threading import Thread
 from datetime import datetime, timedelta
@@ -40,6 +41,7 @@ class TFT(Thread):
 
     MYFONT_18       = pygame.font.SysFont("monospace", 18)
     MYFONT_22       = pygame.font.SysFont("monospace", 22)
+    MYFONT_29       = pygame.font.SysFont("monospace", 29)
     MYFONT_32       = pygame.font.SysFont("monospace", 32)
     MYFONT_40       = pygame.font.SysFont("monospace", 40)
     MYFONT_50       = pygame.font.SysFont("monospace", 50)
@@ -58,7 +60,7 @@ class TFT(Thread):
 
     WHO_LABEL           = MYFONT_40.render(u"Who are you?", 1, WHITE)
 
-    INIT_MENU           = 1
+    INIT_MENU           = 3
     MAX_MENU            = 5
 
     FEEDBACK_TIMEOUT    = 300 #Seconds
@@ -92,6 +94,7 @@ class TFT(Thread):
         self.feedback_value = 0
         self.feedback_user_page = 0
         self.feedback_user_array = list()
+        self.ip = "0.0.0.0"
 
         # for Adafruit PiTFT:
         if 'armv6l' in platform.uname():
@@ -140,6 +143,17 @@ class TFT(Thread):
                     print "PITFT waiting for the Relay to be Loaded"
                     sleep(0.5)
         
+
+        try:
+            p = subprocess.Popen("sudo ifconfig br0; sudo ifconfig bat0", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            lines = p.stdout.readlines()
+            for line in lines:
+                if "inet addr:" in line:
+                    self.ip = line.split()[1].split(':')[1]
+                    break
+
+        except:
+            pass
 
         if 'armv6l' in platform.uname():    #Hides the cursor in running on the RPi
             pygame.mouse.set_visible(False)
@@ -416,6 +430,7 @@ class TFT(Thread):
                 self.button_user_cancel._propSetVisible(True)
                 self.button_user_cancel.draw(self.screen)
 
+        #  I MENU
         elif self.INIT_MENU == 2:
             self.button_forward._propSetVisible(True)
             self.button_back._propSetVisible(True)
@@ -438,6 +453,7 @@ class TFT(Thread):
             self.screen.blit(l_label , (30, 120))
             self.screen.blit(c_label , (30, 150))
         
+        # BIG Temperatur MENU
         elif self.INIT_MENU == 3:
             self.button_forward._propSetVisible(True)
             self.button_back._propSetVisible(True)
@@ -451,15 +467,18 @@ class TFT(Thread):
 
             #self.screen.blit(self.AC_LABEL , (self.WINDOW_WIDTH/2-self.AC_LABEL.get_width()/2, 2))
 
+        # API key MENU
         elif self.INIT_MENU == 4:
             self.button_back._propSetVisible(True)
             self.button_back.draw(self.screen)
 
             self.screen.blit(self.KEY_LABEL , (self.WINDOW_WIDTH/2-self.KEY_LABEL.get_width()/2, 2))
 
-            key  = self.hub["API KEY"]
+            key = self.hub["API KEY"]
             k_label = self.MYFONT_85.render(key, 1, self.WHITE)
-            self.screen.blit(k_label , (10, 60))
+            ip_label = self.MYFONT_29.render(self.ip+":5000", 1, self.WHITE)
+            self.screen.blit(ip_label , (10, 65))
+            self.screen.blit(k_label , (10, 100))
 
 if __name__ == '__main__':
 
