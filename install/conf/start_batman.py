@@ -32,26 +32,27 @@ for mac, pi, ip, p_ip in MAC_Address:
 		priv_ip = p_ip
 		break
 
-sleep(15)
+#sleep(15)
 os.popen("sudo modprobe batman-adv")
-sleep(2)
+sleep(1)
 os.popen("sudo iw dev wlan0 del")
-sleep(2)
+sleep(1)
 os.popen("sudo iw phy phy0 interface add me0 type ibss")
-sleep(2)
+sleep(1)
 os.popen("sudo ifconfig me0 mtu 1528")
-sleep(2)
+os.popen("sudo iwconfig me0 txpower 20")
+os.popen("sudo iwconfig me0 txpower fixed")
+os.popen("sudo iwconfig me0 rts 250")
 #os.popen("sudo iwconfig me0 enc off")
 os.popen("sudo iwconfig me0 key FEFA88C0BE")
-sleep(2)
 os.popen("sudo iwconfig me0 mode ad-hoc essid BatmanNetwork ap any channel 1")
-sleep(2)
+sleep(1)
 os.popen("sudo batctl if add me0")
-sleep(2)
+sleep(1)
 os.popen("sudo ifconfig me0 up")
-sleep(2)
+sleep(1)
 os.popen("sudo ifconfig me0 "+batnet_ip+"/24 up")
-sleep(2)
+sleep(1)
 
 #Enable the brige if this device is the gateway
 if batnet_ip is "10.0.0.1":

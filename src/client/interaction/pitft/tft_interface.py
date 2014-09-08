@@ -142,18 +142,6 @@ class TFT(Thread):
                 if self.DEBUG:
                     print "PITFT waiting for the Relay to be Loaded"
                     sleep(0.5)
-        
-
-        try:
-            p = subprocess.Popen("sudo ifconfig br0; sudo ifconfig bat0", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            lines = p.stdout.readlines()
-            for line in lines:
-                if "inet addr:" in line:
-                    self.ip = line.split()[1].split(':')[1]
-                    break
-
-        except:
-            pass
 
         if 'armv6l' in platform.uname():    #Hides the cursor in running on the RPi
             pygame.mouse.set_visible(False)
@@ -476,9 +464,21 @@ class TFT(Thread):
 
             key = self.hub["API KEY"]
             k_label = self.MYFONT_85.render(key, 1, self.WHITE)
-            ip_label = self.MYFONT_29.render(self.ip+":5000", 1, self.WHITE)
+            ip_label = self.MYFONT_29.render(self.get_local_IP()+":5000", 1, self.WHITE)
             self.screen.blit(ip_label , (10, 65))
             self.screen.blit(k_label , (10, 100))
+
+
+def get_local_IP(self):
+
+        try:
+            p = subprocess.Popen("sudo ifconfig br0; sudo ifconfig bat0", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            lines = p.stdout.readlines()
+            for line in lines:
+                if "inet addr:" in line:
+                    return line.split()[1].split(':')[1]
+        except:
+            return "0.0.0.0"
 
 if __name__ == '__main__':
 
