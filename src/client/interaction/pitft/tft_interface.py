@@ -469,16 +469,16 @@ class TFT(Thread):
             self.screen.blit(k_label , (10, 100))
 
 
-def get_local_IP(self):
+    def get_local_IP(self):
 
-        try:
-            p = subprocess.Popen("sudo ifconfig br0; sudo ifconfig bat0", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-            lines = p.stdout.readlines()
-            for line in lines:
-                if "inet addr:" in line:
-                    return line.split()[1].split(':')[1]
-        except:
-            return "0.0.0.0"
+            try:
+                p = subprocess.Popen("sudo ifconfig br0; sudo ifconfig bat0", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                lines = p.stdout.readlines()
+                for line in lines:
+                    if "inet addr:" in line:
+                        return line.split()[1].split(':')[1]
+            except:
+                return "0.0.0.0"
 
 if __name__ == '__main__':
 
