@@ -203,10 +203,10 @@ echo_options:
 	sudo cp conf/motd /etc/motd
 	
 	#//oh-my-zsh
-	curl -L https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh | sh
+	#curl -L https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh | sh
 	@echo USER PASSWORD
-	chsh -s /bin/zsh
-	cp conf/zshrc ~/.zshrc
+	#chsh -s /bin/zsh
+	#cp conf/zshrc ~/.zshrc
 	
 	#
 	#// Change Hostname
