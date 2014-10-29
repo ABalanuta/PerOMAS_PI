@@ -6,7 +6,7 @@ thesisPI
 	## Release date:2014-01-07
 	## Default login:pi / raspberry
 	## URL:raspbian.org
-	## http://www.raspberrypi.org/downloads/
+	## http://www.raspberrypi.org/forums/viewtopic.php?f=66&t=57783
 
 #### Before Instalation
 	//Add new USer
