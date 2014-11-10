@@ -45,12 +45,33 @@ echo_options:
 
 1: #// Pre-install
 
+	rm -rf python_games
+	rm -rf Desktop
+	rm ocr_pi.png
+
+
 	#//Update & Upgrade
-	sudo aptitude purge wolfram-engine omxplayer scratch zenity midori -y
-	
+	sudo aptitude purge desktop-base lightdm lxappearance lxde-common lxde-icon-theme \
+	lxinput lxpanel lxpolkit lxrandr lxsession-edit lxshortcut lxtask lxterminal squeak-vm \
+	pistore scratch  lxde-core lxde -y
+
+	sudo aptitude purge oracle-java7-jdk wolfram-engine omxplayer zenity midori libenchant1c2a \
+	libwebkitgtk-1.0-0 aspell aspell-en cifs-utils gnome-icon-theme gnome-themes-standard-data -y
+
+	sudo aptitude purge sonic-pi gpicview xpdf xarchiver -y
+
+  #sudo aptitude purge obconf openbox jackd2 gpicview xpdf gtk* libgtk* alsa* raspberrypi-artwork \
+	#gvfs-daemons gvfs-libs gvfs-common gvfs-fuse gvfs pcmanfm libice6 libice6 libxtst6  xinit xserver-xorg xserver-xorg-video-fbdev \
+	#xserver-xorg-core xserver-common xfonts-utils xfonts-encodings xdg-utils x11-utils x11-common x11-session-utils -y
+
+
+
+
 	#sudo apt-mark hold raspberrypi-bootloader
-	sudo apt-get update -y 
+	sudo apt-get update -y
 	sudo apt-get upgrade -y
+
+	sudo raspi-config
 
 	@echo
 	@echo 'Reboot the System Manually'
@@ -198,16 +219,16 @@ echo_options:
 	#// NTP
 	sudo cp conf/crontab /etc/crontab
 	sudo /etc/init.d/cron restart
-	
+
 	#// MOTD
 	sudo cp conf/motd /etc/motd
-	
+
 	#//oh-my-zsh
 	#curl -L https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh | sh
 	@echo USER PASSWORD
 	#chsh -s /bin/zsh
 	#cp conf/zshrc ~/.zshrc
-	
+
 	#
 	#// Change Hostname
 	sudo python conf/change_host.py
@@ -233,7 +254,7 @@ echo_options:
 	@echo
 
 7: #// Test X
-	
+
 	FRAMEBUFFER=/dev/fb1 startx
 
 8: #// Backup MySQL
@@ -248,6 +269,5 @@ echo_options:
 10: #// Update Nodes from git and restar APP
 	ssh -A 172.20.41.192 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true
 	ssh -A 172.20.41.193 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true
-	ssh -A 172.20.41.194 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true	
+	ssh -A 172.20.41.194 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true
 	ssh -A 172.20.41.195 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true
-	
