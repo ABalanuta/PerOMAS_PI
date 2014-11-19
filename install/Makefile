@@ -221,12 +221,6 @@ echo_options:
 	sudo cp conf/crontab /etc/crontab
 	sudo /etc/init.d/cron restart
 
-	#//oh-my-zsh
-	#curl -L https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh | sh
-	@echo USER PASSWORD
-	#chsh -s /bin/zsh
-	#cp conf/zshrc ~/.zshrc
-
 	#
 	#// Change Hostname
 	sudo python conf/change_host.py

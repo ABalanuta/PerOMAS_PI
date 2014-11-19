@@ -14,6 +14,6 @@ echo "\033[0;32m
  ~ (   ) (   ) ~             \033[0;37mMemory.............: $((`cat /proc/meminfo | grep MemFree | awk {'print $2'}`/1024))MB (Free) / $((`cat /proc/meminfo | grep MemTotal | awk {'print $2'}`/1024))MB (Total)\033[0;31m
 ( : '~'.~.'~' : )            \033[0;37mRunning Processes..: `ps ax | wc -l | tr -d " "`\033[0;31m
  ~ .~ (   ) ~. ~             \033[0;37m\033[0;31m
-  (  : '~' :  )              \033[0;37mIP Addresses.......: `/sbin/ifconfig | /bin/grep "Bcast:" | /usr/bin/cut -d ":" -f 2 | /usr/bin/cut -d " " -f 1` / `wget -q -O - http://icanhazip.com/ | tail`\033[0;31m
+  (  : '~' :  )              \033[0;37mIP Addresses.......: `/sbin/ifconfig | /bin/grep "Bcast:"| /usr/bin/cut -d ":" -f 2 | /usr/bin/cut -d " " -f 1 | tr "\\n" '/'`\033[0;31m
    '~ .~~~. ~'               \033[0;37mTemperature........: `vcgencmd measure_temp | sed "s/temp=//"`\033[0;31m
        '~'                   \033[0;37m" > /etc/motd
