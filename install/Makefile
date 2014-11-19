@@ -211,6 +211,7 @@ echo_options:
 	#//Aux Scripts
 	sudo mkdir /opt/peromas -p; true
 	sudo cp conf/start_batman.py /opt/peromas/
+	sudo cp conf/update_motd.sh /opt/peromas/
 	@echo
 
 	#// Ajust TimeZone
@@ -219,9 +220,6 @@ echo_options:
 	#// NTP
 	sudo cp conf/crontab /etc/crontab
 	sudo /etc/init.d/cron restart
-
-	#// MOTD
-	sudo cp conf/motd /etc/motd
 
 	#//oh-my-zsh
 	#curl -L https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh | sh
@@ -267,7 +265,7 @@ echo_options:
 	sudo mysql-uroot -p3O7DCWP2HLR01471G9PZQ6U7X PeromasDB < /tmp/PeromasDB.sql
 
 10: #// Update Nodes from git and restar APP
-	ssh -A 172.20.41.192 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true
-	ssh -A 172.20.41.193 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true
-	ssh -A 172.20.41.194 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true
-	ssh -A 172.20.41.195 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true
+	ssh -A 172.20.126.2 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true
+	ssh -A 172.20.126.3 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true
+	ssh -A 172.20.126.4 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true
+	ssh -A 172.20.126.5 "cd /home/artur-adm/git/thesisPI; git pull; sudo reboot"; true

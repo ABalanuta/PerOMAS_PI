@@ -11,12 +11,12 @@ from time import sleep
 
 #Vars
 MAC_Address = (
-	("b8:27:eb:60:57:67", "Pi1", "10.0.0.1", "172.20.41.191"),
-	("B8:27:EB:20:C0:BA", "Pi2", "10.0.0.2", "172.20.41.192"),
-	("B8:27:EB:34:8A:7A", "Pi3", "10.0.0.3", "172.20.41.193"),
-	("b8:27:eb:d1:19:df", "Pi4", "10.0.0.4", "172.20.41.194"),
-	("b8:27:eb:aa:e9:d2", "Pi5", "10.0.0.5", "172.20.41.195"),
-	("b8:27:eb:10:4a:74", "Pi6", "10.0.0.6", "172.20.41.196")
+	("b8:27:eb:60:57:67", "Pi1", "10.0.0.1", "172.20.126.1"),
+	("B8:27:EB:20:C0:BA", "Pi2", "10.0.0.2", "172.20.126.2"),
+	("B8:27:EB:34:8A:7A", "Pi3", "10.0.0.3", "172.20.126.3"),
+	("b8:27:eb:d1:19:df", "Pi4", "10.0.0.4", "172.20.126.4"),
+	("b8:27:eb:aa:e9:d2", "Pi5", "10.0.0.5", "172.20.126.5"),
+	("b8:27:eb:10:4a:74", "Pi6", "10.0.0.6", "172.20.126.6")
 	)
 
 MyMAC = os.popen("ifconfig eth0 | grep HWaddr | awk '{print $5}'").read().lower().split('\n')[0]
@@ -63,11 +63,9 @@ if batnet_ip is "10.0.0.1":
 	os.popen("sudo ifconfig bat0 0.0.0.0 up")
 	os.popen("sudo ifconfig eth0 0.0.0.0 up")
 	#os.popen("sudo ifconfig br0 hw ether b8:27:eb:60:57:67")
-	os.popen("sudo ifconfig br0 172.20.41.191/24 up")
+	os.popen("sudo ifconfig br0 "+priv_ip+"/24 up")
 else:
 	#Set wired ip
 	os.popen("sudo ifconfig bat0 "+priv_ip+"/24 up")
 
-os.popen("sudo route add default gw 172.20.41.254")
-
-
+os.popen("sudo route add default gw 172.20.126.254")

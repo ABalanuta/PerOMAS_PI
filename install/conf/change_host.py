@@ -28,7 +28,6 @@ for mac, pi in MAC_Address:
 		MyPI = pi
 		break
 
-os.popen("sudo  sed -i 's/raspberrypi/" + MyPI + "/' /etc/hosts")
-os.popen("sudo echo "+MyPI+" > /etc/hostname")
+os.popen("sudo hostname " + MyPI)
 
 print "You Need to reboot the Pi"
