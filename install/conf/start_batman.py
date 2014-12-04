@@ -21,8 +21,8 @@ MAC_Address = (
 
 MyMAC = os.popen("ifconfig eth0 | grep HWaddr | awk '{print $5}'").read().lower().split('\n')[0]
 
-batnet_ip = "0.0.0.0"
-priv_ip = "0.0.0.0"
+batnet_ip = "10.0.0.20"
+priv_ip = "172.20.126.20"
 
 for mac, pi, ip, p_ip in MAC_Address:
 	if MyMAC in mac.lower():
