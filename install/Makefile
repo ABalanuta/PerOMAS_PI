@@ -60,7 +60,7 @@ echo_options:
 
 	sudo aptitude purge sonic-pi gpicview xpdf xarchiver -y
 
-  #sudo aptitude purge obconf openbox jackd2 gpicview xpdf gtk* libgtk* alsa* raspberrypi-artwork \
+ 	#sudo aptitude purge obconf openbox jackd2 gpicview xpdf gtk* libgtk* alsa* raspberrypi-artwork \
 	#gvfs-daemons gvfs-libs gvfs-common gvfs-fuse gvfs pcmanfm libice6 libice6 libxtst6  xinit xserver-xorg xserver-xorg-video-fbdev \
 	#xserver-xorg-core xserver-common xfonts-utils xfonts-encodings xdg-utils x11-utils x11-common x11-session-utils -y
 
@@ -100,7 +100,7 @@ echo_options:
 3: #// Install Software
 
 	@echo 'Aux'
-	sudo aptitude install git vim zsh autojump tmux screen htop ntp ntpdate -y
+	sudo aptitude install git vim zsh autojump tmux screen htop ntp ntpdate fbi -y
 	@echo
 
 	@echo 'GPIO'
