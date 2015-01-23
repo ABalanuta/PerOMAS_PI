@@ -5,6 +5,8 @@ __author__ = "Artur Balanuta"
 __version__ = "1.0.2"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
+from Task import Task
+
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
@@ -159,9 +161,21 @@ def settings():
                         )
 
 
-@app.route('/gateway')
+@app.route('/gateway', methods=['GET', 'POST'])
 @login_required
 def gateway():
+    if request.method == 'POST':
+        if app.config["HUB"]:
+            hub = app.config["HUB"]
+            sm = hub['SCHEDULE MANAGER']
+
+            if 'REBOOT' in request.form.keys():
+                sm.tasks.append(Task(sm.reboot_device, 0, one_time_task = True, var=str(g.user)))
+
+            if 'SHUTDOWN' in request.form.keys():
+                sm.tasks.append(Task(sm.shutdown_device, 0, one_time_task = True, var=str(g.user)))
+                
+
     return render_template("gateway.html")
 
 

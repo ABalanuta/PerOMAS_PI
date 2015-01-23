@@ -5,6 +5,9 @@ __author__ = "Artur Balanuta"
 __version__ = "1.0.5"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
+import os
+import subprocess
+
 from numpy import mean
 from time import sleep
 from random import choice
@@ -20,6 +23,9 @@ class ScheduleManager(Thread):
 	
 	DEBUG 					= False
 	SLEEP_BETWEEN_CHECKS 	= 1	#sleeps X seconds befor cheking the need of executing any task
+	FULL_PATH 				= os.path.realpath(__file__)
+	REBOOT_EXEC_PATH 		= os.path.dirname(FULL_PATH)+"/scripts/stop_peromas_and_reboot.sh"
+	SHUTDOWN_EXEC_PATH 		= os.path.dirname(FULL_PATH)+"/scripts/stop_peromas_and_shutdown.sh"
 
 	def __init__(self, hub):
 		Thread.__init__(self)
@@ -27,7 +33,6 @@ class ScheduleManager(Thread):
 		self.hub = hub
 		self.stopped = True
 		self.tasks = []
-		
 		
 	def stop(self):
 		self.stopped = True
@@ -184,6 +189,23 @@ class ScheduleManager(Thread):
 
 		if self.DEBUG:
 			print "Scheduler: change_Api_Key to "+self.hub["API KEY"]
+
+
+
+	def reboot_device(self, username):
+		if self.hub["STORAGE HANDLER"]:
+			db = self.hub["STORAGE HANDLER"]
+			db.log("Rebooting", username)
+		
+		subprocess.Popen('sh '+self.REBOOT_EXEC_PATH+"&", shell=True)
+
+	def shutdown_device(self, username):
+		if self.hub["STORAGE HANDLER"]:
+			db = self.hub["STORAGE HANDLER"]
+			db.log("Shutting Down", username)
+
+		subprocess.Popen('sh '+self.SHUTDOWN_EXEC_PATH+"&", shell=True)
+
 
 #Runs only if called
 if __name__ == "__main__":

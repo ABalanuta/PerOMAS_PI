@@ -151,34 +151,24 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#40454d', end
                 Register
               </a>
             </li>
+
             <li class="divider-vertical"></li>
-            <li class="dropdown">
-              {% if g.user.username %}
-              <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                <span class="octicon octicon-sign-in"></span>
-                {{g.user.username}} <strong class="caret"></strong>
-              </a>
 
-              <div class="dropdown-menu" style="padding: 15px; padding-bottom: 15px;">
-                <button type="submit" class="btn btn-danger btn-lg" onclick="location.href='/logout'">
-                  LogOut
-                </button>
-                <br>
-              </div>
-              {% else %}
-              <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-                <span class="octicon octicon-sign-in"></span>
-                Log In
-              </a>
-
-              <div class="dropdown-menu" style="padding: 15px; padding-bottom: 15px;">
-                <button type="submit" class="btn btn-success btn-lg" onclick="location.href='/login'">
-                  LogIn
-                </button>
-
-              </div>
-              {% endif %}
-            </li>
+            {% if g.user.username %}
+              <li>
+                <a href="logout">
+                  <span class="octicon octicon-sign-out"></span>
+                  {{g.user.username}}
+                </a>
+              </li>
+            {% else %}
+            <li>
+                <a href="login">
+                  <span class="octicon octicon-sign-in"></span>
+                  Log In
+                </a>
+              </li>
+            {% endif %}
 
           </ul>
 
