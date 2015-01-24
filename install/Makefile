@@ -45,6 +45,43 @@ echo_options:
 
 1: #// Pre-install
 
+	# Everything else needs to be run as root
+	if [ $(id -u) -ne 0 ]; then
+  		printf "Script must be run as root. Try 'sudo raspi-config'\n"
+  		exit 1
+	fi
+
+	#keyboard
+	sudo dpkg-reconfigure keyboard-configuration &&
+  	printf "Reloading keymap. This may take a short while\n" &&
+  	sudo invoke-rc.d keyboard-setup start
+	
+	#change locales
+	sudo dpkg-reconfigure locales
+
+	#timezone
+	sudo dpkg-reconfigure tzdata
+
+	CURRENT_HOSTNAME=`cat /etc/hostname | tr -d " \t\n\r"`
+  	NEW_HOSTNAME=$(whiptail --inputbox "Please enter a hostname" 20 60 "$CURRENT_HOSTNAME" 3>&1 1>&2 2>&3)
+  	if [ $? -eq 0 ]; then
+    		echo $NEW_HOSTNAME > /etc/hostname
+    		sed -i "s/127.0.1.1.*$CURRENT_HOSTNAME/127.0.1.1\t$NEW_HOSTNAME/g" /etc/hosts
+  	fi
+
+          # New-style memory split setting
+          if ! mountpoint -q /boot; then
+            return 1
+          fi
+          ## get current memory split from /boot/config.txt
+          CUR_GPU_MEM=$(get_config_var gpu_mem /boot/config.txt)
+          [ -z "$CUR_GPU_MEM" ] && CUR_GPU_MEM=64
+          ## ask users what gpu_mem they want
+          NEW_GPU_MEM=$(whiptail --inputbox "How much memory should the GPU have?  e.g. 16/32/64/128/256" \
+            20 70 -- "$CUR_GPU_MEM" 3>&1 1>&2 2>&3)
+          if [ $? -eq 0 ]; then
+            set_config_var gpu_mem "$NEW_GPU_MEM" /boot/config.txt
+          fi
 
 	#disable logs and other services
 	sudo update-rc.d rsyslog disable
