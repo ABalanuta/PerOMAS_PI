@@ -45,10 +45,15 @@ echo_options:
 
 1: #// Pre-install
 
+
+	#disable logs and other services
+	sudo update-rc.d rsyslog disable
+	sudo update-rc.d triggerhappy disable
+
 	rm -rf python_games
 	rm -rf Desktop
 	rm ocr_pi.png
-
+	sudo rm -rf /var/log/*
 
 	#//Update & Upgrade
 	sudo aptitude purge desktop-base lightdm lxappearance lxde-common lxde-icon-theme \
@@ -63,9 +68,6 @@ echo_options:
  	#sudo aptitude purge obconf openbox jackd2 gpicview xpdf gtk* libgtk* alsa* raspberrypi-artwork \
 	#gvfs-daemons gvfs-libs gvfs-common gvfs-fuse gvfs pcmanfm libice6 libice6 libxtst6  xinit xserver-xorg xserver-xorg-video-fbdev \
 	#xserver-xorg-core xserver-common xfonts-utils xfonts-encodings xdg-utils x11-utils x11-common x11-session-utils -y
-
-
-
 
 	#sudo apt-mark hold raspberrypi-bootloader
 	sudo apt-get update -y
