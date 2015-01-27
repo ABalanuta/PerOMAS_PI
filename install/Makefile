@@ -99,9 +99,12 @@ echo_options:
 
 	#Firmware for the pitft
 	#https://github.com/notro/rpi-firmware
-	sudo wget https://raw.github.com/Hexxeh/rpi-update/master/rpi-update -O /usr/bin/rpi-update && sudo chmod +x /usr/bin/rpi-update
-	sudo REPO_URI=https://github.com/notro/rpi-firmware rpi-update
+	#sudo wget https://raw.github.com/Hexxeh/rpi-update/master/rpi-update -O /usr/bin/rpi-update && sudo chmod +x /usr/bin/rpi-update
+	#sudo REPO_URI=https://github.com/notro/rpi-firmware rpi-update
 	#sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=builtin rpi-update
+
+	sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=builtin rpi-update
+
 
 	@echo
 	@echo 'Reboot the System Manually'
@@ -257,6 +260,10 @@ echo_options:
 	#// Touchscreen
 	sudo TSLIB_FBDEVICE=/dev/fb1 TSLIB_TSDEVICE=/dev/input/touchscreen ts_calibrate
 	sudo TSLIB_FBDEVICE=/dev/fb1 TSLIB_TSDEVICE=/dev/input/touchscreen ts_test
+
+
+	#dwc_otg.lpm_enable=0 console=ttyAMA0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait
+
 
 	@echo
 	@echo 'Option 6 DONE'
