@@ -45,72 +45,47 @@ echo_options:
 
 1: #// Pre-install
 
-	# Everything else needs to be run as root
-	if [ $(id -u) -ne 0 ]; then
-  		printf "Script must be run as root. Try 'sudo raspi-config'\n"
-  		exit 1
-	fi
-
-	#keyboard
-	sudo dpkg-reconfigure keyboard-configuration &&
-  	printf "Reloading keymap. This may take a short while\n" &&
-  	sudo invoke-rc.d keyboard-setup start
-	
-	#change locales
-	sudo dpkg-reconfigure locales
-
 	#timezone
 	sudo dpkg-reconfigure tzdata
 
-	CURRENT_HOSTNAME=`cat /etc/hostname | tr -d " \t\n\r"`
-  	NEW_HOSTNAME=$(whiptail --inputbox "Please enter a hostname" 20 60 "$CURRENT_HOSTNAME" 3>&1 1>&2 2>&3)
-  	if [ $? -eq 0 ]; then
-    		echo $NEW_HOSTNAME > /etc/hostname
-    		sed -i "s/127.0.1.1.*$CURRENT_HOSTNAME/127.0.1.1\t$NEW_HOSTNAME/g" /etc/hosts
-  	fi
-
-          # New-style memory split setting
-          if ! mountpoint -q /boot; then
-            return 1
-          fi
-          ## get current memory split from /boot/config.txt
-          CUR_GPU_MEM=$(get_config_var gpu_mem /boot/config.txt)
-          [ -z "$CUR_GPU_MEM" ] && CUR_GPU_MEM=64
-          ## ask users what gpu_mem they want
-          NEW_GPU_MEM=$(whiptail --inputbox "How much memory should the GPU have?  e.g. 16/32/64/128/256" \
-            20 70 -- "$CUR_GPU_MEM" 3>&1 1>&2 2>&3)
-          if [ $? -eq 0 ]; then
-            set_config_var gpu_mem "$NEW_GPU_MEM" /boot/config.txt
-          fi
+	sudo sh cng_name_andgpu_ram.sh
 
 	#disable logs and other services
 	sudo update-rc.d rsyslog disable
 	sudo update-rc.d triggerhappy disable
 
-	rm -rf python_games
-	rm -rf Desktop
-	rm ocr_pi.png
+	sudo /etc/init.d/rsyslog stop
+	sudo /etc/init.d/triggerhappy stop
+
 	sudo rm -rf /var/log/*
+	sudo rm -rf /home/pi/
+	sudo rm -rf /opt/*
 
 	#//Update & Upgrade
 	sudo aptitude purge desktop-base lightdm lxappearance lxde-common lxde-icon-theme \
 	lxinput lxpanel lxpolkit lxrandr lxsession-edit lxshortcut lxtask lxterminal squeak-vm \
-	pistore scratch  lxde-core lxde -y
+	pistore scratch lxde-core lxde -y
 
 	sudo aptitude purge oracle-java7-jdk wolfram-engine omxplayer zenity midori libenchant1c2a \
 	libwebkitgtk-1.0-0 aspell aspell-en cifs-utils gnome-icon-theme gnome-themes-standard-data -y
 
+	sudo apt-get remove x11-common midori lxde python3 python3-minimal python-picamera xdg-utils-y
+	sudo apt-get autoremove -y
+
 	sudo aptitude purge sonic-pi gpicview xpdf xarchiver -y
 
- 	#sudo aptitude purge obconf openbox jackd2 gpicview xpdf gtk* libgtk* alsa* raspberrypi-artwork \
-	#gvfs-daemons gvfs-libs gvfs-common gvfs-fuse gvfs pcmanfm libice6 libice6 libxtst6  xinit xserver-xorg xserver-xorg-video-fbdev \
-	#xserver-xorg-core xserver-common xfonts-utils xfonts-encodings xdg-utils x11-utils x11-common x11-session-utils -y
+	sudo apt-get remove `sudo dpkg --get-selections | grep "\-dev" | sed s/install//` -y
+	sudo apt-get remove `sudo dpkg --get-selections | grep -v "deinstall" | grep x11 | sed s/install//` -y
+	sudo apt-get remove `sudo dpkg --get-selections | grep -v "deinstall" | grep sound | sed s/install//` -y
+
+	sudo apt-get remove gcc-4.4-base:armhf gcc-4.5-base:armhf gcc-4.6-base:armhf gcc-4.7-base:armhf -y
+	sudo apt-get autoremove -y
 
 	#sudo apt-mark hold raspberrypi-bootloader
 	sudo apt-get update -y
 	sudo apt-get upgrade -y
 
-	sudo raspi-config
+	sudo apt-get clean -y
 
 	@echo
 	@echo 'Reboot the System Manually'
@@ -120,7 +95,7 @@ echo_options:
 	@echo
 
 
-2: #// Nostro Firmware with pitft and touch suport
+2: #// Notro Firmware with pitft and touch suport
 
 	#Firmware for the pitft
 	#https://github.com/notro/rpi-firmware
@@ -186,6 +161,8 @@ echo_options:
 	sudo cp conf/my.cnf /etc/mysql/my.cnf
 	sudo service mysql restart
 	@echo
+
+	sudo apt-get clean -y
 
 	@echo
 	@echo 'Option 3 DONE'
@@ -274,6 +251,7 @@ echo_options:
 
 	@echo 'Test Soft'
 	sudo apt-get install evtest tslib libts-bin -y
+	sudo apt-get clean -y
 	@echo
 
 	#// Touchscreen
