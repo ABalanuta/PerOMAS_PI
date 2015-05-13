@@ -17,6 +17,7 @@ from detection.BTDetector import BTDetector
 #from interaction.lcd.LCDmenu import LCD
 from interaction.pitft.tft_interface import TFT
 from interaction.Relay import Relay
+from interaction.SSRelay import SSRelay
 from communication.Pub_Sub import MQTTC
 from web.web import *
 from Scheduler_Manager import ScheduleManager
@@ -51,6 +52,8 @@ if __name__ == '__main__':
 
 		sys.exit(0)
 	
+
+
 	if DEBUG:
 		print "\n-> Starting Client <-\n"
 	
@@ -114,18 +117,32 @@ if __name__ == '__main__':
 		if DEBUG:
 			print "BT sensor is ON"
 
+		
+		tft = TFT(hub)
+		IP = tft.get_local_IP()
+		print "My IP is: "+IP
+
+
 		#Starts Relay
-		r = Relay(hub)
+		if IP == "172.20.126.1":
+			r = SSRelay(hub)		
+		else:
+			r = Relay(hub)
 		hub["RELAY"] = r
 		if DEBUG:
 			print "Relays are ON"
-		
+
+
+
 		#Starts TFT
-		tft = TFT(hub)
+
 		tft.start()
 		hub["TFT"] = tft
 		if DEBUG:
 			print "TFT screen is ON"
+
+
+
 
 		#Starts LCD
 		#lcd = LCD(hub)
