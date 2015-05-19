@@ -48,7 +48,7 @@ echo_options:
 	#timezone
 	sudo dpkg-reconfigure tzdata
 
-	sudo sh cng_name_andgpu_ram.sh
+	#sudo sh cng_name_andgpu_ram.sh
 
 	#disable logs and other services
 	sudo update-rc.d rsyslog disable
@@ -64,12 +64,12 @@ echo_options:
 	#//Update & Upgrade
 	sudo aptitude purge desktop-base lightdm lxappearance lxde-common lxde-icon-theme \
 	lxinput lxpanel lxpolkit lxrandr lxsession-edit lxshortcut lxtask lxterminal squeak-vm \
-	pistore scratch lxde-core lxde -y
+	pistore scratch lxde-core lxde nuscratch raspberrypi-net-mods raspberrypi-ui-mods -y
 
 	sudo aptitude purge oracle-java7-jdk wolfram-engine omxplayer zenity midori libenchant1c2a \
 	libwebkitgtk-1.0-0 aspell aspell-en cifs-utils gnome-icon-theme gnome-themes-standard-data -y
 
-	sudo apt-get remove x11-common midori lxde python3 python3-minimal python-picamera xdg-utils-y
+	sudo apt-get remove x11-common midori lxde python3 python3-minimal python-picamera xdg-utils -y
 	sudo apt-get autoremove -y
 
 	sudo aptitude purge sonic-pi gpicview xpdf xarchiver -y
@@ -95,7 +95,7 @@ echo_options:
 	@echo
 
 
-2: #// Notro Firmware with pitft and touch suport
+2.1: #// Notro Firmware with pitft and touch suport
 
 	#Firmware for the pitft
 	#https://github.com/notro/rpi-firmware
@@ -109,6 +109,17 @@ echo_options:
 	@echo
 	@echo 'Reboot the System Manually'
 
+	@echo
+	@echo 'Option 2 DONE'
+	@echo
+
+2.2: #// Notro Firmware with pitft and touch suport
+
+	sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=rpi-bcm2835 
+
+	@echo
+	@echo 'Reboot the System Manually
+	
 	@echo
 	@echo 'Option 2 DONE'
 	@echo
