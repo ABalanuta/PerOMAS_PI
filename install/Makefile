@@ -115,7 +115,7 @@ echo_options:
 
 2.2: #// Notro Firmware with pitft and touch suport
 
-	sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=rpi-bcm2835 
+	sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=rpi-bcm2835 rpi-update
 
 	@echo
 	@echo 'Reboot the System Manually
