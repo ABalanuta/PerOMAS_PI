@@ -100,10 +100,10 @@ echo_options:
 	#Firmware for the pitft
 	#https://github.com/notro/rpi-firmware
 	#sudo wget https://raw.github.com/Hexxeh/rpi-update/master/rpi-update -O /usr/bin/rpi-update && sudo chmod +x /usr/bin/rpi-update
-	#sudo REPO_URI=https://github.com/notro/rpi-firmware rpi-update
+	sudo REPO_URI=https://github.com/notro/rpi-firmware rpi-update
 	#sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=builtin rpi-update
 
-	sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=builtin rpi-update
+	#sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=builtin rpi-update
 
 
 	@echo
