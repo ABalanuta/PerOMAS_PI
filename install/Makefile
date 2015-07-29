@@ -45,33 +45,47 @@ echo_options:
 
 1: #// Pre-install
 
-	rm -rf python_games
-	rm -rf Desktop
-	rm ocr_pi.png
+	#timezone
+	sudo dpkg-reconfigure tzdata
 
+	#sudo sh cng_name_andgpu_ram.sh
+
+	#disable logs and other services
+	sudo update-rc.d rsyslog disable
+	sudo update-rc.d triggerhappy disable
+
+	sudo /etc/init.d/rsyslog stop
+	sudo /etc/init.d/triggerhappy stop
+
+	sudo rm -rf /var/log/*
+	sudo rm -rf /home/pi/
+	sudo rm -rf /opt/*
 
 	#//Update & Upgrade
 	sudo aptitude purge desktop-base lightdm lxappearance lxde-common lxde-icon-theme \
 	lxinput lxpanel lxpolkit lxrandr lxsession-edit lxshortcut lxtask lxterminal squeak-vm \
-	pistore scratch  lxde-core lxde -y
+	pistore scratch lxde-core lxde nuscratch raspberrypi-net-mods raspberrypi-ui-mods -y
 
 	sudo aptitude purge oracle-java7-jdk wolfram-engine omxplayer zenity midori libenchant1c2a \
 	libwebkitgtk-1.0-0 aspell aspell-en cifs-utils gnome-icon-theme gnome-themes-standard-data -y
 
+	sudo apt-get remove x11-common midori lxde python3 python3-minimal python-picamera xdg-utils -y
+	sudo apt-get autoremove -y
+
 	sudo aptitude purge sonic-pi gpicview xpdf xarchiver -y
 
- 	#sudo aptitude purge obconf openbox jackd2 gpicview xpdf gtk* libgtk* alsa* raspberrypi-artwork \
-	#gvfs-daemons gvfs-libs gvfs-common gvfs-fuse gvfs pcmanfm libice6 libice6 libxtst6  xinit xserver-xorg xserver-xorg-video-fbdev \
-	#xserver-xorg-core xserver-common xfonts-utils xfonts-encodings xdg-utils x11-utils x11-common x11-session-utils -y
+	sudo apt-get remove `sudo dpkg --get-selections | grep "\-dev" | sed s/install//` -y
+	sudo apt-get remove `sudo dpkg --get-selections | grep -v "deinstall" | grep x11 | sed s/install//` -y
+	sudo apt-get remove `sudo dpkg --get-selections | grep -v "deinstall" | grep sound | sed s/install//` -y
 
-
-
+	sudo apt-get remove gcc-4.4-base:armhf gcc-4.5-base:armhf gcc-4.6-base:armhf gcc-4.7-base:armhf -y
+	sudo apt-get autoremove -y
 
 	#sudo apt-mark hold raspberrypi-bootloader
 	sudo apt-get update -y
 	sudo apt-get upgrade -y
 
-	sudo raspi-config
+	sudo apt-get clean -y
 
 	@echo
 	@echo 'Reboot the System Manually'
@@ -81,17 +95,31 @@ echo_options:
 	@echo
 
 
-2: #// Nostro Firmware with pitft and touch suport
+2.1: #// Notro Firmware with pitft and touch suport
 
 	#Firmware for the pitft
 	#https://github.com/notro/rpi-firmware
-	sudo wget https://raw.github.com/Hexxeh/rpi-update/master/rpi-update -O /usr/bin/rpi-update && sudo chmod +x /usr/bin/rpi-update
+	#sudo wget https://raw.github.com/Hexxeh/rpi-update/master/rpi-update -O /usr/bin/rpi-update && sudo chmod +x /usr/bin/rpi-update
 	sudo REPO_URI=https://github.com/notro/rpi-firmware rpi-update
 	#sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=builtin rpi-update
+
+	#sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=builtin rpi-update
+
 
 	@echo
 	@echo 'Reboot the System Manually'
 
+	@echo
+	@echo 'Option 2 DONE'
+	@echo
+
+2.2: #// Notro Firmware with pitft and touch suport
+
+	sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=rpi-bcm2835 rpi-update
+
+	@echo
+	@echo 'Reboot the System Manually
+	
 	@echo
 	@echo 'Option 2 DONE'
 	@echo
@@ -147,6 +175,8 @@ echo_options:
 	sudo cp conf/my.cnf /etc/mysql/my.cnf
 	sudo service mysql restart
 	@echo
+
+	sudo apt-get clean -y
 
 	@echo
 	@echo 'Option 3 DONE'
@@ -235,11 +265,16 @@ echo_options:
 
 	@echo 'Test Soft'
 	sudo apt-get install evtest tslib libts-bin -y
+	sudo apt-get clean -y
 	@echo
 
 	#// Touchscreen
 	sudo TSLIB_FBDEVICE=/dev/fb1 TSLIB_TSDEVICE=/dev/input/touchscreen ts_calibrate
 	sudo TSLIB_FBDEVICE=/dev/fb1 TSLIB_TSDEVICE=/dev/input/touchscreen ts_test
+
+
+	#dwc_otg.lpm_enable=0 console=ttyAMA0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait
+
 
 	@echo
 	@echo 'Option 6 DONE'

@@ -134,9 +134,6 @@ if __name__ == '__main__':
 			if DEBUG:
 				print "Relays are ON"
 		hub["RELAY"] = r
-		
-
-
 
 		#Starts TFT
 

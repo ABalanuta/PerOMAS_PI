@@ -11,7 +11,7 @@ from time import sleep
 
 
 class SSRelay():
-	
+
 	DEBUG 			= True
 	RELAY 			= {	"AC_SPEED_1"		:	{"Pin" : 4, "State" :True},
 						"AC_SPEED_2"		:	{"Pin" : 17, "State" : True},
