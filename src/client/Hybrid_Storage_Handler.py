@@ -122,7 +122,7 @@ class HibridStorageHandler():
 		elif len(dto.getValue()) == 2:
 			#values = (dto.getTimestamp(), dto.getValue()[0], dto.getValue()[1])
 			#c.execute('INSERT INTO '+dto.getType()+' VALUES (%s, %s, %s)', values)
-			self.RAM_DB[dto.getType()][dto.getTimestamp()] = (dto.getValue()[0], dto.getValue()[0])
+			self.RAM_DB[dto.getType()][dto.getTimestamp()] = (dto.getValue()[0], dto.getValue()[1])
 		else:
 			#conn.close()
 			raise Exception("Too many Fields")

@@ -21,7 +21,7 @@ from DTOs.MeasurmentEnum import DataType
 
 class ScheduleManager(Thread):
 	
-	DEBUG 					= True
+	DEBUG 					= False
 	SLEEP_BETWEEN_CHECKS 	= 1	#sleeps X seconds befor cheking the need of executing any task
 	FULL_PATH 				= os.path.realpath(__file__)
 	REBOOT_EXEC_PATH 		= os.path.dirname(FULL_PATH)+"/scripts/stop_peromas_and_reboot.sh"
