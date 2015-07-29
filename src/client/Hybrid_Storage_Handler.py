@@ -2,7 +2,7 @@
 """Manages the storage of the values
 """
 __author__ = "Artur Balanuta"
-__version__ = "1.0.1"
+__version__ = "1.0.0"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 from datetime import datetime
@@ -12,13 +12,14 @@ from DTOs.MeasurmentEnum import DataType
 import MySQLdb
 
 
-class StorageHandler():
+class HibridStorageHandler():
 	
 	DEBUG 		= True
 	HOST 		= "localhost"
 	USER 		= "root"
 	PASS 		= "3O7DCWP2HLR01471G9PZQ6U7X"
 	DB 			= "PeromasDB"
+	RAM_DB		= dict()
 
 	def __init__(self, hub):
 		
@@ -27,6 +28,17 @@ class StorageHandler():
 		self.create_database(self.DB)
 
 	def create_database(self, DB):
+		
+		if self.DEBUG:
+				print "create RAM DB"
+
+		self.RAM_DB[DataType.TEMPERATUREHUMIDITY] = dict()
+		self.RAM_DB[DataType.EXTERIOR_TEMPERATURE_HUMIDITY] = dict()
+		self.RAM_DB[DataType.LUMINOSITY] = dict()
+		self.RAM_DB[DataType.CURRENT] = dict()
+		self.RAM_DB[DataType.BT_PRESENCE] = dict()
+		self.RAM_DB[DataType.WIFI_PRESENCE] = dict()
+
 		if self.DEBUG:
 				print "create_database "+DB
 
@@ -79,12 +91,12 @@ class StorageHandler():
 			c.execute('CREATE TABLE Settings (ID TEXT, PickeRepresentation TEXT)')
 
 			#Data
-			c.execute('CREATE TABLE '+DataType.TEMPERATUREHUMIDITY+' (TimeStamp TIMESTAMP, Temperature REAL, Humidity REAL)')
-			c.execute('CREATE TABLE '+DataType.EXTERIOR_TEMPERATURE_HUMIDITY+' (TimeStamp TIMESTAMP, Temperature REAL, Humidity REAL)')
-			c.execute('CREATE TABLE '+DataType.LUMINOSITY+' (TimeStamp TIMESTAMP, Luminosity REAL)')
-			c.execute('CREATE TABLE '+DataType.CURRENT+' (TimeStamp TIMESTAMP, Current REAL)')
-			c.execute('CREATE TABLE '+DataType.BT_PRESENCE+' (TimeStamp TIMESTAMP, MAC TEXT)')
-			c.execute('CREATE TABLE '+DataType.WIFI_PRESENCE+' (TimeStamp TIMESTAMP, MAC TEXT, LOCATIONS TEXT)')
+			#c.execute('CREATE TABLE '+DataType.TEMPERATUREHUMIDITY+' (TimeStamp TIMESTAMP, Temperature REAL, Humidity REAL)')
+			#c.execute('CREATE TABLE '+DataType.EXTERIOR_TEMPERATURE_HUMIDITY+' (TimeStamp TIMESTAMP, Temperature REAL, Humidity REAL)')
+			#c.execute('CREATE TABLE '+DataType.LUMINOSITY+' (TimeStamp TIMESTAMP, Luminosity REAL)')
+			#c.execute('CREATE TABLE '+DataType.CURRENT+' (TimeStamp TIMESTAMP, Current REAL)')
+			#c.execute('CREATE TABLE '+DataType.BT_PRESENCE+' (TimeStamp TIMESTAMP, MAC TEXT)')
+			#c.execute('CREATE TABLE '+DataType.WIFI_PRESENCE+' (TimeStamp TIMESTAMP, MAC TEXT, LOCATIONS TEXT)')
 			db.commit()
 
 			if self.DEBUG:
@@ -95,27 +107,28 @@ class StorageHandler():
 
 		finally:
 			db.close()
-	
+
 	def insertValue(self, dto):
 
-		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
-		c = conn.cursor()
+		#conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
+		#c = conn.cursor()
 
 		if len(dto.getValue()) == 1:
-			values = (dto.getTimestamp(), dto.getValue()[0])
-			c.execute('INSERT INTO '+dto.getType()+' VALUES (%s, %s)', values)
+			#values = (dto.getTimestamp(), dto.getValue()[0])
+			self.RAM_DB[dto.getType()][dto.getTimestamp()] = dto.getValue()[0]
+			#c.execute('INSERT INTO '+dto.getType()+' VALUES (%s, %s)', values)
 
 
 		elif len(dto.getValue()) == 2:
-			values = (dto.getTimestamp(), dto.getValue()[0], dto.getValue()[1])
-			c.execute('INSERT INTO '+dto.getType()+' VALUES (%s, %s, %s)', values)
-
+			#values = (dto.getTimestamp(), dto.getValue()[0], dto.getValue()[1])
+			#c.execute('INSERT INTO '+dto.getType()+' VALUES (%s, %s, %s)', values)
+			self.RAM_DB[dto.getType()][dto.getTimestamp()] = (dto.getValue()[0], dto.getValue()[0])
 		else:
-			conn.close()
+			#conn.close()
 			raise Exception("Too many Fields")
 
-		conn.commit()
-		conn.close()
+		#conn.commit()
+		#conn.close()
 
 	def addUser(self, user):
 
@@ -208,21 +221,31 @@ class StorageHandler():
 
 	def getGraphData(self):
 
-		conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
-		c = conn.cursor()
-		data = {}
-		
-		c.execute("SELECT TimeStamp, Temperature, Humidity FROM TemperatureHumidity WHERE TIMESTAMP > CURRENT_TIMESTAMP() - INTERVAL 1 DAY ")
-		data["TempHumid"] = c.fetchall()
+		#conn = MySQLdb.connect(host=self.HOST, user=self.USER, passwd=self.PASS, db=self.DB)
+		#c = conn.cursor()
+		data = dict()
+		data["TempHumid"] = list()
+		data["Luminosity"] = list()
+		data["Current"] = list()
 
-		c.execute("SELECT * FROM Luminosity WHERE TIMESTAMP > CURRENT_TIMESTAMP() - INTERVAL 1 DAY ")
-		data["Luminosity"] = c.fetchall()
+		#c.execute("SELECT TimeStamp, Temperature, Humidity FROM TemperatureHumidity WHERE TIMESTAMP > CURRENT_TIMESTAMP() - INTERVAL 1 DAY ")
+		for time, val in self.RAM_DB[DataType.TEMPERATUREHUMIDITY].items():
+			data["TempHumid"].append([str(time), val[0], val[1]])
 
-		c.execute("SELECT * FROM Current WHERE TIMESTAMP > CURRENT_TIMESTAMP() - INTERVAL 1 DAY ")
-		data["Current"] = c.fetchall()
+		for time, val in self.RAM_DB[DataType.CURRENT].items():
+			data["Current"].append([str(time), val])
 
-		conn.commit()
-		conn.close()
+		for time, val in self.RAM_DB[DataType.LUMINOSITY].items():
+			data["Luminosity"].append([str(time), val])
+
+		#c.execute("SELECT * FROM Luminosity WHERE TIMESTAMP > CURRENT_TIMESTAMP() - INTERVAL 1 DAY ")
+		#data["Luminosity"] = c.fetchall()
+
+		#c.execute("SELECT * FROM Current WHERE TIMESTAMP > CURRENT_TIMESTAMP() - INTERVAL 1 DAY ")
+		#data["Current"] = c.fetchall()
+
+		#conn.commit()
+		#conn.close()
 		return data
 
 	def readSettings(self, id):
@@ -268,6 +291,8 @@ class StorageHandler():
 		conn.close()
 		return data
 
+	def clean_expired_RAM_values(self):
+		pass
 
 	#Bogus method
 	def stop(self):

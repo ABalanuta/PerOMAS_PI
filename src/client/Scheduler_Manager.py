@@ -21,7 +21,7 @@ from DTOs.MeasurmentEnum import DataType
 
 class ScheduleManager(Thread):
 	
-	DEBUG 					= False
+	DEBUG 					= True
 	SLEEP_BETWEEN_CHECKS 	= 1	#sleeps X seconds befor cheking the need of executing any task
 	FULL_PATH 				= os.path.realpath(__file__)
 	REBOOT_EXEC_PATH 		= os.path.dirname(FULL_PATH)+"/scripts/stop_peromas_and_reboot.sh"
@@ -40,10 +40,13 @@ class ScheduleManager(Thread):
 	def run(self):
 		self.stopped = False
 		
-		
+		#Run Once
 		self.tasks.append(Task(self.log_Startup, 1, one_time_task = True))			# Runs Once
 		self.tasks.append(Task(self.change_Api_Key, 0, one_time_task = True))		# Runs Once
-
+		self.tasks.append(Task(self.save_TempHumid_to_DB, 0, one_time_task = True))
+		self.tasks.append(Task(self.save_Luminosity_to_DB, 0, one_time_task = True))
+		self.tasks.append(Task(self.save_Current_to_DB, 0, one_time_task = True))
+		
 		#Append Rutines to the list
 		self.tasks.append(Task(self.save_TempHumid_to_DB, 5 * 60))							# loop every  5 Min
 		self.tasks.append(Task(self.save_Luminosity_to_DB, 7 * 60))							# loop every  2 Min
@@ -54,6 +57,8 @@ class ScheduleManager(Thread):
 		self.tasks.append(Task(self.change_Api_Key, 45))									# loop every 45 Sec
 		#self.tasks.append(Task(self.send_BT_Presence_to_Gateway, 10))						# loop every 10 Sec
 		
+		#Clean RAM_DB
+		self.tasks.append(Task(self.clean_RAM_DB, 10 * 60))								# loop every 10 Min
 
 		while not self.stopped:
 			self.update()
@@ -191,6 +196,11 @@ class ScheduleManager(Thread):
 			print "Scheduler: change_Api_Key to "+self.hub["API KEY"]
 
 
+	def clean_RAM_DB(self):
+
+		if self.hub["STORAGE HANDLER"]:
+			db = self.hub["STORAGE HANDLER"]
+			db.clean_expired_RAM_values()
 
 	def reboot_device(self, username):
 		if self.hub["STORAGE HANDLER"]:

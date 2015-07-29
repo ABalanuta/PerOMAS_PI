@@ -266,7 +266,7 @@ def load_user(id):
 def before_request():
     g.user = current_user
 
-#@app.cache.cached(timeout=30, key_prefix='GraphData')
+@app.cache.cached(timeout=30, key_prefix='GraphData')
 def getGraphData():
 
     if app.config["HUB"]:

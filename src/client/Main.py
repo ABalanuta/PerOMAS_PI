@@ -17,10 +17,12 @@ from detection.BTDetector import BTDetector
 #from interaction.lcd.LCDmenu import LCD
 from interaction.pitft.tft_interface import TFT
 from interaction.Relay import Relay
+from interaction.SSRelay import SSRelay
 from communication.Pub_Sub import MQTTC
 from web.web import *
 from Scheduler_Manager import ScheduleManager
 from Storage_Handler import StorageHandler
+from Hybrid_Storage_Handler import HibridStorageHandler
 from Logic_Engine import Logic_Engine
 
 
@@ -51,6 +53,8 @@ if __name__ == '__main__':
 
 		sys.exit(0)
 	
+
+
 	if DEBUG:
 		print "\n-> Starting Client <-\n"
 	
@@ -62,7 +66,7 @@ if __name__ == '__main__':
 		#print 'Press Ctrl+C to exit'
 
 		#Starts the Storage Handler
-		sh = StorageHandler(hub)
+		sh = HibridStorageHandler(hub)
 		hub["STORAGE HANDLER"] = sh
 		if DEBUG:
 			print "Storage is ON"
@@ -114,18 +118,35 @@ if __name__ == '__main__':
 		if DEBUG:
 			print "BT sensor is ON"
 
-		#Starts Relay
-		r = Relay(hub)
-		hub["RELAY"] = r
-		if DEBUG:
-			print "Relays are ON"
 		
-		#Starts TFT
 		tft = TFT(hub)
+		IP = tft.get_local_IP()
+		print "My IP is: "+IP
+
+
+		#Starts Relay
+		if IP == "172.20.126.1":
+			r = SSRelay(hub)
+			if DEBUG:
+				print "SSRelays are ON"
+		else:
+			r = Relay(hub)
+			if DEBUG:
+				print "Relays are ON"
+		hub["RELAY"] = r
+		
+
+
+
+		#Starts TFT
+
 		tft.start()
 		hub["TFT"] = tft
 		if DEBUG:
 			print "TFT screen is ON"
+
+
+
 
 		#Starts LCD
 		#lcd = LCD(hub)
