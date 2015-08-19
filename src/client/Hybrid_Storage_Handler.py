@@ -292,7 +292,20 @@ class HibridStorageHandler():
 		return data
 
 	def clean_expired_RAM_values(self):
-		pass
+
+		now = datetime.now()
+
+		for time, val in self.RAM_DB[DataType.TEMPERATUREHUMIDITY].items():
+			if (now - datetime.strptime(time, '%Y-%m-%d %H:%M:%S.%f')).days > 1:
+				del self.RAM_DB[DataType.TEMPERATUREHUMIDITY][time]
+
+		for time, val in self.RAM_DB[DataType.CURRENT].items():
+			if (now - datetime.strptime(time, '%Y-%m-%d %H:%M:%S.%f')).days > 1:
+				del self.RAM_DB[DataType.CURRENT][time]
+
+		for time, val in self.RAM_DB[DataType.LUMINOSITY].items():
+			if (now - datetime.strptime(time, '%Y-%m-%d %H:%M:%S.%f')).days > 1:
+				del self.RAM_DB[DataType.LUMINOSITY][time]
 
 	#Bogus method
 	def stop(self):

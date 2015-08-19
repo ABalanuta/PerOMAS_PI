@@ -58,7 +58,7 @@ class ScheduleManager(Thread):
 		#self.tasks.append(Task(self.send_BT_Presence_to_Gateway, 10))						# loop every 10 Sec
 		
 		#Clean RAM_DB
-		self.tasks.append(Task(self.clean_RAM_DB, 10 * 60))								# loop every 10 Min
+		self.tasks.append(Task(self.clean_RAM_DB, 10 * 60))									# loop every 10 Min
 
 		while not self.stopped:
 			self.update()
