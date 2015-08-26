@@ -13,10 +13,10 @@ from time import sleep, localtime, time
 class Logic_Engine(Thread):
 
 	DEBUG 					= False
-	SLEEP_BETWEEN_CHECKS 	= 1 		#sleeps X seconds befor cheking the need of executing any task
+	SLEEP_BETWEEN_CHECKS 	= 30 		#sleeps X seconds befor cheking the need of executing any task
 	MARGIN 					= 0.33
-	AC_TARGET 		 		= 24
-	AC_MODE_AUTO 			= True
+	AC_TARGET 		 		= 24.5
+	AC_MODE_AUTO 			= False
 
 	def __init__(self, hub):
 		Thread.__init__(self)
@@ -61,19 +61,21 @@ class Logic_Engine(Thread):
 
 	def checkTermostatLogic(self):
 		
-		if self.hub["TEMPERATURE"] and "RELAY" in self.hub.keys() and "USER MANAGER" in self.hub.keys():
+		if self.hub["TEMPERATURE"] and "RELAY" in self.hub.keys():
 
 			curr_temp = self.hub["TEMPERATURE"].getTemperature()
 			relay = self.hub["RELAY"]
-			present_users = self.hub["USER MANAGER"].getPresentUsers()
-			
-			if len(present_users) > 0:
 
-				#Calculates the average temperature of the users in the office
-				target_setpoint = 0
-				for user in present_users:
-					target_setpoint += self.hub["USER MANAGER"].getUser(user).setpoint
-				target_setpoint /= len(present_users)
+			#present_users = self.hub["USER MANAGER"].getPresentUsers()
+			
+			#if len(present_users) > 0:
+			if True:
+				##Calculates the average temperature of the users in the office
+				#target_setpoint = 0
+				target_setpoint = self.AC_TARGET
+				#for user in present_users:
+				#	target_setpoint += self.hub["USER MANAGER"].getUser(user).setpoint
+				#target_setpoint /= len(present_users)
 
 				#Shuts Down the AC if out of Working Hours or no Users in the Office
 				#if not self.isWorkingHours():
@@ -84,8 +86,11 @@ class Logic_Engine(Thread):
 				if curr_temp > target_setpoint+(self.MARGIN*3):
 					relay.set_ac_speed(3)
 
-				elif curr_temp > target_setpoint+self.MARGIN:
+				elif curr_temp > target_setpoint+(self.MARGIN*2):
 					relay.set_ac_speed(2)
+
+				elif curr_temp > target_setpoint+(self.MARGIN*1.25):
+					relay.set_ac_speed(1)
 
 				#Turn OFF FAN if temp Perfect
 				elif curr_temp < target_setpoint-self.MARGIN:

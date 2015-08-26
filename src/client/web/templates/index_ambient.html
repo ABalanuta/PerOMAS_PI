@@ -158,7 +158,7 @@
                                 {% if ac_heat_or_cool == "Cool" %}
                                 <button type="submit" name="AC_COOL" class="btn btn-info disabled">
                                     <span class="glyphicon glyphicon-asterisk"></span>
-                                    <b>Cool</b>
+                                    <u><b>Cool</b></u>
                                 </button>
                                 {% else %}
                                 <button type="submit" name="AC_COOL" class="btn btn-info">
@@ -169,7 +169,7 @@
                                 {% if ac_heat_or_cool == "Heat" %}
                                 <button type="submit" name="AC_HEAT" class="btn btn-danger disabled">
                                     <span class="glyphicon glyphicon-fire"></span>
-                                    <b>Heat</b>
+                                    <u><b>Heat</b></u>
                                 </button>
                                 {% else %}
                                 <button type="submit" name="AC_HEAT" class="btn btn-danger">
@@ -223,7 +223,7 @@
         </div>
         {% endif %}
 
-        {% if g.user.username and setpoint and mode == "Auto" and FALSE%}
+        {% if g.user.username and setpoint and mode == "Auto" %}
         <div class="col-md-6">
             <div class="panel panel-primary">
                 <div class="panel-heading">
