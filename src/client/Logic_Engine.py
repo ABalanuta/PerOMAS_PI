@@ -13,10 +13,10 @@ from time import sleep, localtime, time
 class Logic_Engine(Thread):
 
 	DEBUG 					= False
-	SLEEP_BETWEEN_CHECKS 	= 30 		#sleeps X seconds befor cheking the need of executing any task
+	SLEEP_BETWEEN_CHECKS 	= 20 		#sleeps X seconds befor cheking the need of executing any task
 	MARGIN 					= 0.33
 	AC_TARGET 		 		= 24.5
-	AC_MODE_AUTO 			= False
+	AC_MODE_AUTO 			= True
 
 	def __init__(self, hub):
 		Thread.__init__(self)
@@ -40,7 +40,16 @@ class Logic_Engine(Thread):
 		self.checkUserRules()
 
 		if self.AC_MODE_AUTO:
-			self.checkTermostatLogic()
+
+			# if out of working ours and Automatic
+			# turn off he AC
+			if not self.isWorkingHours():
+				if "RELAY" in self.hub.keys():
+					self.hub["RELAY"].set_ac_speed(0)
+			
+			#continue with the normal scheduler
+			else:
+				self.checkTermostatLogic()
 
 	def checkUserRules(self):
 
@@ -105,7 +114,7 @@ class Logic_Engine(Thread):
 
 	def isWorkingHours(self):
 		current_hour = localtime(time()).tm_hour
-		if current_hour > 20 or current_hour < 8:
+		if current_hour > 21 or current_hour < 8:
 			return False
 		else:
 			return True
