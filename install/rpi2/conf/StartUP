@@ -1,0 +1,36 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          StartUP
+# Required-Start:               $named $network $remote_fs $syslog
+# Required-Stop:                $syslog
+# Should-Start:
+# Should-Stop:
+# Default-Start:                2 3 4 5
+# Default-Stop:			0 1 6
+# Description:       Longer script description.
+### END INIT INFO
+
+# Some things that run always
+touch /var/lock/StartUP
+
+# Carry out specific functions when asked to by the system
+case "$1" in
+  start)
+    echo "Starting script StartUP"
+    python /opt/peromas/start_batman.py > /tmp/wifi.log &
+    tmux new-session -d -s main
+    tmux send -t main.0 "sleep 10; sudo python /home/artur-adm/git/thesisPI/src/client/Main.py" ENTER
+    #python /opt/send_Email_With_IP.py &
+    #python /home/artur-adm/sensor/LCDtestArtur.py &
+    #python /home/artur-adm/sensor/showIP.py &
+    ;;
+  stop)
+    echo "Stopping script StartUP"
+    ;;
+  *)
+    echo "Usage: /etc/init.d/StartUP {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0
