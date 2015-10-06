@@ -45,6 +45,11 @@ echo_options:
 
 1: #// Pre-install
 
+	#//Set git Variables
+        git config --global user.email ABalanuta@users.noreply.github.com
+        git config --global user.name ABalanuta
+        @echo
+
 	#timezone
 	sudo dpkg-reconfigure tzdata
 
@@ -99,37 +104,6 @@ echo_options:
 	@echo 'Option 1 DONE'
 	@echo
 
-
-2.1: #// Notro Firmware with pitft and touch suport
-
-	#Firmware for the pitft
-	#https://github.com/notro/rpi-firmware
-	#sudo wget https://raw.github.com/Hexxeh/rpi-update/master/rpi-update -O /usr/bin/rpi-update && sudo chmod +x /usr/bin/rpi-update
-	sudo REPO_URI=https://github.com/notro/rpi-firmware rpi-update
-	#sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=builtin rpi-update
-
-	#sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=builtin rpi-update
-
-
-	@echo
-	@echo 'Reboot the System Manually'
-
-	@echo
-	@echo 'Option 2 DONE'
-	@echo
-
-2.2: #// Notro Firmware with pitft and touch suport
-
-	sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=rpi-bcm2835 rpi-update
-
-	@echo
-	@echo 'Reboot the System Manually
-	
-	@echo
-	@echo 'Option 2 DONE'
-	@echo
-
-
 3: #// Install Software
 
 	@echo 'Aux'
@@ -157,13 +131,14 @@ echo_options:
 	@echo
 
 	@echo 'WEB'
-	sudo aptitude install python-pip -y
+	sudo aptitude install python-pip python-numpy python-pygame -y
 	sudo pip install flask
 	sudo pip install flask-wtf
 	sudo pip install Flask-Cache
 	sudo pip install flask-compress
 	sudo pip install Flask-Login
 	sudo pip install tornado
+
 	#pip install flask-login
 	#pip install flask-openid
 	#pip install sqlalchemy
@@ -213,7 +188,7 @@ echo_options:
 	sudo sed -i 's/BLANK_TIME=30/BLANK_TIME=0/' /etc/kbd/config
 	@echo
 
-	#// add event rule
+	#// add event rule for renaming the touchscreen
 	sudo cp conf/95-stmpe.rules /etc/udev/rules.d/95-stmpe.rules
 	@echo
 
@@ -228,37 +203,37 @@ echo_options:
 
 
 	#// Auto Load Modules
-	sudo cp conf/modules /etc/modules
-	@echo
+	#sudo cp conf/modules /etc/modules
+	#@echo
 
 	#// Remove Blacklist of I2C and spi
-	sudo sed -i 's/blacklist\ i2c-bcm2708/#blacklist\ i2c-bcm2708/' /etc/modprobe.d/raspi-blacklist.conf
-	sudo sed -i 's/blacklist\ spi-bcm2708/#blacklist\ spi-bcm2708/' /etc/modprobe.d/raspi-blacklist.conf
-	@echo
+	#sudo sed -i 's/blacklist\ i2c-bcm2708/#blacklist\ i2c-bcm2708/' /etc/modprobe.d/raspi-blacklist.conf
+	#sudo sed -i 's/blacklist\ spi-bcm2708/#blacklist\ spi-bcm2708/' /etc/modprobe.d/raspi-blacklist.conf
+	#@echo
 
 	#// Startup Script
-	sudo cp conf/StartUP /etc/init.d/StartUP
-	cd /etc/init.d/; sudo chmod +x StartUP
-	sudo update-rc.d StartUP remove; true
-	sudo update-rc.d StartUP defaults; true
-	@echo
+	#sudo cp conf/StartUP /etc/init.d/StartUP
+	#cd /etc/init.d/; sudo chmod +x StartUP
+	#sudo update-rc.d StartUP remove; true
+	#sudo update-rc.d StartUP defaults; true
+	#@echo
 
 	#//Aux Scripts
-	sudo mkdir /opt/peromas -p; true
-	sudo cp conf/start_batman.py /opt/peromas/
-	sudo cp conf/update_motd.sh /opt/peromas/
+	#sudo mkdir /opt/peromas -p; true
+	#sudo cp conf/start_batman.py /opt/peromas/
+	#sudo cp conf/update_motd.sh /opt/peromas/
 	@echo
 
 	#// Ajust TimeZone
-	sudo dpkg-reconfigure tzdata
+	#sudo dpkg-reconfigure tzdata
 
 	#// NTP
-	sudo cp conf/crontab /etc/crontab
-	sudo /etc/init.d/cron restart
+	#sudo cp conf/crontab /etc/crontab
+	#sudo /etc/init.d/cron restart
 
 	#
 	#// Change Hostname
-	sudo python conf/change_host.py
+	#sudo python conf/change_host.py
 
 	@echo 'Reboot the System Manually'
 
