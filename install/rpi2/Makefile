@@ -46,9 +46,9 @@ echo_options:
 1: #// Pre-install
 
 	#//Set git Variables
-        git config --global user.email ABalanuta@users.noreply.github.com
-        git config --global user.name ABalanuta
-        @echo
+	#git config --global user.email ABalanuta@users.noreply.github.com
+	#git config --global user.name ABalanuta
+	#@echo
 
 	#timezone
 	sudo dpkg-reconfigure tzdata
@@ -180,8 +180,8 @@ echo_options:
 5:	#// Configuration Variables
 
 	#//Set git Variables
-	git config --global user.email AliensGoo@users.noreply.github.com
-	git config --global user.name AliensGoo
+	git config --global user.email ABalanuta@users.noreply.github.com
+	git config --global user.name ABalanuta
 	@echo
 
 	#// remove backlight timeout
@@ -198,13 +198,17 @@ echo_options:
 	@echo
 
 	#//bugfix X would not start wthout it
-	sudo sed -i 's/fb0/fb1/' /usr/share/X11/xorg.conf.d/99-fbturbo.conf
-	@echo
+	#sudo sed -i 's/fb0/fb1/' /usr/share/X11/xorg.conf.d/99-fbturbo.conf
+	#@echo
 
 
 	#// Auto Load Modules
-	#sudo cp conf/modules /etc/modules
-	#@echo
+	sudo cp conf/modules /etc/modules
+	@echo
+
+	#// Add pitft28 overlay 
+	sudo sed -i 's/dtoverlay=pitft28-resistive,rotate=90//' /boot/config.txt
+	sudo sh -c " echo 'dtoverlay=pitft28-resistive,rotate=90' >> /boot/config.txt"
 
 	#// Remove Blacklist of I2C and spi
 	#sudo sed -i 's/blacklist\ i2c-bcm2708/#blacklist\ i2c-bcm2708/' /etc/modprobe.d/raspi-blacklist.conf
@@ -212,24 +216,25 @@ echo_options:
 	#@echo
 
 	#// Startup Script
-	#sudo cp conf/StartUP /etc/init.d/StartUP
-	#cd /etc/init.d/; sudo chmod +x StartUP
-	#sudo update-rc.d StartUP remove; true
-	#sudo update-rc.d StartUP defaults; true
-	#@echo
+	sudo cp conf/StartUP /etc/init.d/StartUP
+	cd /etc/init.d/; sudo chmod +x StartUP
+	sudo update-rc.d StartUP remove; true
+	sudo update-rc.d StartUP defaults; true
+	@echo
 
 	#//Aux Scripts
-	#sudo mkdir /opt/peromas -p; true
-	#sudo cp conf/start_batman.py /opt/peromas/
-	#sudo cp conf/update_motd.sh /opt/peromas/
+	sudo mkdir /opt/peromas -p; true
+	sudo cp conf/start_batman.py /opt/peromas/
+	sudo cp conf/update_motd.sh /opt/peromas/
+	sudo cp conf/startup.png /opt/peromas/
 	@echo
 
 	#// Ajust TimeZone
-	#sudo dpkg-reconfigure tzdata
+	sudo dpkg-reconfigure tzdata
 
 	#// NTP
-	#sudo cp conf/crontab /etc/crontab
-	#sudo /etc/init.d/cron restart
+	sudo cp conf/crontab /etc/crontab
+	sudo /etc/init.d/cron restart
 
 	#
 	#// Change Hostname
@@ -250,11 +255,9 @@ echo_options:
 
 	#// Touchscreen
 	sudo TSLIB_FBDEVICE=/dev/fb1 TSLIB_TSDEVICE=/dev/input/touchscreen ts_calibrate
-	sudo TSLIB_FBDEVICE=/dev/fb1 TSLIB_TSDEVICE=/dev/input/touchscreen ts_test
+	#sudo TSLIB_FBDEVICE=/dev/fb1 TSLIB_TSDEVICE=/dev/input/touchscreen ts_test
 
-
-	#dwc_otg.lpm_enable=0 console=ttyAMA0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait
-
+	sudo python tools/pitft_touch_cal.py
 
 	@echo
 	@echo 'Option 6 DONE'

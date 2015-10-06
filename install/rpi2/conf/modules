@@ -2,11 +2,7 @@
 #
 # This file contains the names of kernel modules that should be loaded
 # at boot time, one per line. Lines beginning with "#" are ignored.
-# Parameters can be specified after the module name.
 
 snd-bcm2835
-i2c-bcm2708
 i2c-dev
-fbtft dma
-fbtft_device name=pitft rotate=90 speed=32000000 fps=30
-stmpe_device cs=1 chip=stmpe610 blocks=gpio,ts irq-pullup irq-gpio=24 irq-base=330 sample-time=4 mod-12b=1 ref-sel=0 adc-freq=2 ave-ctrl=3 touch-det-delay=4 settling=2 fraction-z=7 i-drive=0
+stmpe-ts
