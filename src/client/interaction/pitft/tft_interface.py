@@ -476,7 +476,7 @@ class TFT(Thread):
                 lines = p.stdout.readlines()
                 for line in lines:
                     if "inet addr:" in line:
-                        return line.split()[1].split(':')[1]
+                        return str(line.split()[1].split(':')[1])
             except:
                 return "0.0.0.0"
 

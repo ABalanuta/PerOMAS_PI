@@ -66,7 +66,7 @@ echo_options:
 
 	sudo rm -rf /var/log/*
 	sudo rm -rf /home/pi/
-	sudo rm -rf /opt/*
+	#sudo rm -rf /opt/*
 
 	#//Update & Upgrade
 	sudo aptitude purge desktop-base lightdm lxappearance lxde-common lxde-icon-theme \

@@ -121,7 +121,7 @@ if __name__ == '__main__':
 		
 		tft = TFT(hub)
 		IP = tft.get_local_IP()
-		print "My IP is: "+IP
+		print "My IP is: " + str(IP)
 
 
 		#Starts Relay
