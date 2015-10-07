@@ -3,10 +3,8 @@ all: echo_options
 echo_options:
 	@echo '# # Options # #'
 	@echo
-	@echo '0: #// Add User/Keys INFO'
 	@echo '1: #// Pre-install'
-	@echo '2: #// Nostro Firmware with pitft and touch suport'
-	@echo '3: #// Install Software'
+	@echo '2: #// Install Software'
 	@echo '4: #// Install Addicional Software (Gateway Only)'
 	@echo '5: #// Configuration Variables'
 	@echo '6: #// Test touchscreen'
@@ -16,172 +14,82 @@ echo_options:
 	@echo '10: #// Update Nodes from git and RESTART them'
 	@echo
 
-
-0: #// Add User/Keys INFO
-	@echo
-	@echo 'ssh pi@piX'
-	@echo 'pass:raspberry'
-	@echo
-	@echo 'sudo su'
-	@echo 'adduser artur-adm'
-	@echo 'pass:xxxxx'
-	@echo
-	@echo "sudo sed -i 's/pi/artur-adm/' /etc/sudoers"
-	@echo
-	@echo 'exit'
-	@echo 'exit'
-	@echo
-	@echo '//Copy Key'
-	@echo 'ssh-copy-id artur-adm@piX'
-	@echo
-	@echo 'ssh artur-adm@piX'
-	@echo 'sudo deluser pi'
-
-	@echo
-	@echo 'Option 0 DONE'
-	@echo
-
-
-
 1: #// Pre-install
-
-	#timezone
-	sudo dpkg-reconfigure tzdata
-
-	#sudo sh cng_name_andgpu_ram.sh
 
 	#disable logs and other services
 	sudo update-rc.d rsyslog disable
 	sudo update-rc.d triggerhappy disable
 
+	sudo /etc/init.d/rsyslog stop | true
 	sudo /etc/init.d/rsyslog stop
+	sudo /etc/init.d/triggerhappy stop | true
 	sudo /etc/init.d/triggerhappy stop
 
 	sudo rm -rf /var/log/*
 	sudo rm -rf /home/pi/
-	sudo rm -rf /opt/*
+
+	sudo aptitude purge wolfram-engine sonic-pi pistore minecraft-pi -y
 
 	#//Update & Upgrade
-	sudo aptitude purge desktop-base lightdm lxappearance lxde-common lxde-icon-theme \
-	lxinput lxpanel lxpolkit lxrandr lxsession-edit lxshortcut lxtask lxterminal squeak-vm \
-	pistore scratch lxde-core lxde nuscratch raspberrypi-net-mods raspberrypi-ui-mods -y
+	#sudo aptitude purge desktop-base lightdm lxappearance lxde-common lxde-icon-theme \
+	#lxinput lxpanel lxpolkit lxrandr lxsession-edit lxshortcut lxtask lxterminal squeak-vm \
+	#pistore scratch lxde-core lxde nuscratch raspberrypi-net-mods raspberrypi-ui-mods -y
 
-	sudo aptitude purge oracle-java7-jdk wolfram-engine omxplayer zenity midori libenchant1c2a \
-	libwebkitgtk-1.0-0 aspell aspell-en cifs-utils gnome-icon-theme gnome-themes-standard-data -y
+	#sudo aptitude purge oracle-java7-jdk wolfram-engine omxplayer zenity midori libenchant1c2a \
+	#libwebkitgtk-1.0-0 aspell aspell-en cifs-utils gnome-icon-theme gnome-themes-standard-data -y
 
-	sudo apt-get remove x11-common midori lxde python3 python3-minimal python-picamera xdg-utils -y
-	sudo apt-get autoremove -y
+	#sudo apt-get remove x11-common midori lxde python3 python3-minimal python-picamera xdg-utils -y
 
-	sudo aptitude purge sonic-pi gpicview xpdf xarchiver -y
+	#sudo apt-get autoremove -y
 
-	sudo apt-get remove `sudo dpkg --get-selections | grep "\-dev" | sed s/install//` -y
-	sudo apt-get remove `sudo dpkg --get-selections | grep -v "deinstall" | grep x11 | sed s/install//` -y
-	sudo apt-get remove `sudo dpkg --get-selections | grep -v "deinstall" | grep sound | sed s/install//` -y
+	#sudo apt-get remove `sudo dpkg --get-selections | grep "\-dev" | sed s/install//` -y
+	#sudo apt-get remove `sudo dpkg --get-selections | grep -v "deinstall" | grep x11 | sed s/install//` -y
+	#sudo apt-get remove `sudo dpkg --get-selections | grep -v "deinstall" | grep sound | sed s/install//` -y
 
-	sudo apt-get remove gcc-4.4-base:armhf gcc-4.5-base:armhf gcc-4.6-base:armhf gcc-4.7-base:armhf -y
+	#sudo apt-get remove gcc-4.4-base:armhf gcc-4.5-base:armhf gcc-4.6-base:armhf gcc-4.7-base:armhf -y
 	sudo apt-get autoremove -y
 
 	#sudo apt-mark hold raspberrypi-bootloader
-	sudo apt-get update -y
-	sudo apt-get upgrade -y
+	#sudo apt-get update -y
+	#sudo apt-get upgrade -y
 
 	sudo apt-get clean -y
 
-	@echo
-	@echo 'Reboot the System Manually'
-
-	@echo
-	@echo 'Option 1 DONE'
-	@echo
-
-
-2.1: #// Notro Firmware with pitft and touch suport
-
-	#Firmware for the pitft
-	#https://github.com/notro/rpi-firmware
-	#sudo wget https://raw.github.com/Hexxeh/rpi-update/master/rpi-update -O /usr/bin/rpi-update && sudo chmod +x /usr/bin/rpi-update
-	sudo REPO_URI=https://github.com/notro/rpi-firmware rpi-update
-	#sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=builtin rpi-update
-
-	#sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=builtin rpi-update
-
+	sudo dpkg-reconfigure tzdata
 
 	@echo
 	@echo 'Reboot the System Manually'
 
-	@echo
-	@echo 'Option 2 DONE'
-	@echo
+2: #// Install Software
 
-2.2: #// Notro Firmware with pitft and touch suport
+	sudo aptitude install git vim zsh autojump tmux screen htop ntp ntpdate fbi python-dev python-rpi.gpio \
+	python-smbus i2c-tools bluez bluez-tools python-gobject python-gobject-2 snmp libsnmp-python python-pysnmp4 \
+	python-pysnmp-common python-pip batctl bridge-utils iw wireless-tools iperf mysql-client mysql-server \
+	python-mysqldb -y
 
-	sudo REPO_URI=https://github.com/notro/rpi-firmware BRANCH=rpi-bcm2835 rpi-update
-
-	@echo
-	@echo 'Reboot the System Manually
-	
-	@echo
-	@echo 'Option 2 DONE'
-	@echo
-
-
-3: #// Install Software
-
-	@echo 'Aux'
-	sudo aptitude install git vim zsh autojump tmux screen htop ntp ntpdate fbi -y
-	@echo
-
-	@echo 'GPIO'
-	sudo aptitude install python-dev python-rpi.gpio -y
-	@echo
-
-	@echo 'I2C'
-	sudo aptitude install python-smbus i2c-tools -y
-	@echo
-
-	@echo 'Mosqitto'
-	sudo aptitude install python-mosquitto -y
-	@echo
-
-	@echo 'Bluetooth'
-	sudo aptitude install bluez bluez-tools python-gobject python-gobject-2 -y
-	@echo
-
-	@echo 'SNMP'
-	sudo aptitude install snmp libsnmp-python python-pysnmp4 python-pysnmp-common -y
-	@echo
-
-	@echo 'WEB'
-	sudo aptitude install python-pip -y
 	sudo pip install flask
 	sudo pip install flask-wtf
 	sudo pip install Flask-Cache
 	sudo pip install flask-compress
 	sudo pip install Flask-Login
 	sudo pip install tornado
+
 	#pip install flask-login
 	#pip install flask-openid
 	#pip install sqlalchemy
-	@echo
 
-	@echo 'Mesh'
-	sudo aptitude install batctl bridge-utils iw wireless-tools iperf -y
-	@echo
 
-	@echo 'MySQL'
-	sudo aptitude install mysql-client mysql-server python-mysqldb -y
+
+	#@echo 'Mosqitto'
+	#sudo aptitude install python-mosquitto -y
+
+	sudo apt-get clean -y
+
 	@echo "Optimizing MySQL"
 	sudo cp /etc/mysql/my.cnf /etc/mysql/my.cnf.bak
 	sudo cp conf/my.cnf /etc/mysql/my.cnf
 	sudo service mysql restart
 	@echo
-
-	sudo apt-get clean -y
-
-	@echo
-	@echo 'Option 3 DONE'
-	@echo
-
 
 4: #// Install Addicional Gateway Software
 
@@ -192,17 +100,11 @@ echo_options:
 	sudo aptitude install mosquitto -y
 	@echo
 
-	@echo
-	@echo 'Option 4 DONE'
-	@echo
-
-
 5:	#// Configuration Variables
 
 	#//Set git Variables
-	git config --global user.email AliensGoo@users.noreply.github.com
-	git config --global user.name AliensGoo
-	@echo
+	git config --global user.email ABalanuta@users.noreply.github.com
+	git config --global user.name ABalanuta
 
 	#// remove backlight timeout
 	sudo sed -i 's/BLANK_TIME=30/BLANK_TIME=0/' /etc/kbd/config
