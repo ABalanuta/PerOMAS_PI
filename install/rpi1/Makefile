@@ -119,9 +119,8 @@ echo_options:
 	#//bugfix X would not start wthout it
 	#sudo sed -i 's/fb0/fb1/' /usr/share/X11/xorg.conf.d/99-fbturbo.conf
 
-
-	#// Auto Load Modules
-	#sudo cp conf/modules /etc/modules
+	sudo sed -i 's/i2c-dev//g' /etc/modules
+	sudo sh -c 'echo i2c-dev >> /etc/modules'
 
 	#// Remove Blacklist of I2C and spi
 	#sudo sed -i 's/blacklist\ i2c-bcm2708/#blacklist\ i2c-bcm2708/' /etc/modprobe.d/raspi-blacklist.conf

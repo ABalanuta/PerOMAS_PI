@@ -18,7 +18,7 @@ from detection.BTDetector import BTDetector
 from interaction.pitft.tft_interface import TFT
 from interaction.Relay import Relay
 from interaction.SSRelay import SSRelay
-from communication.Pub_Sub import MQTTC
+#from communication.Pub_Sub import MQTTC
 from web.web import *
 from Scheduler_Manager import ScheduleManager
 from Storage_Handler import StorageHandler
