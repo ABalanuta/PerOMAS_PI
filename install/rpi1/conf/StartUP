@@ -20,7 +20,7 @@ case "$1" in
     sudo fbi -T 2 -d /dev/fb1 -noverbose -a /opt/peromas/startup.png
     python /opt/peromas/start_batman.py > /tmp/wifi.log &
     tmux new-session -d -s main
-    tmux send -t main.0 "sleep 10; sudo python /home/artur-adm/git/PerOMAS_PI//src/client/Main.py" ENTER
+    tmux send -t main.0 "sleep 10; sudo python /home/artur-adm/git/PerOMAS_PI/src/client/Main.py" ENTER
     ;;
   stop)
     echo "Stopping script StartUP"

@@ -2,7 +2,7 @@
 """Configures the B.A.T.M.A.N network between the PI nodes"""
 
 __author__ = "Artur Balanuta"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 import os
@@ -33,13 +33,15 @@ for mac, pi, ip, p_ip in MAC_Address:
 		break
 
 #sleep(15)
+os.popen("sudo modprobe -r batman-adv")
+sleep(1)
 os.popen("sudo modprobe batman-adv")
 sleep(1)
 os.popen("sudo iw dev wlan0 del")
 sleep(1)
 os.popen("sudo iw phy phy0 interface add me0 type ibss")
 sleep(1)
-os.popen("sudo ifconfig me0 mtu 1528")
+os.popen("sudo ifconfig me0 mtu 1532")
 os.popen("sudo iwconfig me0 txpower 20")
 os.popen("sudo iwconfig me0 txpower fixed")
 os.popen("sudo iwconfig me0 rts 250")
