@@ -72,7 +72,7 @@ else:
 	os.popen("sudo brctl stp br0 off")
 	os.popen("sudo brctl addif br0 bat0")
 	os.popen("sudo brctl addif br0 eth0")
-	os.popen("sudo ifconfig bat0 "+priv_ip+"/24 up")
+	os.popen("sudo ifconfig br0 "+priv_ip+"/24 up")
 	
 os.popen("sudo sed -i 's/nameserver 8.8.8.8//g' /etc/resolv.conf")
 os.popen("sudo sh -c 'echo nameserver 8.8.8.8 >> /etc/resolv.conf'")
