@@ -62,10 +62,13 @@ echo_options:
 
 2: #// Install Software
 
+	sudo sed -i 's/nameserver 8.8.8.8//g' /etc/resolv.conf
+	sudo sh -c "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf"
+
 	sudo aptitude install git vim zsh autojump tmux screen htop ntp ntpdate fbi python-dev python-rpi.gpio \
 	python-smbus i2c-tools bluez bluez-tools python-gobject python-gobject-2 snmp libsnmp-python python-pysnmp4 \
 	python-pysnmp-common python-pip batctl bridge-utils iw wireless-tools iperf mysql-client mysql-server \
-	python-mysqldb -y
+	python-mysqldb libcap-dev libcap-ng-dev libcap-ng-utils libcap2-dev libcap2-bin -y
 
 	sudo pip install flask
 	sudo pip install flask-wtf
@@ -78,7 +81,11 @@ echo_options:
 	#pip install flask-openid
 	#pip install sqlalchemy
 
-
+	#Install Alfred
+	cd /tmp/;\
+	git clone http://git.open-mesh.org/alfred.git;cd alfred;\
+	make CONFIG_ALFRED_CAPABILITIES=n CONFIG_ALFRED_GPSD=n;\
+	sudo make CONFIG_ALFRED_CAPABILITIES=n CONFIG_ALFRED_GPSD=n install
 
 	#@echo 'Mosqitto'
 	#sudo aptitude install python-mosquitto -y
@@ -145,15 +152,6 @@ echo_options:
 	#// NTP
 	sudo cp conf/crontab /etc/crontab
 	sudo /etc/init.d/cron restart
-
-	sudo sed -i 's/nameserver 8.8.8.8//g' /etc/resolv.conf
-	sudo sh -c "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf"
-
-	#Install Alfred
-	cd /tmp/;\
-	git clone http://git.open-mesh.org/alfred.git;cd alfred;\
-	make CONFIG_ALFRED_CAPABILITIES=n CONFIG_ALFRED_GPSD=n;\
-	sudo make CONFIG_ALFRED_CAPABILITIES=n CONFIG_ALFRED_GPSD=n install
 
 	#sudo python conf/change_host.py
 
