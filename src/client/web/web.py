@@ -215,11 +215,7 @@ def login():
 @app.route('/admin')
 @login_required
 def admin():
-    if g.user.username == "Artur":
         return render_template('admin.html')
-    else:
-        flash("Permission Denied.", "error")
-        return redirect(url_for('index'))
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
