@@ -147,7 +147,7 @@ echo_options:
 	sudo cp conf/startup.png /opt/peromas/
 
 	#// Ajust TimeZone
-	sudo dpkg-reconfigure tzdata
+	#sudo dpkg-reconfigure tzdata
 
 	#// NTP
 	sudo cp conf/crontab /etc/crontab
