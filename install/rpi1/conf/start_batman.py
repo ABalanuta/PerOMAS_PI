@@ -62,12 +62,21 @@ if batnet_ip is "10.0.0.1":
 	os.popen("sudo brctl stp br0 off")
 	os.popen("sudo brctl addif br0 bat0")
 	os.popen("sudo brctl addif br0 eth0")
-	os.popen("sudo ifconfig bat0 0.0.0.0 up")
 	os.popen("sudo ifconfig eth0 0.0.0.0 up")
+	os.popen("sudo ifconfig bat0 0.0.0.0 up")
 	#os.popen("sudo ifconfig br0 hw ether b8:27:eb:60:57:67")
 	os.popen("sudo ifconfig br0 "+priv_ip+"/24 up")
 else:
 	#Set wired ip
+	os.popen("sudo brctl addbr br0")
+	os.popen("sudo brctl stp br0 off")
+	os.popen("sudo brctl addif br0 bat0")
+	os.popen("sudo brctl addif br0 eth0")
 	os.popen("sudo ifconfig bat0 "+priv_ip+"/24 up")
-
+	
+os.popen("sudo sed -i 's/nameserver 8.8.8.8//g' /etc/resolv.conf")
+os.popen("sudo sh -c 'echo nameserver 8.8.8.8 >> /etc/resolv.conf'")
 os.popen("sudo route add default gw 172.20.126.254")
+os.popen("sudo alfred -i me0 -m &")
+os.popen("sudo batadv-vis -i me0 -s &")
+	
