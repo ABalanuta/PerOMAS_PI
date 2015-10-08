@@ -146,6 +146,15 @@ echo_options:
 	sudo cp conf/crontab /etc/crontab
 	sudo /etc/init.d/cron restart
 
+	sudo sed -i 's/nameserver 8.8.8.8//g' /etc/resolv.conf
+	sudo sh -c "echo 'nameserver 8.8.8.8' >> /etc/resolv.conf"
+
+	#Install Alfred
+	cd /tmp/;\
+	git clone http://git.open-mesh.org/alfred.git;cd alfred;\
+	make CONFIG_ALFRED_CAPABILITIES=n CONFIG_ALFRED_GPSD=n;\
+	sudo make CONFIG_ALFRED_CAPABILITIES=n CONFIG_ALFRED_GPSD=n install
+
 	#sudo python conf/change_host.py
 
 	@echo 'Reboot the System Manually'
