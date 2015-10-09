@@ -215,7 +215,12 @@ def login():
 @app.route('/admin')
 @login_required
 def admin():
-        return render_template('admin.html')
+
+	if app.config["HUB"]:
+		hub = app.config["HUB"]
+		cm = hub["CLI MANAGER"]
+		nodesData = cm.getBatmanNodes()
+        return render_template('admin.html', nodes=nodesData)
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required

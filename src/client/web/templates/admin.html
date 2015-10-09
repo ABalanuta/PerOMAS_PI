@@ -2,117 +2,56 @@
 
 {% block content %}
 
-<div class="well well-lg" id="well2" style="max-width:900px;">
-        <h3><b>Mesh Network Map</b></h3>
-        <br>
-<div class="row" align="left">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <style>
 
-.link {
-  fill: none;
-  stroke: #666;
-  stroke-width: 1.5px;
-}
+	path.link {
+	  fill: none;
+	  stroke: #666;
+	  stroke-width: 1.5px;
+	}
 
-.node circle {
-  fill: #ccc;
-  stroke: #fff;
-  stroke-width: 1.5px;
-}
+	marker#licensing {
+	  fill: green;
+	}
 
-text {
-  pointer-events: none;
-}
+	path.link.licensing {
+	  stroke: green;
+	}
+
+	path.link.resolved {
+	  stroke-dasharray: 0,2 1;
+	}
+
+	circle {
+	  fill: #ccc;
+	  stroke: #333;
+	  stroke-width: 1.5px;
+	}
+
+	text {
+	  font: 10px sans-serif;
+	  pointer-events: none;
+	}
+
+	text.shadow {
+	  stroke: #fff;
+	  stroke-width: 3px;
+	  stroke-opacity: .8;
+	}
+
+	#slider {
+	    margin: 10px 5px 5px 5px;
+	}
 
 </style>
 
-<script>
 
-var links = [
-  {source: "Microsoft", target: "Amazon", type: "licensing"},
-  {source: "Microsoft", target: "HTC", type: "licensing"},
-  {source: "Samsung", target: "Apple", type: "suit"}
-];
-
-var nodes = {};
-
-// Compute the distinct nodes from the links.
-links.forEach(function(link) {
-  link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
-  link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
-});
-
-var width = 900,
-    height = 300;
-
-var force = d3.layout.force()
-    .nodes(d3.values(nodes))
-    .links(links)
-    .size([width, height])
-    .linkDistance(65)
-    .charge(-175)
-    .on("tick", tick)
-    .start();
-
-var svg = d3.select("body").select("center").select("#well2").append("svg")
-    .attr("width", width)
-    .attr("height", height);
-
-var link = svg.selectAll(".link")
-    .data(force.links())
-    .enter()
-    .append("line")
-    .attr("class", "link");
-
-var node = svg.selectAll(".node")
-    .data(force.nodes())
-    .enter().append("g")
-    .attr("class", "node")
-    .on("mouseover", mouseover)
-    .on("mouseout", mouseout)
-    .call(force.drag);
-
-node.append("circle")
-    .attr("r", 20)
-    .style("fill", function(d) { return "#"+((1<<24)*Math.random()|0).toString(16) });
-
-node.append("text")
-    .attr("x", 20)
-    .attr("dy", ".40em")
-    //.style("text-anchor", "middle")
-    .style("font-weight","bold")
-    .text(function(d) { return d.name; });
-
-function tick() {
-  link
-      .attr("x1", function(d) { return d.source.x; })
-      .attr("y1", function(d) { return d.source.y; })
-      .attr("x2", function(d) { return d.target.x; })
-      .attr("y2", function(d) { return d.target.y; });
-
-  node
-      .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
-
-}
-
-function mouseover() {
-  d3.select(this).select("circle").transition()
-      .duration(400)
-      .attr("r", 40);
-}
-
-function mouseout() {
-  d3.select(this).select("circle").transition()
-      .duration(400)
-      .attr("r", 20);
-}
-
-</script>
-
-
-
+<div class="well well-lg" id="well2" style="max-width:900px;">
+        <h3><b>Mesh Network Map</b></h3>
+        <br>
+	<div class="row" align="left">
+		<div id="slider"></div>
+		<div id="graph"></div>
 	</div>
 </div>
 
@@ -144,5 +83,148 @@ function mouseout() {
         </div>
 </div>
 	
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+
+<script>
+var links = [ 
+{% for node in nodes %}
+	{source: "{{ node.source }}", target: "{{ node.target }}", type: "suit", cost: "{{node.cost}}" },
+{% endfor %}
+
+];
+
+//[
+//    {source: "Apple", target: "Nokia", type: "resolved",cost:"25"},
+//  {source: "Qualcomm", target: "Nokia", type: "resolved",cost:"30"},
+//  {source: "Apple", target: "Motorola", type: "suit",cost:"35"},
+//  {source: "Microsoft", target: "Motorola", type: "suit",cost:"40"},
+//  {source: "Motorola", target: "Microsoft", type: "suit",cost:"45"}
+//];
+
+var nodes = {};
+
+// Compute the distinct nodes from the links.
+links.forEach(function(link) {
+  link.source = nodes[link.source] || (nodes[link.source] = {name: link.source});
+  link.target = nodes[link.target] || (nodes[link.target] = {name: link.target});
+});
+
+var w = 900,
+    h = 400;
+
+var force = d3.layout.force()
+    .nodes(d3.values(nodes))
+    .links(links)
+    .size([w, h])
+    .linkDistance(200)
+    .charge(-300)
+    .on("tick", tick)
+    .start();
+
+var svg = d3.select("#graph").append("svg:svg")
+    .attr("width", w)
+    .attr("height", h);
+
+// Per-type markers, as they don't inherit styles.
+svg.append("svg:defs").selectAll("marker")
+    .data(["suit", "licensing", "resolved"])
+  .enter().append("svg:marker")
+    .attr("id", String)
+    .attr("viewBox", "0 -5 10 10")
+    .attr("refX", 16.5)
+    .attr("refY", -1.5)
+    .attr("markerWidth", 12)
+    .attr("markerHeight", 12)
+    .attr("orient", "auto")
+  .append("svg:path")
+    .attr("d", "M0,-5L10,0L0,5");
+
+var path = svg.append("g").selectAll("path")
+.data(force.links())
+.enter()
+.append("g")
+.attr("class", "link-group")
+.append("path")
+    .attr("class", "link")
+    .attr("id", function(d, i) { return "link" + i;})
+    .attr("marker-end", function(d) { return "url(#" + d.type + ")"; });
+	
+	svg.selectAll(".link-group").append("text")
+	.attr("dy", "-0.5em")
+	.append("textPath")
+	.attr("startOffset",function(d,i){return 8/20;})
+	.attr("xlink:href",function(d,i){return "#link"+i;})
+    .text(function(d) {
+        return d.cost;
+    });
+    
+
+var circle = svg.append("svg:g").selectAll("circle")
+    .data(force.nodes())
+  .enter().append("svg:circle")
+    .attr("r", 15)
+    .style("fill", function(d) { return "#"+((1<<24)*Math.random()|0).toString(16) })
+    .call(force.drag);
+
+var text = svg.append("svg:g").selectAll("g")
+    .data(force.nodes())
+  .enter().append("svg:g");
+
+// A copy of the text with a thick white stroke for legibility.
+text.append("svg:text")
+    .attr("x", 8)
+    .attr("y", ".31em")
+    .attr("class", "shadow")
+    .text(function(d) { return d.name; });
+
+text.append("svg:text")
+    .attr("x", 8)
+    .attr("y", ".31em")
+    .text(function(d) { return d.name; });
+
+// Use elliptical arc path segments to doubly-encode directionality.
+function tick() {
+  path.attr("d", function(d) {
+    var dx = d.target.x - d.source.x,
+        dy = d.target.y - d.source.y,
+        dr = Math.sqrt(dx * dx + dy * dy);
+    return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+  });
+
+  circle.attr("transform", function(d) {
+    return "translate(" + d.x + "," + d.y + ")";
+  });
+
+  text.attr("transform", function(d) {
+    return "translate(" + d.x + "," + d.y + ")";
+  });
+}
+
+$(function() {
+    $( "#slider" ).slider({
+        min: 1,
+        max: 30,
+        value: 10,
+        slide: function( event, ui ) {
+        
+      	svg.transition().duration(100)
+                .selectAll("circle").attr("r", ui.value);
+        svg.transition().duration(100)
+                .selectAll("marker").attr("markerWidth", ui.value).attr("markerHeight", ui.value);
+
+    }});
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
 
 {% endblock %}

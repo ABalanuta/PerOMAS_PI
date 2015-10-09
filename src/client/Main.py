@@ -24,7 +24,7 @@ from Scheduler_Manager import ScheduleManager
 from Storage_Handler import StorageHandler
 from Hybrid_Storage_Handler import HibridStorageHandler
 from Logic_Engine import Logic_Engine
-
+from CLI_Manager import CLI_Manager
 
 
 
@@ -64,6 +64,12 @@ if __name__ == '__main__':
 		hub = dict()
 		signal.signal(signal.SIGINT, signal_handler)
 		#print 'Press Ctrl+C to exit'
+
+		#Starts the CLI Manager
+		cm = CLI_Manager(hub)
+		hub["CLI MANAGER"] = cm
+		if DEBUG:
+			print "CLI Manager is ON"
 
 		#Starts the Storage Handler
 		sh = HibridStorageHandler(hub)
