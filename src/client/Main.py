@@ -118,11 +118,10 @@ if __name__ == '__main__':
 		
 		#Starts BT Detector
 		bt = BTDetector(hub)
-		bt.start()
-		bt.track_device('40:B0:FA:3D:5F:08')
+		#bt.start()
 		hub["BLUETOOTH"] = bt
-		if DEBUG:
-			print "BT sensor is ON"
+		#if DEBUG:
+		#	print "BT sensor is ON"
 
 		
 		tft = TFT(hub)

@@ -2,7 +2,7 @@
 """Configures the B.A.T.M.A.N network between the PI nodes"""
 
 __author__ = "Artur Balanuta"
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 import os
@@ -75,8 +75,10 @@ else:
 	os.popen("sudo ifconfig br0 "+priv_ip+"/24 up")
 	
 os.popen("sudo sed -i 's/nameserver 8.8.8.8//g' /etc/resolv.conf")
-os.popen("sudo sh -c 'echo nameserver 8.8.8.8 >> /etc/resolv.conf'")
 os.popen("sudo route add default gw 172.20.126.254")
+os.popen("sudo sh -c 'echo nameserver 8.8.8.8 >> /etc/resolv.conf'")
 os.popen("sudo alfred -i me0 -m &")
-os.popen("sudo batadv-vis -i me0 -s &")
-	
+os.popen("sudo batadv-vis -i me0 -s &")	
+os.popen("sudo /opt/peromas/altbeacon_transmit_peromas '"+priv_ip+"'")
+sleep(20)
+os.popen("sudo sh -c 'echo nameserver 8.8.8.8 >> /etc/resolv.conf'")

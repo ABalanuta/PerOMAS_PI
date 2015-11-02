@@ -145,6 +145,8 @@ echo_options:
 	sudo cp conf/start_batman.py /opt/peromas/
 	sudo cp conf/update_motd.sh /opt/peromas/
 	sudo cp conf/startup.png /opt/peromas/
+	sudo cp conf/altbeacon_transmit_peromas /opt/peromas/
+	sudo chmod +x /opt/peromas/altbeacon_transmit_peromas
 
 	#// Ajust TimeZone
 	#sudo dpkg-reconfigure tzdata
