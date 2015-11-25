@@ -91,18 +91,25 @@ class Logic_Engine(Thread):
 				#	relay.set_ac_speed(0)
 				#	return
 
-				#Turn ON Fan if too Hot
-				if curr_temp > target_setpoint+(self.MARGIN*3):
+
+				#Ajusts AC Mode
+				if target_setpoint > curr_temp:
+					relay.set_ac_mode("Heat")
+				else:
+					relay.set_ac_mode("Cool")
+
+				#Ajusts the fan speed
+				if abs(curr_temp - target_setpoint) > self.MARGIN*3:
 					relay.set_ac_speed(3)
 
-				elif curr_temp > target_setpoint+(self.MARGIN*2):
+				elif abs(curr_temp - target_setpoint) > self.MARGIN*2:
 					relay.set_ac_speed(2)
 
-				elif curr_temp > target_setpoint+(self.MARGIN*1.25):
+				elif abs(curr_temp - target_setpoint) > self.MARGIN*1.25:
 					relay.set_ac_speed(1)
 
 				#Turn OFF FAN if temp Perfect
-				elif curr_temp < target_setpoint-self.MARGIN:
+				else:
 					relay.set_ac_speed(0)
 			
 			else:
