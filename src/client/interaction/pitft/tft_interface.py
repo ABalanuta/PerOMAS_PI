@@ -205,13 +205,13 @@ class TFT(Thread):
 
                     events_x1 = self.button_light_1.handleEvent(event)
                     if 'click' in events_x1:
-                        sleep(0.1)
+                        sleep(0.01)
                         self.relay.flip_lights_x1()
                         to_draw = True
 
                     events_x2 = self.button_light_2.handleEvent(event)
                     if 'click' in events_x2:
-                        sleep(0.1)
+                        sleep(0.01)
                         self.relay.flip_lights_x2()
                         to_draw = True
 
@@ -303,7 +303,7 @@ class TFT(Thread):
 
             if to_draw:
                 self.draw()
-                sleep(0.7)
+                sleep(0.01)
 
     def menu(self):
 
@@ -488,7 +488,7 @@ if __name__ == '__main__':
     t.start()
     try:
         while True:
-            sleep(1)
+            sleep(0.2)
     except: 
         t.stop()
     print "#Sttoped#\n\n"
