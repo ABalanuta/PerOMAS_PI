@@ -45,7 +45,7 @@ class SSRelay():
 
 		#Turn on the especified speed
 		if 0 <= speed <= 3:
-			if speed = 2:
+			if speed == 2:
 				speed = 3
 			if speed > 0:
 				relay_name = "AC_SPEED_"+str(speed)
