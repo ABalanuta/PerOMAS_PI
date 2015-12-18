@@ -3,7 +3,7 @@
 devices to maintain a confortable Office for the occupants"""
 
 __author__ = "Artur Balanuta"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 
@@ -99,11 +99,11 @@ class Logic_Engine(Thread):
 					relay.set_ac_mode("Cool")
 
 				#Ajusts the fan speed
-				if abs(curr_temp - target_setpoint) > self.MARGIN*3:
+				if abs(curr_temp - target_setpoint) > self.MARGIN*2.5:
 					relay.set_ac_speed(3)
 
-				elif abs(curr_temp - target_setpoint) > self.MARGIN*2:
-					relay.set_ac_speed(2)
+				#elif abs(curr_temp - target_setpoint) > self.MARGIN*2:
+				#	relay.set_ac_speed(2)
 
 				elif abs(curr_temp - target_setpoint) > self.MARGIN*1.25:
 					relay.set_ac_speed(1)
@@ -141,7 +141,7 @@ class Logic_Engine(Thread):
 	def set_AC_Setpoint(self, setpoint):
 		self.AC_TARGET = float(setpoint)
 		if self.DEBUG:
-			print "New AC setpoint", self.AC_TARGET
+	2.5	print "New AC setpoint", self.AC_TARGET
 
 	def get_AC_Setpoint(self):
 		return self.AC_TARGET

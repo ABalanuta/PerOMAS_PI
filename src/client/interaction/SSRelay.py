@@ -2,7 +2,7 @@
 """This Class is responsible for tigerring the Relays"""
 
 __author__ = "Artur Balanuta"
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 import RPi.GPIO as GPIO
@@ -14,11 +14,11 @@ class SSRelay():
 
 	DEBUG 			= False
 	RELAY 			= {	"AC_SPEED_1"		:	{"Pin" : 4, "State" :True},
-						"AC_SPEED_2"		:	{"Pin" : 17, "State" : True},
-						"AC_SPEED_3" 		:	{"Pin" : 27, "State" : True},
-						"AC_HEAT_COOL" 		:	{"Pin" : 22, "State" : False},
-						"LIGHTS_X1" 		:	{"Pin" : 18, "State" : False},
-						"LIGHTS_X2" 		:	{"Pin" : 23, "State" : False},}
+					"AC_SPEED_2"		:	{"Pin" : 17, "State" : True},
+					"AC_SPEED_3" 		:	{"Pin" : 27, "State" : True},
+					"AC_HEAT_COOL" 		:	{"Pin" : 22, "State" : False},
+					"LIGHTS_X1" 		:	{"Pin" : 18, "State" : False},
+					"LIGHTS_X2" 		:	{"Pin" : 23, "State" : False},}
 
 
 	def __init__(self, hub):
@@ -45,6 +45,8 @@ class SSRelay():
 
 		#Turn on the especified speed
 		if 0 <= speed <= 3:
+			if speed = 2:
+				speed = 3
 			if speed > 0:
 				relay_name = "AC_SPEED_"+str(speed)
 				pin = self.RELAY[relay_name]["Pin"]
