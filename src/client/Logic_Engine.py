@@ -141,7 +141,7 @@ class Logic_Engine(Thread):
 	def set_AC_Setpoint(self, setpoint):
 		self.AC_TARGET = float(setpoint)
 		if self.DEBUG:
-	2.5	print "New AC setpoint", self.AC_TARGET
+			print "New AC setpoint", self.AC_TARGET
 
 	def get_AC_Setpoint(self):
 		return self.AC_TARGET
