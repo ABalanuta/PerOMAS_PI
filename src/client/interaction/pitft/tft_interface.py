@@ -121,18 +121,18 @@ class TFT(Thread):
                 sleep(0.5)
 
             self.relay = self.hub["RELAY"]
-            l1_state = self.relay.get_lights_x1_state()
-            l2_state = self.relay.get_lights_x2_state()
+            #l1_state = self.relay.get_lights_x1_state()
+            #l2_state = self.relay.get_lights_x2_state()
 
-            if l1_state:
-                self.button_light_1.setSurfaces(self.BTN_BULB_ON)
-            else:
-                self.button_light_1.setSurfaces(self.BTN_BULB_OFF)
+            #if l1_state:
+            #    self.button_light_1.setSurfaces(self.BTN_BULB_ON)
+            #else:
+            #    self.button_light_1.setSurfaces(self.BTN_BULB_OFF)
 
-            if l2_state:
-                self.button_light_2.setSurfaces(self.BTN_BULB_ON)
-            else:
-                self.button_light_2.setSurfaces(self.BTN_BULB_OFF)
+            #if l2_state:
+            #    self.button_light_2.setSurfaces(self.BTN_BULB_ON)
+            #else:
+            #    self.button_light_2.setSurfaces(self.BTN_BULB_OFF)
 
             while not "TEMPERATURE" in self.hub.keys():
                 if self.DEBUG:
