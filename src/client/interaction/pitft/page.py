@@ -202,9 +202,9 @@ class KeyPage(Page):
             super(self.__class__,self).render()
 
             if 'armv6l' in platform.uname():
-                key = self.hub["API KEY"]
+                key = self.pallete.hub["API KEY"]
             else:
-                key = "testTest"
+                key = "TEST"
 
             k_label = self.MYFONT_85.render(key, 1, self.WHITE)
             ip_label = self.MYFONT_29.render(self.pallete.get_local_IP()+":5000", 1, self.WHITE)
