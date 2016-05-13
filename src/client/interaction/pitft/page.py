@@ -183,7 +183,7 @@ class TemperaturePage(Page):
         super(self.__class__,self).render()
 
         if 'armv6l' in platform.uname():
-            temp  = round(self.hub["TEMPERATURE"].getTemperature(), 1)
+            temp  = round(self.pallete.hub["TEMPERATURE"].getTemperature(), 1)
         else:
             temp = 20.1
 
