@@ -20,7 +20,7 @@ from DTOs.MesurmentDTO import MesurmentDTO
 from DTOs.MeasurmentEnum import DataType
 
 class ScheduleManager(Thread):
-	
+
 	DEBUG 					= False
 	SLEEP_BETWEEN_CHECKS 	= 1	#sleeps X seconds befor cheking the need of executing any task
 	FULL_PATH 				= os.path.realpath(__file__)
@@ -29,24 +29,24 @@ class ScheduleManager(Thread):
 
 	def __init__(self, hub):
 		Thread.__init__(self)
-		
+
 		self.hub = hub
 		self.stopped = True
 		self.tasks = []
-		
+
 	def stop(self):
 		self.stopped = True
-	
+
 	def run(self):
 		self.stopped = False
-		
+
 		#Run Once
 		self.tasks.append(Task(self.log_Startup, 1, one_time_task = True))			# Runs Once
 		self.tasks.append(Task(self.change_Api_Key, 0, one_time_task = True))		# Runs Once
 		self.tasks.append(Task(self.save_TempHumid_to_DB, 0, one_time_task = True))
 		self.tasks.append(Task(self.save_Luminosity_to_DB, 0, one_time_task = True))
 		self.tasks.append(Task(self.save_Current_to_DB, 0, one_time_task = True))
-		
+
 		#Append Rutines to the list
 		self.tasks.append(Task(self.save_TempHumid_to_DB, 5 * 60))							# loop every  5 Min
 		self.tasks.append(Task(self.save_Luminosity_to_DB, 7 * 60))							# loop every  2 Min
@@ -56,7 +56,7 @@ class ScheduleManager(Thread):
 		self.tasks.append(Task(self.update_and_Save_Exterior_Sensor_Values, 10 * 60))		# loop every 10 Min
 		self.tasks.append(Task(self.change_Api_Key, 45))									# loop every 45 Sec
 		#self.tasks.append(Task(self.send_BT_Presence_to_Gateway, 10))						# loop every 10 Sec
-		
+
 		#Clean RAM_DB
 		self.tasks.append(Task(self.clean_RAM_DB, 10 * 60))									# loop every 10 Min
 
@@ -64,7 +64,7 @@ class ScheduleManager(Thread):
 			self.update()
 			if not self.stopped:
 				sleep(self.SLEEP_BETWEEN_CHECKS)
-			
+
 	def update(self):
 		for task in self.tasks:
 			if task.can_run() and not self.stopped:
@@ -73,7 +73,7 @@ class ScheduleManager(Thread):
 				if task.one_time_task():
 					self.tasks.remove(task)
 
-	
+
 	def save_TempHumid_to_DB(self):
 		if self.DEBUG:
 			print "Scheduler: Save_TempHumid_to_DB"
@@ -86,7 +86,7 @@ class ScheduleManager(Thread):
 				h_vmean = round(mean(h_values), 1)
 				db = self.hub["STORAGE HANDLER"]
 				db.insertValue(MesurmentDTO(str(datetime.now()), DataType.TEMPERATUREHUMIDITY, [t_vmean, h_vmean]))
-			
+
 		else:
 			print "Scheduler: Save_TempHumid_to_DB Error locating TEMPERATURE or HUMIDITY or STORAGE object"
 
@@ -173,7 +173,7 @@ class ScheduleManager(Thread):
 			h_value = self.hub["EXTERNAL HUMIDITY"].getHumidity()
 			db = self.hub["STORAGE HANDLER"]
 			db.insertValue(MesurmentDTO(str(datetime.now()), DataType.EXTERIOR_TEMPERATURE_HUMIDITY, [t_value, h_value]))
-			
+
 		else:
 			print "Scheduler: Save_TempHumid_to_DB Error locating EXTERNAL TEMPERATURE or EXTERNAL HUMIDITY or STORAGE object"
 
@@ -184,10 +184,10 @@ class ScheduleManager(Thread):
 		if self.hub["STORAGE HANDLER"]:
 			db = self.hub["STORAGE HANDLER"]
 			db.log("System Startup")
-			
+
 		else:
 			print "Scheduler: Save_TempHumid_to_DB Error locating EXTERNAL TEMPERATURE or EXTERNAL HUMIDITY or STORAGE object"
-	
+
 	def change_Api_Key(self):
 
 		self.hub["API KEY"] = ''.join(choice(ascii_uppercase+digits) for _ in range(6))
@@ -206,7 +206,7 @@ class ScheduleManager(Thread):
 		if self.hub["STORAGE HANDLER"]:
 			db = self.hub["STORAGE HANDLER"]
 			db.log("Rebooting", username)
-		
+
 		subprocess.Popen('sh '+self.REBOOT_EXEC_PATH+"&", shell=True)
 
 	def shutdown_device(self, username):
@@ -219,7 +219,7 @@ class ScheduleManager(Thread):
 
 #Runs only if called
 if __name__ == "__main__":
-	
+
 	sm = Schedule_Manager(None)
 	sm.start()
 	sleep(3)
