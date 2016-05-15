@@ -16,7 +16,6 @@ from datetime import datetime, timedelta
 from page import PageManager
 from pygame.locals import *
 
-
 class TFT(Thread):
 
     DEBUG           = False
@@ -27,12 +26,9 @@ class TFT(Thread):
     WINDOW_SIZE     = (WINDOW_WIDTH, WINDOW_HEIGHT)
     BLACK           = (  0,   0,   0)
 
-    LOCAL_PATH      = os.path.dirname(os.path.realpath(__file__))
-
     def __init__(self, hub):
         Thread.__init__(self)
         self.hub = hub
-        self.relay = None
         self.ip = "0.0.0.0"
         self.pageManager = PageManager(self)
 
@@ -42,15 +38,17 @@ class TFT(Thread):
             os.putenv('SDL_FBDEV'      , '/dev/fb1')
             os.putenv('SDL_MOUSEDRV'   , 'TSLIB')
             os.putenv('SDL_MOUSEDEV'   , '/dev/input/touchscreen')
-
-            # Init pygame and screen
-            pygame.display.init()
-            pygame.font.init()
             pygame.mouse.set_visible(False)
+
+        # Init pygame and screen
+        pygame.display.init()
+        pygame.font.init()
+        self.FPSCLOCK = pygame.time.Clock()
+        self.screen = pygame.display.set_mode(self.WINDOW_SIZE, 0, 32)
 
     def stop(self):
         self.stopped = True
-        sleep(0.1)
+        sleep(0.2)
         pygame.quit()
 
     def run(self):
@@ -66,11 +64,7 @@ class TFT(Thread):
             self.relay = self.hub["RELAY"]
             self.scheduler = self.hub["SCHEDULE MANAGER"]
 
-        if 'armv6l' in platform.uname():    #Hides the cursor if running on the RPi
-            pygame.mouse.set_visible(False)
 
-        self.FPSCLOCK = pygame.time.Clock()
-        self.screen = pygame.display.set_mode(self.WINDOW_SIZE, 0, 32)
 
         self.draw()
         intermediate_update = 0
@@ -132,7 +126,7 @@ if __name__ == '__main__':
     t = TFT(None)
     t.start()
     try:
-        while True:
+        while not t.stopped:
             sleep(0.2)
     except:
         t.stop()
