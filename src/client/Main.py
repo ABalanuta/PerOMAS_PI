@@ -26,21 +26,19 @@ from Hybrid_Storage_Handler import HibridStorageHandler
 from Logic_Engine import Logic_Engine
 from CLI_Manager import CLI_Manager
 
-
-
 ##Executed if only is the main app
-if __name__ == '__main__':	
-	
+if __name__ == '__main__':
+
 
 	DEBUG			= True		# Debug Mode
-	CLI_INTERFACE	= False		# 
-	WEB_INTERFACE	= True		# 
-	
+	CLI_INTERFACE	= False		#
+	WEB_INTERFACE	= True		#
+
 	def signal_handler(signal, frame):
-		
+
 		print 'You pressed Ctrl+C!'
 		for key, value in hub.items():
-			
+
 			if key not in ["API KEY", "STORAGE HANDLER", "UserManager"]:
 				if DEBUG:
 					print "Stopping", key
@@ -52,14 +50,14 @@ if __name__ == '__main__':
 					pass
 
 		sys.exit(0)
-	
+
 
 
 	if DEBUG:
 		print "\n-> Starting Client <-\n"
-	
+
 	try:
-		
+
 		#Main object used for sharing
 		hub = dict()
 		signal.signal(signal.SIGINT, signal_handler)
@@ -92,14 +90,14 @@ if __name__ == '__main__':
 		if DEBUG:
 			print "External T/H sensor is ON"
 
-		
+
 		#Start Luminosity Sensor
 		lux = TSL2561(hub)
 		lux.start()
 		hub["LUMINOSITY"] = lux
 		if DEBUG:
 			print "LUX sensor is ON"
-		
+
 		#Start Current Sensor
 		watt = ADS1115(hub)
 		watt.start()
@@ -115,7 +113,7 @@ if __name__ == '__main__':
 		#wifi.track_device('CC:C3:EA:0E:23:8F')
 		#if DEBUG:
 		#	print "WIFI sensor is ON"
-		
+
 		#Starts BT Detector
 		bt = BTDetector(hub)
 		#bt.start()
@@ -123,7 +121,7 @@ if __name__ == '__main__':
 		#if DEBUG:
 		#	print "BT sensor is ON"
 
-		
+
 		tft = TFT(hub)
 		IP = tft.get_local_IP()
 		print "My IP is: " + str(IP)
@@ -163,7 +161,7 @@ if __name__ == '__main__':
 		#hub["PUBLISHER"] = mqtt
 		#if DEBUG:
 		#	print "MQTT Publisher is ON"
-		
+
 		#Starts the Scheduler Manager
 		sm = ScheduleManager(hub)
 		sm.start()
@@ -177,7 +175,7 @@ if __name__ == '__main__':
 		hub["LOGIC ENGINE"] = le
 		if DEBUG:
 			print "Logic Engine started automation"
-		
+
 		#Starts Web Server
 		#Must be last (Blocking)
 		if WEB_INTERFACE:
@@ -188,12 +186,12 @@ if __name__ == '__main__':
 			wh = WebHandler(hub)
 			wh.start()
 			hub["WEB"] = wh
-			
-			
+
+
 	except Exception as inst:
 		print "Exception"
 		print type(inst)     # the exception instance
 		print inst.args      # arguments stored in .args
 		raise
-	
+
 	print "The End"
