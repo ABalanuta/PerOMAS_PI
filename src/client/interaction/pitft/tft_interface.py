@@ -38,11 +38,12 @@ class TFT(Thread):
             os.putenv('SDL_FBDEV'      , '/dev/fb1')
             os.putenv('SDL_MOUSEDRV'   , 'TSLIB')
             os.putenv('SDL_MOUSEDEV'   , '/dev/input/touchscreen')
-            pygame.mouse.set_visible(False)
 
         # Init pygame and screen
         pygame.display.init()
         pygame.font.init()
+        pygame.mouse.set_visible(False)
+        
         self.FPSCLOCK = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.WINDOW_SIZE, 0, 32)
 
