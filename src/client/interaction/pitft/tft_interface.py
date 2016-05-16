@@ -70,9 +70,9 @@ class TFT(Thread):
                     print "PITFT waiting for "+str(waiting)+" Modules to be Loaded"
                 sleep(0.5)
 
-                self.relay = self.hub["RELAY"]
-                self.scheduler = self.hub["SCHEDULE MANAGER"]
-                self.logic = self.hub["LOGIC ENGINE"]
+            self.relay = self.hub["RELAY"]
+            self.scheduler = self.hub["SCHEDULE MANAGER"]
+        self.logic = self.hub["LOGIC ENGINE"]
 
         self.draw()
         intermediate_update = 0
