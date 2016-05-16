@@ -81,6 +81,10 @@ if __name__ == '__main__':
 		if DEBUG:
 			print "CLI Manager is ON"
 
+		#Starts the Logic Engine
+		le = Logic_Engine(hub)
+		hub["LOGIC ENGINE"] = le
+
 		#Starts the Storage Handler
 		sh = HibridStorageHandler(hub)
 		hub["STORAGE HANDLER"] = sh
@@ -154,10 +158,9 @@ if __name__ == '__main__':
 		if DEBUG:
 			print "Scheduler Manager started automation"
 
-		#Starts the Logic Engine
-		le = Logic_Engine(hub)
+
 		le.start()
-		hub["LOGIC ENGINE"] = le
+
 		if DEBUG:
 			print "Logic Engine started automation"
 
