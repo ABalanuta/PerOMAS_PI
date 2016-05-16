@@ -178,9 +178,10 @@ class LightsPage(Page):
             sleep(0.01)
             if not self.DEVELOPMENT:
                 self.pallete.relay.set_lights_x1_state(False)
-                sleep(0.2)
+                sleep(0.4)
                 self.pallete.relay.set_lights_x2_state(False)
-                sleep(0.2)
+                sleep(0.1)
+                self.pallete.logic.setACMode("Manual")
                 self.pallete.relay.set_ac_speed(0)
             else:
                 self.x1 = False
@@ -261,7 +262,7 @@ class RebootPage(Page):
             if 'click' in events:
                 sleep(0.01)
                 if not self.DEVELOPMENT:
-                    self.pallete.reboot_device("System")
+                    self.pallete.scheduler.reboot_device("System")
                 self.pallete.stop()
                 print("REBOOTING ....")
                 return True

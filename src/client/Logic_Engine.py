@@ -21,10 +21,10 @@ class Logic_Engine(Thread):
 	def __init__(self, hub):
 		Thread.__init__(self)
 		self.hub = hub
-		
+
 	def stop(self):
 		self.stopped = True
-	
+
 	def run(self):
 		self.stopped = False
 
@@ -32,7 +32,7 @@ class Logic_Engine(Thread):
 			self.update()
 			if not self.stopped:
 				sleep(self.SLEEP_BETWEEN_CHECKS)
-			
+
 	def update(self):
 		if self.DEBUG:
 			print "Update"
@@ -46,7 +46,7 @@ class Logic_Engine(Thread):
 			if not self.isWorkingHours():
 				if "RELAY" in self.hub.keys():
 					self.hub["RELAY"].set_ac_speed(0)
-			
+
 			#continue with the normal scheduler
 			else:
 				self.checkTermostatLogic()
@@ -69,14 +69,14 @@ class Logic_Engine(Thread):
 					print "checkUserRules: Rule: "+rule.alias, t
 
 	def checkTermostatLogic(self):
-		
+
 		if self.hub["TEMPERATURE"] and "RELAY" in self.hub.keys():
 
 			curr_temp = self.hub["TEMPERATURE"].getTemperature()
 			relay = self.hub["RELAY"]
 
 			#present_users = self.hub["USER MANAGER"].getPresentUsers()
-			
+
 			#if len(present_users) > 0:
 			if True:
 				##Calculates the average temperature of the users in the office
@@ -111,7 +111,7 @@ class Logic_Engine(Thread):
 				#Turn OFF FAN if temp Perfect
 				else:
 					relay.set_ac_speed(0)
-			
+
 			else:
 				#Shuts Down the AC if nobody is in the office
 				relay.set_ac_speed(0)
@@ -148,7 +148,7 @@ class Logic_Engine(Thread):
 
 #Runs only if called
 if __name__ == "__main__":
-	
+
 
 	lm = Logic_Engine(None)
 	lm.start()

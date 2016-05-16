@@ -43,7 +43,7 @@ class TFT(Thread):
         pygame.display.init()
         pygame.font.init()
         pygame.mouse.set_visible(False)
-        
+
         self.FPSCLOCK = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.WINDOW_SIZE, 0, 32)
 
@@ -57,15 +57,15 @@ class TFT(Thread):
 
         #wait for the ralay to load
         while self.hub and not set(self.hub.keys()).issuperset(
-            set(["RELAY", "TEMPERATURE", "HUMIDITY", "LUMINOSITY", "CURRENT", "USER MANAGER", "BLUETOOTH", "SCHEDULE MANAGER"])):
+            set(["RELAY", "TEMPERATURE", "HUMIDITY", "LUMINOSITY", "CURRENT",
+                "USER MANAGER", "BLUETOOTH", "SCHEDULE MANAGER", "LOGIC ENGINE"])):
             if self.DEBUG:
                 print "PITFT waiting for the Modules to be Loaded"
             sleep(0.5)
 
             self.relay = self.hub["RELAY"]
             self.scheduler = self.hub["SCHEDULE MANAGER"]
-
-
+            self.logic = self.hub["LOGIC ENGINE"]
 
         self.draw()
         intermediate_update = 0
