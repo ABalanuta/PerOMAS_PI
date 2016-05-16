@@ -393,13 +393,7 @@ class TemperaturePage(Page):
         if self.DEVELOPMENT:
             self.AC_MENU = self.manual
         else:
-            mode = self.pallete.logic.getACMode()
-            if mode == "Manual":
-                self.AC_MENU = self.manual
-            elif mode == "Auto":
-                self.AC_MENU = self.auto
-            else:
-                self.AC_MENU = Page(self.pallete, self.manager, prevPage=self)
+            self.AC_MENU = self.auto
 
 
     def render(self):
