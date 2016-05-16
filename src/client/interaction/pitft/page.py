@@ -191,6 +191,185 @@ class LightsPage(Page):
         # return the response of the superclass
         return super(self.__class__,self).handleEvent(event)
 
+class ACManualPage(Page):
+    LOCAL_PATH      = os.path.dirname(os.path.realpath(__file__))
+    IMG_MANUAL      = LOCAL_PATH + '/images/manual_60.png'
+    IMG_AUTO        = LOCAL_PATH + '/images/auto_60.png'
+    MYFONT_50       = pygame.font.SysFont("monospace", 50)
+    MYFONT_25       = pygame.font.SysFont("monospace", 25)
+    WHITE           = (255, 255, 255)
+    BLACK           = (  0,   0,   0)
+    BLUE            = (  0,   0, 255)
+    RED             = (255,   0,   0)
+    RED2            = (232,   0,  66)
+    YELLOW          = (255, 204,  51)
+    LIGHT_BLUE      = ( 51, 204, 255)
+
+    def __init__(self, pallete, manager, prevPage=None, nextPage=None):
+        super(self.__class__,self).__init__(pallete, manager, prevPage=prevPage, nextPage=nextPage)
+        self.modeName = "Manual"
+        BTN_M_H         = 60
+        BTN_M_L         = 60
+        BTN_M_X          = self.WINDOW_WIDTH - BTN_M_L
+        BTN_M_Y          = self.WINDOW_HEIGHT - BTN_M_H
+
+        B0_H = 60
+        B0_L = 60
+        B0_X = (self.WINDOW_WIDTH/4 - B0_L)/2
+        B0_Y = self.WINDOW_HEIGHT/10
+
+        B1_H = 60
+        B1_L = 60
+        B1_X = 3*B0_X + B0_L
+        B1_Y = B0_Y
+
+        B2_H = 60
+        B2_L = 60
+        B2_X = 5*B0_X + B0_L + B1_L
+        B2_Y = B0_Y
+
+        B3_H = 60
+        B3_L = 60
+        B3_X = 7*B0_X + B0_L + B1_L + B2_L
+        B3_Y = B0_Y
+
+        BH_H = 60
+        BH_L = 120
+        BH_X = (self.WINDOW_WIDTH/2 - BH_L)/2
+        BH_Y = B0_Y*2 + B0_L
+
+        BC_H = 60
+        BC_L = 120
+        BC_X = 3*BH_X + BH_L
+        BC_Y = BH_Y
+
+        self.button_mode    = pygbutton.PygButton((BTN_M_X, BTN_M_Y, BTN_M_H, BTN_M_L),normal=self.IMG_AUTO)
+        self.button_speed_0 = pygbutton.PygButton((B0_X, B0_Y, B0_L, B0_H),"0", font=self.MYFONT_50)
+        self.button_speed_1 = pygbutton.PygButton((B1_X, B1_Y, B1_L, B1_H),"1", font=self.MYFONT_50)
+        self.button_speed_2 = pygbutton.PygButton((B2_X, B2_Y, B2_L, B2_H),"2", font=self.MYFONT_50)
+        self.button_speed_3 = pygbutton.PygButton((B3_X, B3_Y, B3_L, B3_H),"3", font=self.MYFONT_50)
+        self.button_warm     = pygbutton.PygButton((BH_X, BH_Y, BH_L, BH_H),"Warm", font=self.MYFONT_25, bgcolor=self.RED2)
+        self.button_cold    = pygbutton.PygButton((BC_X, BC_Y, BC_L, BC_H),"Cold", font=self.MYFONT_25, bgcolor=self.BLUE)
+
+        #self.button_speed_2.buttonDown = True
+        if self.DEVELOPMENT:
+            self.button_speed_pressed = self.button_speed_0
+            self.warm = False
+
+    def render(self):
+        super(self.__class__,self).render()
+        self.button_mode.draw(self.pallete.screen)
+
+        self.button_speed_0.buttonDown = False
+        self.button_speed_1.buttonDown = False
+        self.button_speed_2.buttonDown = False
+        self.button_speed_3.buttonDown = False
+        self.button_cold.buttonDown = False
+        self.button_warm.buttonDown = False
+
+
+        if self.DEVELOPMENT:
+            self.button_speed_pressed.buttonDown = True
+            if self.warm:
+                self.button_warm.buttonDown = True
+            else:
+                self.button_cold.buttonDown = True
+        else:
+            pass
+        self.button_speed_0.draw(self.pallete.screen)
+        self.button_speed_1.draw(self.pallete.screen)
+        self.button_speed_2.draw(self.pallete.screen)
+        self.button_speed_3.draw(self.pallete.screen)
+        self.button_warm.draw(self.pallete.screen)
+        self.button_cold.draw(self.pallete.screen)
+
+    def handleEvent(self, event):
+        events = self.button_mode.handleEvent(event)
+        if 'click' in events:
+            print("From Manual")
+            self.prev.toggleACMode()
+            return True
+
+        events = self.button_speed_0.handleEvent(event)
+        if 'click' in events:
+            print("Button Speed 0")
+            if not self.DEVELOPMENT:
+                self.pallete.relay.set_ac_speed(0)
+            else:
+                self.button_speed_pressed = self.button_speed_0
+            return True
+        events = self.button_speed_1.handleEvent(event)
+        if 'click' in events:
+            print("Button Speed 1")
+            if not self.DEVELOPMENT:
+                self.pallete.relay.set_ac_speed(1)
+            else:
+                self.button_speed_pressed = self.button_speed_1
+            return True
+        events = self.button_speed_2.handleEvent(event)
+        if 'click' in events:
+            print("Button Speed 2")
+            if not self.DEVELOPMENT:
+                self.pallete.relay.set_ac_speed(2)
+            else:
+                self.button_speed_pressed = self.button_speed_2
+            return True
+        events = self.button_speed_3.handleEvent(event)
+        if 'click' in events:
+            print("Button Speed 3")
+            if not self.DEVELOPMENT:
+                self.pallete.relay.set_ac_speed(3)
+            else:
+                self.button_speed_pressed = self.button_speed_3
+            return True
+        events = self.button_warm.handleEvent(event)
+        if 'click' in events:
+            print("Button Warm")
+            if not self.DEVELOPMENT:
+                self.pallete.relay.set_ac_mode("Heat")
+            else:
+                self.warm = True
+            return True
+        events = self.button_cold.handleEvent(event)
+        if 'click' in events:
+            print("Button Cold")
+            if not self.DEVELOPMENT:
+                self.pallete.relay.set_ac_mode("Cool")
+            else:
+                self.warm = False
+            return True
+        # return the response of the superclass
+        return super(self.__class__,self).handleEvent(event)
+
+class ACAutoPage(Page):
+    LOCAL_PATH      = os.path.dirname(os.path.realpath(__file__))
+    IMG_MANUAL      = LOCAL_PATH + '/images/manual_60.png'
+    IMG_AUTO        = LOCAL_PATH + '/images/auto_60.png'
+
+    def __init__(self, pallete, manager, prevPage=None, nextPage=None):
+        super(self.__class__,self).__init__(pallete, manager, prevPage=prevPage, nextPage=nextPage)
+        self.modeName = "Auto"
+        BTN_M_H         = 60
+        BTN_M_L         = 60
+        BTN_M_X          = self.WINDOW_WIDTH - BTN_M_L
+        BTN_M_Y          = self.WINDOW_HEIGHT - BTN_M_H
+
+        self.button_mode    = pygbutton.PygButton((BTN_M_X, BTN_M_Y, BTN_M_H, BTN_M_L),normal=self.IMG_MANUAL)
+
+    def render(self):
+        super(self.__class__,self).render()
+        self.button_mode.draw(self.pallete.screen)
+
+    def handleEvent(self, event):
+        events = self.button_mode.handleEvent(event)
+        if 'click' in events:
+            print("From Auto")
+            self.prev.toggleACMode()
+            return True
+
+        # return the response of the superclass
+        return super(self.__class__,self).handleEvent(event)
+
 class TemperaturePage(Page):
 
     LOCAL_PATH      = os.path.dirname(os.path.realpath(__file__))
@@ -200,13 +379,28 @@ class TemperaturePage(Page):
 
     def __init__(self, pallete, manager, prevPage=None, nextPage=None):
         super(self.__class__,self).__init__(pallete, manager, prevPage=prevPage, nextPage=nextPage)
-        self.AC_MENU    = Page(self.pallete, self.manager, prevPage=self)
+
         BTN_H           = 50
         BTN_L           = 50
         BTN1_X          = self.WINDOW_WIDTH/2 - BTN_L/2
         BTN1_Y          = self.WINDOW_HEIGHT - BTN_H
 
         self.button_cogwheel  = pygbutton.PygButton((BTN1_X, BTN1_Y, BTN_H, BTN_L),normal=self.COGWHEEL_BTN)
+
+        self.manual     = ACManualPage(self.pallete, self.manager, prevPage=self)
+        self.auto       = ACAutoPage(self.pallete, self.manager, prevPage=self)
+
+        if self.DEVELOPMENT:
+            self.AC_MENU = self.manual
+        else:
+            mode = self.pallete.logic.getACMode()
+            if mode == "Manual":
+                self.AC_MENU = self.manual
+            elif mode == "Auto":
+                self.AC_MENU = self.auto
+            else:
+                self.AC_MENU = Page(self.pallete, self.manager, prevPage=self)
+
 
     def render(self):
         super(self.__class__,self).render()
@@ -230,6 +424,24 @@ class TemperaturePage(Page):
 
         # return the response of the superclass
         return super(self.__class__,self).handleEvent(event)
+
+    def toggleACMode(self):
+        if self.DEVELOPMENT:
+            if self.AC_MENU.modeName == "Manual":
+                print("Manual->Auto")
+                self.AC_MENU = self.auto
+            else:
+                print("Auto->Manual")
+                self.AC_MENU = self.manual
+        else:
+            mode = self.pallete.logic.getACMode()
+            if mode == "Manual":
+                self.pallete.logic.getACMode("Auto")
+                self.AC_MENU = self.auto
+            else:
+                self.pallete.logic.getACMode("Manual")
+                self.AC_MENU = self.manual
+        self.manager.setCurrentPage(self.AC_MENU)
 
 class RebootPage(Page):
 

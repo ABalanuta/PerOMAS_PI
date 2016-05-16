@@ -42,7 +42,8 @@ class TFT(Thread):
         # Init pygame and screen
         pygame.display.init()
         pygame.font.init()
-        pygame.mouse.set_visible(False)
+        if 'armv6l' in platform.uname():
+            pygame.mouse.set_visible(False)
 
         self.FPSCLOCK = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.WINDOW_SIZE, 0, 32)
@@ -94,7 +95,11 @@ class TFT(Thread):
         if self.stopped:
             return
 
-        pevents = pygame.event.get()
+        try:
+            pevents = pygame.event.get()
+        except:
+            return
+
         for event in pevents:
                 if self.DEBUG:
                     print event
