@@ -18,7 +18,7 @@ from pygame.locals import *
 
 class TFT(Thread):
 
-    DEBUG           = False
+    DEBUG           = True
 
     FPS             = 10
     WINDOW_WIDTH    = 320
