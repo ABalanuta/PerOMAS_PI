@@ -62,7 +62,7 @@ if batnet_ip is "10.0.0.1":
 	os.popen("sudo brctl stp br0 off")
 	os.popen("sudo brctl addif br0 bat0")
 	os.popen("sudo brctl addif br0 eth0")
-	os.popen("sudo ifconfig eth0 0.0.0.0 up")
+	os.popen("sudo ifconfig eth0 up")
 	os.popen("sudo ifconfig bat0 0.0.0.0 up")
 	#os.popen("sudo ifconfig br0 hw ether b8:27:eb:60:57:67")
 	os.popen("sudo ifconfig br0 "+priv_ip+"/24 up")
