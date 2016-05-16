@@ -138,12 +138,7 @@ if __name__ == '__main__':
 				print "Relays are ON"
 		hub["RELAY"] = r
 
-		#Starts TFT
 
-		tft.start()
-		hub["TFT"] = tft
-		if DEBUG:
-			print "TFT screen is ON"
 
 
 
@@ -175,6 +170,13 @@ if __name__ == '__main__':
 		hub["LOGIC ENGINE"] = le
 		if DEBUG:
 			print "Logic Engine started automation"
+
+
+		#Starts TFT
+		tft.start()
+		hub["TFT"] = tft
+		if DEBUG:
+			print "TFT screen is ON"
 
 		#Starts Web Server
 		#Must be last (Blocking)
