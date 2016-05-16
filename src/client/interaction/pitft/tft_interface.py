@@ -41,15 +41,17 @@ class TFT(Thread):
         print("#2")
         # Init pygame and screen
         pygame.display.init()
+        print("#2.1")
         pygame.font.init()
+        print("#2.2")
         if 'armv6l' in platform.uname():
             pygame.mouse.set_visible(False)
-
+        print("#2.3")
         self.FPSCLOCK = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.WINDOW_SIZE, 0, 32)
         self.logic = None
         print("#3")
-        
+
     def stop(self):
         self.stopped = True
         sleep(0.2)
