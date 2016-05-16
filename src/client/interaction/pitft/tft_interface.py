@@ -67,6 +67,7 @@ class TFT(Thread):
                 for x in dependencies:
                     if x not in self.hub:
                         waiting = waiting + 1
+                        print "Waiting for ", x
                 if self.DEBUG and waiting > 0:
                     print "PITFT waiting for "+str(waiting)+" Modules to be Loaded"
                 sleep(0.5)
