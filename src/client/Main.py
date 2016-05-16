@@ -160,6 +160,7 @@ if __name__ == '__main__':
 
 
 		le.start()
+		sleep(2)
 
 		if DEBUG:
 			print "Logic Engine started automation"

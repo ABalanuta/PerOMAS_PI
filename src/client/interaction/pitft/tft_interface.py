@@ -47,6 +47,7 @@ class TFT(Thread):
 
         self.FPSCLOCK = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.WINDOW_SIZE, 0, 32)
+        self.logic = None
 
     def stop(self):
         self.stopped = True
@@ -72,8 +73,10 @@ class TFT(Thread):
 
             self.relay = self.hub["RELAY"]
             self.scheduler = self.hub["SCHEDULE MANAGER"]
+        print("#")
         self.logic = self.hub["LOGIC ENGINE"]
-
+        print("#")
+        print self.s
         self.draw()
         intermediate_update = 0
 
