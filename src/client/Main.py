@@ -7,7 +7,7 @@ __author__ = "Artur Balanuta"
 __version__ = "1.0.2"
 __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
-import signal, sys
+import signal, sys, platform
 from sensors.HTU21D.HTU21D import TempHumid #Temp/Humid
 from sensors.OPENWEATHERMAPAPI.OpenWeatherMapAPI import OpenWeatherMapAPI #Exterior Temp/Humid
 from sensors.TSL2561.TSL2561 import TSL2561	#Lux
