@@ -81,6 +81,14 @@ if __name__ == '__main__':
 		if DEBUG:
 			print "CLI Manager is ON"
 
+		#Starts TFT
+		tft = TFT(hub)
+		tft.start()
+		hub["TFT"] = tft
+		if DEBUG:
+			print "TFT screen is ON"
+
+
 		#Starts the Logic Engine
 		le = Logic_Engine(hub)
 		hub["LOGIC ENGINE"] = le
@@ -160,18 +168,12 @@ if __name__ == '__main__':
 
 
 		le.start()
-		sleep(2)
 
 		if DEBUG:
 			print "Logic Engine started automation"
 
 
-		#Starts TFT
-		tft = TFT(hub)
-		tft.start()
-		hub["TFT"] = tft
-		if DEBUG:
-			print "TFT screen is ON"
+
 
 
 		IP = get_local_IP()
