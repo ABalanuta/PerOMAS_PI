@@ -77,7 +77,7 @@ class TFT(Thread):
         print("#")
         self.logic = self.hub["LOGIC ENGINE"]
         print("#")
-        print self.s
+        print self.logic
         self.draw()
         intermediate_update = 0
 
