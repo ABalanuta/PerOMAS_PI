@@ -26,7 +26,7 @@ class SSRelay():
 		self.lock = Lock()
 		GPIO.setmode(GPIO.BCM)
 		#GPIO.setwarnings(False)
-		
+
 		#Iniciates and Sets the Predefine state to each device
 		for device_name in self.RELAY.keys():
 			values = self.RELAY[device_name]
@@ -44,14 +44,14 @@ class SSRelay():
 				GPIO.output(pin, True)
 
 		#Turn on the especified speed
-		if 0 <= speed <= 3:
-			if speed == 2:
-				speed = 3
-			if speed > 0:
-				relay_name = "AC_SPEED_"+str(speed)
-				pin = self.RELAY[relay_name]["Pin"]
-				self.RELAY[relay_name]["State"] = False
-				GPIO.output(pin, False)
+		if speed > 2:
+			speed = 3
+		if speed < 0:
+			speed = 0
+		relay_name = "AC_SPEED_"+str(speed)
+		pin = self.RELAY[relay_name]["Pin"]
+		self.RELAY[relay_name]["State"] = False
+		GPIO.output(pin, False)
 
 	def get_ac_speed(self):
 
@@ -63,11 +63,11 @@ class SSRelay():
 				state = self.RELAY[relay_name]["State"]
 				if not state:
 					on_speed = int(relay_name[-1:])
-					break			
+					break
 		return on_speed
 
 	def get_ac_mode(self):
-		
+
 		mode = not self.RELAY["AC_HEAT_COOL"]["State"]
 
 		if mode:
@@ -75,13 +75,13 @@ class SSRelay():
 		else:
 			return "Cool"
 
-	
+
 	def set_ac_mode(self, mode):
 		if self.DEBUG:
 			print "set_ac_mode: "+ mode
 
 		pin = self.RELAY["AC_HEAT_COOL"]["Pin"]
-		
+
 		if mode == "Heat":
 			self.RELAY["AC_HEAT_COOL"]["State"] = False
 			GPIO.output(pin, False)
@@ -90,7 +90,7 @@ class SSRelay():
 			self.RELAY["AC_HEAT_COOL"]["State"] = True
 			GPIO.output(pin, True)
 
-	
+
 
 	def set_lights_x1_state(self, state):
 		with self.lock:
