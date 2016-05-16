@@ -47,8 +47,7 @@ class TFT(Thread):
         if 'armv6l' in platform.uname():
             pygame.mouse.set_visible(False)
         print("#2.3")
-        self.FPSCLOCK = pygame.time.Clock()
-        self.screen = pygame.display.set_mode(self.WINDOW_SIZE, 0, 32)
+
         self.logic = None
         print("#3")
 
@@ -59,6 +58,8 @@ class TFT(Thread):
 
     def run(self):
         self.stopped = False
+        self.FPSCLOCK = pygame.time.Clock()
+        self.screen = pygame.display.set_mode(self.WINDOW_SIZE, 0, 32)
         print("#")
         #wait for the ralay to load
         if 'armv6l' in platform.uname():
