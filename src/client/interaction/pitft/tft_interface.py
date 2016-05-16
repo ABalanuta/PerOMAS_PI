@@ -31,14 +31,14 @@ class TFT(Thread):
         self.hub = hub
         self.ip = "0.0.0.0"
         self.pageManager = PageManager(self)
-
+        print("#1")
         # for Adafruit PiTFT:
         if 'armv6l' in platform.uname():
             os.putenv('SDL_VIDEODRIVER', 'fbcon')
             os.putenv('SDL_FBDEV'      , '/dev/fb1')
             os.putenv('SDL_MOUSEDRV'   , 'TSLIB')
             os.putenv('SDL_MOUSEDEV'   , '/dev/input/touchscreen')
-
+        print("#2")
         # Init pygame and screen
         pygame.display.init()
         pygame.font.init()
@@ -48,7 +48,8 @@ class TFT(Thread):
         self.FPSCLOCK = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.WINDOW_SIZE, 0, 32)
         self.logic = None
-
+        print("#3")
+        
     def stop(self):
         self.stopped = True
         sleep(0.2)

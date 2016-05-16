@@ -18,10 +18,10 @@ class CLI_Manager(Thread):
 	def __init__(self, hub):
 		Thread.__init__(self)
 		self.hub = hub
-		
+
 	def stop(self):
 		self.stopped = True
-	
+
 	def run(self):
 		self.stopped = False
 
@@ -29,11 +29,11 @@ class CLI_Manager(Thread):
 			self.update()
 			if not self.stopped:
 				sleep(self.SLEEP_BETWEEN_CHECKS)
-			
+
 	def update(self):
 		if self.DEBUG:
 			print "Update"
-	
+
 	def getBatmanNodes(self):
 		p = subprocess.Popen("sudo batadv-vis -f json | grep router | sed 's/router/source/g' | sed 's/neighbor/target/'| sed 's/label/cost/'", \
 			shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -44,10 +44,10 @@ class CLI_Manager(Thread):
 			retList.append(json.loads(line))
 		return retList
 
-	
+
 #Runs only if called
 if __name__ == "__main__":
-	
+
 
 	cm = CLI_Manager(None)
 	cm.start()
