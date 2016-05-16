@@ -46,8 +46,8 @@ class SSRelay():
 		#Turn on the especified speed
 		if speed > 2:
 			speed = 3
-		if speed < 0:
-			speed = 0
+		if speed < 1:
+			return
 		relay_name = "AC_SPEED_"+str(speed)
 		pin = self.RELAY[relay_name]["Pin"]
 		self.RELAY[relay_name]["State"] = False
