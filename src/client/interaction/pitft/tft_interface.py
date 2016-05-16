@@ -78,8 +78,8 @@ class TFT(Thread):
 
             self.relay = self.hub["RELAY"]
             self.scheduler = self.hub["SCHEDULE MANAGER"]
-        print("#")
-        self.logic = self.hub["LOGIC ENGINE"]
+            print("#")
+            self.logic = self.hub["LOGIC ENGINE"]
         print("#")
         print self.logic
         self.draw()
