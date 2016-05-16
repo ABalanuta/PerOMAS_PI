@@ -7,6 +7,7 @@ __email__ = "artur.balanuta [at] tecnico.ulisboa.pt"
 
 import subprocess
 import json
+import platform
 from threading import Thread
 from time import sleep, localtime, time
 
@@ -44,6 +45,19 @@ class CLI_Manager(Thread):
 			retList.append(json.loads(line))
 		return retList
 
+	def get_local_IP(self):
+		self.ip = "0.0.0.0"
+		if 'armv6l' in platform.uname():
+			try:
+				p = subprocess.Popen("sudo ifconfig br0; sudo ifconfig bat0", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+				lines = p.stdout.readlines()
+				for line in lines:
+					if "inet addr:" in line:
+						self.ip = str(line.split()[1].split(':')[1])
+						return self.ip
+			except:
+				return self.ip
+		return self.ip
 
 #Runs only if called
 if __name__ == "__main__":
