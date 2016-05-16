@@ -178,9 +178,7 @@ class LightsPage(Page):
             sleep(0.01)
             if not self.DEVELOPMENT:
                 self.pallete.relay.set_lights_x1_state(False)
-                sleep(0.4)
                 self.pallete.relay.set_lights_x2_state(False)
-                sleep(0.1)
                 self.pallete.logic.setACMode("Manual")
                 self.pallete.relay.set_ac_speed(0)
             else:
@@ -430,10 +428,10 @@ class TemperaturePage(Page):
         else:
             mode = self.pallete.logic.getACMode()
             if mode == "Manual":
-                self.pallete.logic.getACMode("Auto")
+                self.pallete.logic.setACMode("Auto")
                 self.AC_MENU = self.auto
             else:
-                self.pallete.logic.getACMode("Manual")
+                self.pallete.logic.setACMode("Manual")
                 self.AC_MENU = self.manual
         self.manager.setCurrentPage(self.AC_MENU)
 
