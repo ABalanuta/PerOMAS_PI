@@ -51,7 +51,19 @@ if __name__ == '__main__':
 
 		sys.exit(0)
 
-
+    def get_local_IP():
+		ip = "0.0.0.0"
+            if 'armv6l' in platform.uname():
+                try:
+                    p = subprocess.Popen("sudo ifconfig br0; sudo ifconfig bat0", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                    lines = p.stdout.readlines()
+                    for line in lines:
+                        if "inet addr:" in line:
+                            ip = str(line.split()[1].split(':')[1])
+                            return self.ip
+                except:
+                    return ip
+            return ip
 
 	if DEBUG:
 		print "\n-> Starting Client <-\n"
@@ -122,21 +134,7 @@ if __name__ == '__main__':
 		#	print "BT sensor is ON"
 
 
-		tft = TFT(hub)
-		IP = tft.get_local_IP()
-		print "My IP is: " + str(IP)
 
-
-		#Starts Relay
-		if IP == "172.20.126.1":
-			r = SSRelay(hub)
-			if DEBUG:
-				print "SSRelays are ON"
-		else:
-			r = Relay(hub)
-			if DEBUG:
-				print "Relays are ON"
-		hub["RELAY"] = r
 
 
 
@@ -173,10 +171,27 @@ if __name__ == '__main__':
 
 
 		#Starts TFT
+		tft = TFT(hub)
 		tft.start()
 		hub["TFT"] = tft
 		if DEBUG:
 			print "TFT screen is ON"
+
+
+		IP = get_local_IP()
+		print "My IP is: " + str(IP)
+
+
+		#Starts Relay
+		if IP == "172.20.126.1":
+			r = SSRelay(hub)
+			if DEBUG:
+				print "SSRelays are ON"
+		else:
+			r = Relay(hub)
+			if DEBUG:
+				print "Relays are ON"
+		hub["RELAY"] = r
 
 		#Starts Web Server
 		#Must be last (Blocking)
