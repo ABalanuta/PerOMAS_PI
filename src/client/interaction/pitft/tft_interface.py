@@ -18,7 +18,7 @@ from pygame.locals import *
 
 class TFT(Thread):
 
-    DEBUG           = True
+    DEBUG           = False
 
     FPS             = 10
     WINDOW_WIDTH    = 320
@@ -57,16 +57,22 @@ class TFT(Thread):
         self.stopped = False
 
         #wait for the ralay to load
-        while self.hub and not set(self.hub.keys()).issuperset(
-            set(["RELAY", "TEMPERATURE", "HUMIDITY", "LUMINOSITY", "CURRENT",
-                "USER MANAGER", "BLUETOOTH", "SCHEDULE MANAGER", "LOGIC ENGINE"])):
-            if self.DEBUG:
-                print "PITFT waiting for the Modules to be Loaded"
-            sleep(0.5)
+        if 'armv6l' in platform.uname():
+            dependencies = set(["RELAY", "TEMPERATURE", "HUMIDITY", "LUMINOSITY", "CURRENT","USER MANAGER",
+                "SCHEDULE MANAGER", "LOGIC ENGINE"])
+            waiting = len(dependencies)
+            while waiting > 0:
+                waiting = 0
+                for x in dependencies:
+                    if x not in self.hub:
+                        waiting = waiting + 1
+                if self.DEBUG and waiting > 0:
+                    print "PITFT waiting for "+str(waiting)+" Modules to be Loaded"
+                sleep(0.5)
 
-            self.relay = self.hub["RELAY"]
-            self.scheduler = self.hub["SCHEDULE MANAGER"]
-            self.logic = self.hub["LOGIC ENGINE"]
+                self.relay = self.hub["RELAY"]
+                self.scheduler = self.hub["SCHEDULE MANAGER"]
+                self.logic = self.hub["LOGIC ENGINE"]
 
         self.draw()
         intermediate_update = 0
