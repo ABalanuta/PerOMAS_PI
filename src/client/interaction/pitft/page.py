@@ -448,8 +448,8 @@ class ACAutoPage(Page):
                 if self.setpoint < 40:
                     self.setpoint = self.setpoint + 0.5
             else:
-                if self.setpoint < 40:
-                    setpoint = self.pallete.logic.get_AC_Setpoint()
+                setpoint = self.pallete.logic.get_AC_Setpoint()
+                if setpoint < 40:
                     self.pallete.logic.set_AC_Setpoint(setpoint + 0.5)
 
             return True
@@ -459,8 +459,8 @@ class ACAutoPage(Page):
                 if self.setpoint > 10:
                     self.setpoint = self.setpoint - 0.5
             else:
-                if self.setpoint > 10:
-                    setpoint = self.pallete.logic.get_AC_Setpoint()
+                setpoint = self.pallete.logic.get_AC_Setpoint()
+                if setpoint > 10:
                     self.pallete.logic.set_AC_Setpoint(setpoint - 0.5)
             return True
         # return the response of the superclass
