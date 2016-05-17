@@ -228,6 +228,7 @@ class ACManualPage(Page):
     IMG_AUTO        = LOCAL_PATH + '/images/auto_60.png'
     MYFONT_50       = pygame.font.SysFont("monospace", 50)
     MYFONT_25       = pygame.font.SysFont("monospace", 25)
+    MYFONT_35       = pygame.font.SysFont("monospace", 35)
     WHITE           = (255, 255, 255)
     BLACK           = (  0,   0,   0)
     BLUE            = (  0,   0, 255)
@@ -279,8 +280,8 @@ class ACManualPage(Page):
         self.button_speed_1 = pygbutton.PygButton((B1_X, B1_Y, B1_L, B1_H),"1", font=self.MYFONT_50)
         self.button_speed_2 = pygbutton.PygButton((B2_X, B2_Y, B2_L, B2_H),"2", font=self.MYFONT_50)
         self.button_speed_3 = pygbutton.PygButton((B3_X, B3_Y, B3_L, B3_H),"3", font=self.MYFONT_50)
-        self.button_warm     = pygbutton.PygButton((BH_X, BH_Y, BH_L, BH_H),"Warm", font=self.MYFONT_25, bgcolor=self.RED2)
-        self.button_cold    = pygbutton.PygButton((BC_X, BC_Y, BC_L, BC_H),"Cold", font=self.MYFONT_25, bgcolor=self.BLUE)
+        self.button_warm    = pygbutton.PygButton((BH_X, BH_Y, BH_L, BH_H),"Warm", font=self.MYFONT_35, bgcolor=self.RED2)
+        self.button_cold    = pygbutton.PygButton((BC_X, BC_Y, BC_L, BC_H),"Cold", font=self.MYFONT_35, bgcolor=self.BLUE)
 
         #self.button_speed_2.buttonDown = True
         if self.DEVELOPMENT:
@@ -306,7 +307,21 @@ class ACManualPage(Page):
             else:
                 self.button_cold.buttonDown = True
         else:
-            pass
+            speed = self.pallete.relay.get_ac_speed()
+            mode = self.pallete.relay.get_ac_mode()
+            if speed == 0:
+                self.button_speed_0.buttonDown = True
+            if speed == 1:
+                self.button_speed_1.buttonDown = True
+            if speed == 2:
+                self.button_speed_2.buttonDown = True
+            if speed == 3:
+                self.button_speed_3.buttonDown = True
+            if mode == "Heat":
+                self.button_warm.buttonDown = True
+            else:
+                self.button_warm.buttonDown = True
+
         self.button_speed_0.draw(self.pallete.screen)
         self.button_speed_1.draw(self.pallete.screen)
         self.button_speed_2.draw(self.pallete.screen)
@@ -374,22 +389,52 @@ class ACManualPage(Page):
 
 class ACAutoPage(Page):
     LOCAL_PATH      = os.path.dirname(os.path.realpath(__file__))
+    WHITE           = (255, 255, 255)
+    MYFONT_70       = pygame.font.SysFont("monospace", 70)
+    MYFONT_55       = pygame.font.SysFont("monospace", 55)
     IMG_MANUAL      = LOCAL_PATH + '/images/manual_60.png'
     IMG_AUTO        = LOCAL_PATH + '/images/auto_60.png'
 
     def __init__(self, pallete, manager, prevPage=None, nextPage=None):
         super(self.__class__,self).__init__(pallete, manager, prevPage=prevPage, nextPage=nextPage)
         self.modeName = "Auto"
-        BTN_M_H         = 60
-        BTN_M_L         = 60
-        BTN_M_X          = self.WINDOW_WIDTH - BTN_M_L
-        BTN_M_Y          = self.WINDOW_HEIGHT - BTN_M_H
+        BTN_M_H = 60
+        BTN_M_L = 60
+        BTN_M_X = self.WINDOW_WIDTH - BTN_M_L
+        BTN_M_Y = self.WINDOW_HEIGHT - BTN_M_H
 
-        self.button_mode    = pygbutton.PygButton((BTN_M_X, BTN_M_Y, BTN_M_H, BTN_M_L),normal=self.IMG_MANUAL)
+        BP_H = 60
+        BP_L = 60
+        BP_X = (self.WINDOW_WIDTH/8)*6
+        BP_Y = (self.WINDOW_HEIGHT/8)*3 - BP_H
+
+        BM_H = 60
+        BM_L = 60
+        BM_X = (self.WINDOW_WIDTH/8)*6
+        BM_Y = (self.WINDOW_HEIGHT/8)*3
+
+        self.button_mode = pygbutton.PygButton((BTN_M_X, BTN_M_Y, BTN_M_H, BTN_M_L),normal=self.IMG_MANUAL)
+        self.button_plus = pygbutton.PygButton((BP_X, BP_Y, BP_L, BP_H),"+", font=self.MYFONT_70)
+        self.button_minus = pygbutton.PygButton((BM_X, BM_Y, BM_L, BM_H),"-", font=self.MYFONT_70)
+
+
+        if self.DEVELOPMENT:
+            self.setpoint = 24.0
 
     def render(self):
         super(self.__class__,self).render()
+
+        if not self.DEVELOPMENT:
+            setpoint  = round(self.pallete.logic.get_AC_Setpoint(), 1)
+        else:
+            setpoint = self.setpoint
+
+        s_label = self.MYFONT_55.render(str(setpoint)+" C"+chr(176), 1, self.WHITE)
+        self.pallete.screen.blit(s_label , (10, 60))
+
         self.button_mode.draw(self.pallete.screen)
+        self.button_plus.draw(self.pallete.screen)
+        self.button_minus.draw(self.pallete.screen)
 
     def handleEvent(self, event):
         events = self.button_mode.handleEvent(event)
@@ -397,7 +442,27 @@ class ACAutoPage(Page):
             print("From Auto")
             self.prev.toggleACMode()
             return True
+        events = self.button_plus.handleEvent(event)
+        if 'click' in events:
+            if self.DEVELOPMENT:
+                if self.setpoint < 40:
+                    self.setpoint = self.setpoint + 0.5
+            else:
+                if self.setpoint < 40:
+                    setpoint = self.pallete.logic.get_AC_Setpoint()
+                    self.pallete.logic.set_AC_Setpoint(setpoint + 0.5)
 
+            return True
+        events = self.button_minus.handleEvent(event)
+        if 'click' in events:
+            if self.DEVELOPMENT:
+                if self.setpoint > 10:
+                    self.setpoint = self.setpoint - 0.5
+            else:
+                if self.setpoint > 10:
+                    setpoint = self.pallete.logic.get_AC_Setpoint()
+                    self.pallete.logic.set_AC_Setpoint(setpoint - 0.5)
+            return True
         # return the response of the superclass
         return super(self.__class__,self).handleEvent(event)
 
