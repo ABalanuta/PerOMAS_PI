@@ -320,7 +320,7 @@ class ACManualPage(Page):
             if mode == "Heat":
                 self.button_warm.buttonDown = True
             else:
-                self.button_warm.buttonDown = True
+                self.button_cold.buttonDown = True
 
         self.button_speed_0.draw(self.pallete.screen)
         self.button_speed_1.draw(self.pallete.screen)
