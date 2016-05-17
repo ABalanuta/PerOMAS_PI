@@ -29,27 +29,21 @@ class TFT(Thread):
     def __init__(self, hub):
         Thread.__init__(self)
         self.hub = hub
-        self.ip = "0.0.0.0"
         self.pageManager = PageManager(self)
-        print("#1")
+
         # for Adafruit PiTFT:
         if 'armv6l' in platform.uname():
             os.putenv('SDL_VIDEODRIVER', 'fbcon')
             os.putenv('SDL_FBDEV'      , '/dev/fb1')
             os.putenv('SDL_MOUSEDRV'   , 'TSLIB')
             os.putenv('SDL_MOUSEDEV'   , '/dev/input/touchscreen')
-        print("#2")
+
         # Init pygame and screen
         pygame.display.init()
-        print("#2.1")
         pygame.font.init()
-        print("#2.2")
         if 'armv6l' in platform.uname():
             pygame.mouse.set_visible(False)
-        print("#2.3")
-
         self.logic = None
-        print("#3")
 
     def stop(self):
         self.stopped = True
@@ -60,7 +54,6 @@ class TFT(Thread):
         self.stopped = False
         self.FPSCLOCK = pygame.time.Clock()
         self.screen = pygame.display.set_mode(self.WINDOW_SIZE, 0, 32)
-        print("#")
         #wait for the ralay to load
         if 'armv6l' in platform.uname():
             dependencies = set(["RELAY", "TEMPERATURE", "HUMIDITY", "LUMINOSITY", "CURRENT","USER MANAGER",
@@ -78,10 +71,7 @@ class TFT(Thread):
 
             self.relay = self.hub["RELAY"]
             self.scheduler = self.hub["SCHEDULE MANAGER"]
-            print("#")
             self.logic = self.hub["LOGIC ENGINE"]
-        print("#")
-        print self.logic
         self.draw()
         intermediate_update = 0
 
@@ -127,17 +117,18 @@ class TFT(Thread):
         return
 
     def get_local_IP(self):
-            if 'armv6l' in platform.uname():
-                try:
-                    p = subprocess.Popen("sudo ifconfig br0; sudo ifconfig bat0", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-                    lines = p.stdout.readlines()
-                    for line in lines:
-                        if "inet addr:" in line:
-                            self.ip = str(line.split()[1].split(':')[1])
-                            return self.ip
-                except:
-                    return self.ip
-            return self.ip
+        ip = "0.0.0.0"
+        if 'armv6l' in platform.uname():
+            try:
+                p = subprocess.Popen("sudo ifconfig br0; sudo ifconfig bat0", shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                lines = p.stdout.readlines()
+                for line in lines:
+                    if "inet addr:" in line:
+                        ip = str(line.split()[1].split(':')[1])
+                        return ip
+            except:
+                return ip
+        return ip
 
 if __name__ == '__main__':
 

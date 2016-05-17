@@ -101,7 +101,8 @@ class LightsPage(Page):
     LOCAL_PATH      = os.path.dirname(os.path.realpath(__file__))
     IMG_BULB_ON     = LOCAL_PATH + '/images/light_bulb_on.png'
     IMG_BULB_OFF    = LOCAL_PATH + '/images/light_bulb_off.png'
-    IMG_EXIT        = LOCAL_PATH + '/images/exit_50.png'
+    IMG_EXIT        = LOCAL_PATH + '/images/leave_50_a.png'
+    IMG_ENTER       = LOCAL_PATH + '/images/enter_50_c.png'
 
 
     def __init__(self, pallete, manager, prevPage=None, nextPage=None):
@@ -120,7 +121,9 @@ class LightsPage(Page):
 
         self.button_light_1 = pygbutton.PygButton((BTN1_X, BTN1_Y, BTN_H, BTN_L),normal=self.IMG_BULB_OFF)
         self.button_light_2 = pygbutton.PygButton((BTN2_X, BTN2_Y, BTN_H, BTN_L),normal=self.IMG_BULB_OFF)
-        self.button_exit    = pygbutton.PygButton((BTN_E_X, BTN_E_Y, BTN_E_H, BTN_E_L),normal=self.IMG_EXIT)
+        self.button_exit_enter = pygbutton.PygButton((BTN_E_X, BTN_E_Y, BTN_E_H, BTN_E_L),normal=self.IMG_EXIT)
+
+        self.savedState = False
 
         #Fake button states for DEBUG
         if self.DEVELOPMENT:
@@ -144,9 +147,15 @@ class LightsPage(Page):
         else:
             self.button_light_2.setSurfaces(self.IMG_BULB_OFF)
 
+        if self.savedState:
+            self.button_exit_enter.setSurfaces(self.IMG_ENTER)
+        else:
+            self.button_exit_enter.setSurfaces(self.IMG_EXIT)
+
+
         self.button_light_1.draw(self.pallete.screen)
         self.button_light_2.draw(self.pallete.screen)
-        self.button_exit.draw(self.pallete.screen)
+        self.button_exit_enter.draw(self.pallete.screen)
 
     #def disableEvents(self):
     #    super(self.__class__,self).disableEvents()
@@ -173,17 +182,41 @@ class LightsPage(Page):
                 self.x2 = not self.x2
             return True
 
-        events = self.button_exit.handleEvent(event)
+        events = self.button_exit_enter.handleEvent(event)
         if 'click' in events:
-            sleep(0.01)
-            if not self.DEVELOPMENT:
-                self.pallete.relay.set_lights_x1_state(False)
-                self.pallete.relay.set_lights_x2_state(False)
-                self.pallete.logic.setACMode("Manual")
-                self.pallete.relay.set_ac_speed(0)
+
+            # preform the exit routine
+            if self.savedState:
+                self.savedState = False
+                if not self.DEVELOPMENT:
+                    #Load the previous state
+                    self.pallete.relay.set_lights_x1_state(self.light1_state)
+                    self.pallete.relay.set_lights_x2_state(self.light2_state )
+                    self.pallete.relay.set_ac_speed(self.speed_state)
+                    self.pallete.logic.setACMode(self.logic_state)
+                else:
+                     self.x1 = self.light1_state
+                     self.x2 = self.light2_state
             else:
-                self.x1 = False
-                self.x2 = False
+                self.savedState = True
+                if not self.DEVELOPMENT:
+                    #Save the state
+                    self.light1_state = self.pallete.relay.get_lights_x1_state()
+                    self.light2_state = self.pallete.relay.get_lights_x2_state()
+                    self.speed_state = self.pallete.relay.get_ac_speed()
+                    self.logic_state = self.pallete.logic.getACMode()
+                    #Shut down the subsystems
+                    self.pallete.relay.set_lights_x1_state(False)
+                    self.pallete.relay.set_lights_x2_state(False)
+                    self.pallete.logic.setACMode("Manual")
+                    self.pallete.relay.set_ac_speed(0)
+                else:
+                    #Save the state
+                    self.light1_state = self.x1
+                    self.light2_state = self.x2
+
+                    self.x1 = False
+                    self.x2 = False
             return True
 
         # return the response of the superclass
@@ -371,7 +404,7 @@ class ACAutoPage(Page):
 class TemperaturePage(Page):
 
     LOCAL_PATH      = os.path.dirname(os.path.realpath(__file__))
-    COGWHEEL_BTN    = LOCAL_PATH + '/images/cogwheel_50.png'
+    COGWHEEL_BTN    = LOCAL_PATH + '/images/gears_50_a.png'
     WHITE           = (255, 255, 255)
     MYFONT_85       = pygame.font.SysFont("monospace", 85)
 
@@ -486,7 +519,7 @@ class RebootPage(Page):
 class KeyPage(Page):
 
         LOCAL_PATH      = os.path.dirname(os.path.realpath(__file__))
-        POWER_MENU_BTN  = LOCAL_PATH + '/images/power_menu_50.png'
+        POWER_MENU_BTN  = LOCAL_PATH + '/images/plug_50_a.png'
         WHITE           = (255, 255, 255)
         MYFONT_29       = pygame.font.SysFont("monospace", 29)
         MYFONT_50       = pygame.font.SysFont("monospace", 50)
