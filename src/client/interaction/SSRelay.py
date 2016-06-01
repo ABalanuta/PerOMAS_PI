@@ -83,12 +83,12 @@ class SSRelay():
 		pin = self.RELAY["AC_HEAT_COOL"]["Pin"]
 
 		if mode == "Heat":
-			self.RELAY["AC_HEAT_COOL"]["State"] = False
-			GPIO.output(pin, False)
-
-		elif mode == "Cool":
 			self.RELAY["AC_HEAT_COOL"]["State"] = True
 			GPIO.output(pin, True)
+
+		elif mode == "Cool":
+			self.RELAY["AC_HEAT_COOL"]["State"] = False
+			GPIO.output(pin, False)
 
 
 
